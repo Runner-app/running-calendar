@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dziennik Treningowy</title>
+    <meta
+      name="description"
+      content="Nowoczesny kalendarz biegowy do śledzenia treningów, tempa, tętna i pogody."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="app-container sidebar-hidden">
+      <aside class="sidebar">
+        <div class="brand-section">
+          <span class="brand-icon">🏃‍♂️</span>
+          <h1 class="brand-logo">Biegowy Kalendarz</h1>
+        </div>
+
+        <button class="btn btn-full" id="btn-add-run-sidebar">Dodaj bieg</button>
+
+        <div class="glass-panel">
+          <div class="stats-header">
+            <span>📊 Twoje Statystyki</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🏁</div>
+              <div class="stat-info">
+                <span class="stat-label">Suma biegów</span>
+                <span class="stat-value" id="stats-total-runs">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🗺️</div>
+              <div class="stat-info">
+                <span class="stat-label">Dystans sumaryczny</span>
+                <span class="stat-value" id="stats-total-distance">0.0 km</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⏱️</div>
+              <div class="stat-info">
+                <span class="stat-label">Średnie tempo</span>
+                <span class="stat-value" id="stats-avg-pace">--:-- /km</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-info">
+                <span class="stat-label">Aktualna passa</span>
+                <span class="stat-value" id="stats-current-streak">0 dni</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-full" id="btn-settings-sidebar">
+          <span>⚙️</span> Ustawienia progów
+        </button>
+        <button class="btn btn-secondary btn-full" id="btn-theme-toggle" style="margin-top: 0.5rem">
+          <span>☀️</span> Tryb jasny
+        </button>
+      </aside>
+
+      <main class="calendar-panel glass-panel">
+        <header class="calendar-header">
+          <div class="calendar-navigation">
+            <button class="nav-btn" id="btn-prev-year">⏪</button>
+            <button class="nav-btn" id="btn-prev-month" aria-label="Poprzedni miesiąc">◀</button>
+            <h2 class="month-title" id="calendar-month-year">Maj 2026</h2>
+            <button class="nav-btn" id="btn-next-month" aria-label="Następny miesiąc">▶</button>
+            <button class="nav-btn" id="btn-next-year">⏩</button>
+          </div>
+          <div class="year-nav" id="year-nav-container"></div>
+          <div class="calendar-actions">
+            <button class="btn btn-secondary" id="btn-toggle-sidebar" title="Pokaż/Ukryj panel boczny">
+              <span>📊</span> Pokaż panel
+            </button>
+            <button class="btn btn-secondary" id="btn-today">Dzisiaj</button>
+          </div>
+        </header>
+
+        <div class="calendar-weekdays">
+          <div class="weekday">Pon</div>
+          <div class="weekday">Wt</div>
+          <div class="weekday">Śr</div>
+          <div class="weekday">Czw</div>
+          <div class="weekday">Pt</div>
+          <div class="weekday">Sob</div>
+          <div class="weekday">Niedz</div>
+        </div>
+        <div class="calendar-grid" id="calendar-days-grid"></div>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="modal-run-overlay">
+      <div class="modal-content">
+        <header class="modal-header">
+          <h3 class="modal-title" id="modal-run-title">Dodaj Bieg</h3>
+          <button
+            class="modal-close"
+            id="btn-close-run-modal"
+            aria-label="Zamknij modal"
+          >
+            &times;
+          </button>
+        </header>
+        <div class="modal-body">
+          <form id="form-run">
+            <input type="hidden" id="input-run-id" />
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-run-date">Data biegu</label>
+                <input type="date" id="input-run-date" required />
+              </div>
+              <div class="form-group">
+                <label for="input-run-time">Godzina biegu</label>
+                <input type="time" id="input-run-time" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-run-distance">Dystans (km)</label>
+                <input
+                  type="number"
+                  id="input-run-distance"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="np. 10.50"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="input-run-hr">Średnie tętno (bpm)</label>
+                <input
+                  type="number"
+                  id="input-run-hr"
+                  min="40"
+                  max="240"
+                  placeholder="np. 150"
+                />
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Czas trwania lub tempo</div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Czas (godz : min : sek)</label>
+                  <div class="inline-input-group">
+                    <input
+                      type="number"
+                      id="input-duration-h"
+                      min="0"
+                      max="99"
+                      placeholder="g"
+                      value="0"
+                    />
+                    <span class="unit-label">:</span>
+                    <input
+                      type="number"
+                      id="input-duration-m"
+                      min="0"
+                      max="59"
+                      placeholder="m"
+                      value="0"
+                    />
+                    <span class="unit-label">:</span>
+                    <input
+                      type="number"
+                      id="input-duration-s"
+                      min="0"
+                      max="59"
+                      placeholder="s"
+                      value="0"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Tempo średnie (min : sek /km)</label>
+                  <div class="inline-input-group">
+                    <input
+                      type="number"
+                      id="input-pace-m"
+                      min="1"
+                      max="25"
+                      placeholder="min"
+                      required
+                    />
+                    <span class="unit-label">:</span>
+                    <input
+                      type="number"
+                      id="input-pace-s"
+                      min="0"
+                      max="59"
+                      placeholder="sek"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="select-weather-type">Pogoda</label>
+                <select id="select-weather-type" required>
+                  <option value="sunny">☀️ Słonecznie</option>
+                  <option value="cloudy">☁️ Zachmurzenie</option>
+                  <option value="rainy">🌧️ Deszcz</option>
+                  <option value="snowy">❄️ Śnieg</option>
+                  <option value="windy">💨 Wietrznie</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="input-weather-temp">Temperatura (°C)</label>
+                <input
+                  type="number"
+                  id="input-weather-temp"
+                  step="1"
+                  placeholder="np. 18"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="checkbox-manual-run-num" />
+                <label for="checkbox-manual-run-num"
+                  >Własny numer biegu (ręczne nadpisanie)</label
+                >
+              </div>
+              <div
+                class="inline-input-group"
+                id="manual-run-num-container"
+                style="margin-top: 0.5rem; display: none"
+              >
+                <label
+                  for="input-manual-run-num"
+                  style="margin-bottom: 0; margin-right: 0.5rem"
+                  >Numer biegu:</label
+                >
+                <input
+                  type="number"
+                  id="input-manual-run-num"
+                  min="1"
+                  style="width: 120px"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="input-run-notes">Notatki (opcjonalnie)</div>
+              <textarea
+                id="input-run-notes"
+                rows="2"
+                placeholder="Jak się dzisiaj biegło?"
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-danger"
+            id="btn-delete-run"
+            style="display: none; margin-right: auto"
+          >
+            Usuń
+          </button>
+          <button class="btn btn-secondary" id="btn-cancel-run-modal">
+            Anuluj
+          </button>
+          <button class="btn" id="btn-save-run" type="submit" form="form-run">
+            Zapisz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-settings-overlay">
+      <div class="modal-content">
+        <header class="modal-header">
+          <h3 class="modal-title">Ustawienia Stref</h3>
+          <button class="modal-close" id="btn-close-settings-modal" aria-label="Zamknij modal">&times;</button>
+        </header>
+        <div class="modal-body">
+          <form id="form-settings">
+            <div class="settings-section">
+              <div class="settings-section-title">Numeracja biegów</div>
+              <div class="form-group">
+                <label for="input-setting-offset">Początkowy numer biegu (offset)</label>
+                <input type="number" id="input-setting-offset" min="0"value="0"/>
+                <small style="
+                    color: var(--text-secondary);
+                    display: block;
+                    margin-top: 0.25rem;">
+                  Wszystkie automatycznie liczone biegi będą zaczynać się od tej
+                  wartości + 1.
+                </small>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Strefy tętna (co 5 bpm)</div>
+              <div style="font-size: 0.9rem; color: var(--text-secondary);line-height: 1.6;"</div>
+                • <strong>&lt; 130 bpm</strong>: Zielony (Progres)<br />
+                • <strong>130 - 134 bpm</strong>: Jasnoniebieski / Turkusowy<br />
+                • <strong>135 - 139 bpm</strong>: Miętowy / Jasnozielony<br />
+                • <strong>140 - 144 bpm</strong>: Żółtozielony<br />
+                • <strong>145 - 149 bpm</strong>: Ciemnożółty<br />
+                • <strong>150 - 154 bpm</strong>: Jasnopomarańczowy<br />
+                • <strong>155 - 159 bpm</strong>: Ciemnopomarańczowy<br />
+                • <strong>160 - 164 bpm</strong>: Pastelowy czerwony<br />
+                • <strong>165+ bpm</strong>: Mocny czerwony
+              </div>
+            </div>
+
+            <div class="settings-section" style="
+                border-top: 1px solid var(--glass-border);
+                padding-top: 1.5rem;
+                margin-top: 1.5rem;">
+              <div class="settings-section-title">💾 Kopia zapasowa danych</div>
+              <div style="
+                  font-size: 0.85rem;
+                  color: var(--text-secondary);
+                  margin-bottom: 1rem;
+                  line-height: 1.4;">
+                Eksportuj swoje biegi do pliku JSON, aby przenieść je do innej
+                przeglądarki lub zapisać kopię zapasową na dysku.
+              </div>
+              <div class="form-row">
+                <button type="button" class="btn btn-secondary" id="btn-export-json">📤 Eksportuj (.json)</button>
+                <button type="button" class="btn btn-secondary" id="btn-trigger-import">📥 Importuj z pliku</button>
+              </div>
+              <input type="file" id="input-import-json" accept=".json" style="display: none"/>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-settings-modal">Anuluj</button>
+          <button class="btn" id="btn-save-settings" type="submit" form="form-settings">Zapisz</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
