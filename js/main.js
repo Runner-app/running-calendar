@@ -1,3 +1,4 @@
+import '../styles.less';
 import { state, loadData, saveRuns, saveSettings } from "./state.js";
 import { getMonday } from "./utils.js";
 import { renderCalendar, updateStats } from "./calendar.js";
