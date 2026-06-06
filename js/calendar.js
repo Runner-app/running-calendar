@@ -201,7 +201,33 @@ export function renderCalendar() {
                 const detailsBar = document.createElement('div');
                 detailsBar.classList.add('run-bar', 'bar-details');
                 const distFormatted = typeof run.distance === 'number' ? run.distance.toFixed(1) : parseFloat(run.distance || 0).toFixed(1);
-                detailsBar.innerHTML = `<span>🕖 ${run.time || '--:--'} &#8226;</span> ${run.computedNumber || 0} || ${distFormatted} km [${run.computedStreak || 1}]`;
+                const mountainEmoji = run.mountainRun ? ' ⛰️' : '';
+                const notesEmoji = run.notes ? ' 📝' : '';
+                detailsBar.innerHTML = `<span>🕖 ${run.time || '--:--'} &#8226;</span> ${run.computedNumber || 0} || ${distFormatted} km [${run.computedStreak || 1}]${mountainEmoji}${notesEmoji}`;
+
+                if (run.notes) {
+                    const notesIcon = detailsBar.querySelector('[style*=""]');
+                    detailsBar.addEventListener('mouseenter', (e) => {
+                        const tooltip = document.createElement('div');
+                        tooltip.classList.add('run-notes-tooltip');
+                        tooltip.textContent = run.notes;
+                        document.body.appendChild(tooltip);
+
+                        const rect = detailsBar.getBoundingClientRect();
+                        tooltip.style.top = (rect.bottom + 5) + 'px';
+                        tooltip.style.left = rect.left + 'px';
+
+                        detailsBar._tooltip = tooltip;
+                    });
+
+                    detailsBar.addEventListener('mouseleave', () => {
+                        if (detailsBar._tooltip) {
+                            detailsBar._tooltip.remove();
+                            detailsBar._tooltip = null;
+                        }
+                    });
+                }
+
                 runContainer.appendChild(detailsBar);
 
                 runContainer.addEventListener('click', (e) => {

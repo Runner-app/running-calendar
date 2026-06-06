@@ -24,6 +24,7 @@ import {
   manualRunNumContainer,
 } from "./modals.js";
 import { exportBackupToJSON, importBackupFromJSON } from "./backup.js";
+import { renderStatsPage } from "./stats.js";
 
 // Elementy Nawigacji Głównej
 const btnPrevMonth = document.getElementById("btn-prev-month");
@@ -34,11 +35,26 @@ const btnToday = document.getElementById("btn-today");
 const btnAddRunSidebar = document.getElementById("btn-add-run-sidebar");
 const btnSettingsSidebar = document.getElementById("btn-settings-sidebar");
 const btnToggleSidebar = document.getElementById("btn-toggle-sidebar");
+const btnStatsSidebar = document.getElementById("btn-stats-sidebar");
+const btnBackStats = document.getElementById("btn-back-stats");
+const calendarPanel = document.querySelector(".calendar-panel");
+const statsPage = document.getElementById("stats-page");
 
 // Elementy Backup JSON
 const btnExportJson = document.getElementById("btn-export-json");
 const btnTriggerImport = document.getElementById("btn-trigger-import");
 const inputImportJson = document.getElementById("input-import-json");
+
+function showStatsPage() {
+  calendarPanel.style.display = "none";
+  statsPage.style.display = "flex";
+  renderStatsPage();
+}
+
+function showCalendarPage() {
+  calendarPanel.style.display = "block";
+  statsPage.style.display = "none";
+}
 
 function init() {
   loadData();
@@ -82,6 +98,8 @@ function setupEventListeners() {
   // Sidebar
   btnAddRunSidebar.addEventListener("click", () => openRunModal());
   btnSettingsSidebar.addEventListener("click", openSettingsModal);
+  btnStatsSidebar.addEventListener("click", showStatsPage);
+  btnBackStats.addEventListener("click", showCalendarPage);
 
   // Backup JSON
   if (btnExportJson)
@@ -202,6 +220,7 @@ function setupEventListeners() {
         ? parseInt(document.getElementById("input-manual-run-num").value) ||
           null
         : null,
+      mountainRun: document.getElementById("checkbox-mountain-run").checked,
       notes: document.getElementById("input-run-notes").value.trim(),
     };
 

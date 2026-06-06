@@ -26,6 +26,7 @@ export const manualRunNumContainer = document.getElementById(
   "manual-run-num-container",
 );
 const inputManualRunNum = document.getElementById("input-manual-run-num");
+const checkboxMountainRun = document.getElementById("checkbox-mountain-run");
 const inputRunNotes = document.getElementById("input-run-notes");
 
 // Modal Settings Elements
@@ -106,6 +107,7 @@ export function openRunModal(runId = null, defaultDate = null) {
         manualRunNumContainer.style.display = "none";
         inputManualRunNum.value = "";
       }
+      checkboxMountainRun.checked = run.mountainRun || false;
       inputRunNotes.value = run.notes || "";
     }
   } else {
@@ -121,6 +123,7 @@ export function openRunModal(runId = null, defaultDate = null) {
     checkboxManualRunNum.checked = false;
     manualRunNumContainer.style.display = "none";
     inputManualRunNum.value = "";
+    checkboxMountainRun.checked = false;
   }
   modalRunOverlay.classList.add("active");
 }

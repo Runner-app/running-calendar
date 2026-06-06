@@ -56,6 +56,9 @@
         <button class="btn btn-secondary btn-full" id="btn-settings-sidebar">
           <span>⚙️</span> Settings
         </button>
+        <button class="btn btn-secondary btn-full" id="btn-stats-sidebar">
+          <span>📈</span> Statistics
+        </button>
         <button class="btn btn-secondary btn-full" id="btn-theme-toggle" style="margin-top: 0.5rem">
           <span>☀️</span> Light Mode
         </button>
@@ -72,11 +75,7 @@
           </div>
           <div class="year-nav" id="year-nav-container"></div>
           <div class="calendar-actions">
-            <button
-              class="btn btn-secondary"
-              id="btn-toggle-sidebar"
-              title="Show/Hide sidebar"
-            >
+            <button class="btn btn-secondary" id="btn-toggle-sidebar" title="Show/Hide sidebar" >
               <span>📊</span> Show panel
             </button>
             <button class="btn btn-secondary" id="btn-today">Today</button>
@@ -94,6 +93,23 @@
         </div>
         <div class="calendar-grid" id="calendar-days-grid"></div>
       </main>
+
+      <div class="stats-page glass-panel" id="stats-page" style="display: none;">
+        <header class="stats-header">
+          <button class="nav-btn" id="btn-back-stats" aria-label="Back to calendar">◀</button>
+          <h2 class="stats-title">Statistics</h2>
+        </header>
+        <div class="stats-content">
+          <div class="stats-section">
+            <h3 class="stats-section-title">📅 Yearly Breakdown</h3>
+            <div id="yearly-stats-container"></div>
+          </div>
+          <div class="stats-section">
+            <h3 class="stats-section-title">🏆 Monthly Rankings (By Distance)</h3>
+            <div id="monthly-stats-container"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-overlay" id="modal-run-overlay">
@@ -182,6 +198,13 @@
                   Run Number:
                 </label>
                 <input type="number" id="input-manual-run-num" min="1" style="width: 120px"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="checkbox-mountain-run" />
+                <label for="checkbox-mountain-run">⛰️ Mountain Run</label>
               </div>
             </div>
 
