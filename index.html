@@ -2,26 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Running calendar</title>
-    <meta name="description" content="Modern running calendar for tracking workouts, pace, heart rate and weather."/>
+    <title>running_calendar</title>
   </head>
-
   <body>
-    <div class="app-container sidebar-hidden">
-      <load ="./html/components/sidepanel.html" />
-
-      <main class="calendar-panel glass-panel">
-        <load ="./html/components/calendar-view.html" />
-      </main>
-
-      <load ="./html/components/stats-page.html" />
-    </div>
-
-    <load ="./html/modals/run-edit-modal.html" />
-    <load ="./html/modals/settings-modal.html" />
-
-    <script type="module" src="/js/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
-
 </html>
