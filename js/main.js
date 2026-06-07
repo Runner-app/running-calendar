@@ -154,12 +154,6 @@ function setupEventListeners() {
     if (e.target === modalSettingsOverlay) closeSettingsModal();
   });
 
-  // Kalkulatory w formularzu biegu
-  document
-    .getElementById("checkbox-manual-run-num")
-    .addEventListener("change", (e) => {
-      manualRunNumContainer.style.display = e.target.checked ? "flex" : "none";
-    });
 
   [inputDurationH, inputDurationM, inputDurationS].forEach((input) => {
     input.addEventListener("input", () => {
@@ -214,12 +208,6 @@ function setupEventListeners() {
       weatherType: document.getElementById("select-weather-type").value,
       weatherTemp:
         parseInt(document.getElementById("input-weather-temp").value) || 0,
-      manualRunNum: document.getElementById("checkbox-manual-run-num").checked,
-      manualRunNumVal: document.getElementById("checkbox-manual-run-num")
-        .checked
-        ? parseInt(document.getElementById("input-manual-run-num").value) ||
-          null
-        : null,
       mountainRun: document.getElementById("checkbox-mountain-run").checked,
       notes: document.getElementById("input-run-notes").value.trim(),
     };
@@ -239,15 +227,6 @@ function setupEventListeners() {
 
   formSettings.addEventListener("submit", (e) => {
     e.preventDefault();
-    state.settings = {
-      ...state.settings,
-      offset:
-        parseInt(document.getElementById("input-setting-offset").value) || 0,
-    };
-
-    saveSettings();
-    renderCalendar();
-    updateStats();
     closeSettingsModal();
   });
 }

@@ -73,7 +73,7 @@ export function getHrClass(hr) {
 
 export function computeRunMetrics() {
     const sortedRuns = [...state.runs].sort((a, b) => new Date(a.date) - new Date(b.date));
-    let autoRunNumCounter = (parseInt(state.settings.offset) || 0) + 1;
+    let autoRunNumCounter = 1;
     const runDates = new Set(sortedRuns.map(r => r.date));
     const streakMap = {};
 
@@ -92,12 +92,9 @@ export function computeRunMetrics() {
         }
         streakMap[run.id] = streak;
 
-        if (run.manualRunNum && run.manualRunNumVal) {
-            run.computedNumber = run.manualRunNumVal;
-        } else {
-            run.computedNumber = autoRunNumCounter;
-            autoRunNumCounter++;
-        }
+        run.computedNumber = autoRunNumCounter;
+        autoRunNumCounter++;
+
         run.computedStreak = streak;
     });
 

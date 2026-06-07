@@ -256,7 +256,7 @@ export function updateStats() {
     statsTotalRuns.textContent = runsWithMetrics.length;
 
     const totalDist = runsWithMetrics.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
-    const formattedDist = new Intl.NumberFormat('pl-PL').format(Math.round(totalDist));
+    const formattedDist = new Intl.NumberFormat('pl-PL').format(Math.floor(totalDist));
     statsTotalDistance.textContent = `${formattedDist} km`;
 
     let totalSeconds = 0;

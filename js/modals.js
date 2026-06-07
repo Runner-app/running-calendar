@@ -21,7 +21,6 @@ export const inputPaceM = document.getElementById("input-pace-m");
 export const inputPaceS = document.getElementById("input-pace-s");
 const selectWeatherType = document.getElementById("select-weather-type");
 const inputWeatherTemp = document.getElementById("input-weather-temp");
-const checkboxManualRunNum = document.getElementById("checkbox-manual-run-num");
 export const manualRunNumContainer = document.getElementById(
   "manual-run-num-container",
 );
@@ -34,7 +33,6 @@ export const modalSettingsOverlay = document.getElementById(
   "modal-settings-overlay",
 );
 export const formSettings = document.getElementById("form-settings");
-const inputSettingOffset = document.getElementById("input-setting-offset");
 
 export let lastEditedCalculatorGroup = "pace";
 export function setLastEditedGroup(val) {
@@ -97,16 +95,6 @@ export function openRunModal(runId = null, defaultDate = null) {
       inputPaceS.value = run.paceS || "";
       selectWeatherType.value = run.weatherType || "sunny";
       inputWeatherTemp.value = run.weatherTemp || "15";
-
-      if (run.manualRunNum) {
-        checkboxManualRunNum.checked = true;
-        manualRunNumContainer.style.display = "flex";
-        inputManualRunNum.value = run.manualRunNumVal || "";
-      } else {
-        checkboxManualRunNum.checked = false;
-        manualRunNumContainer.style.display = "none";
-        inputManualRunNum.value = "";
-      }
       checkboxMountainRun.checked = run.mountainRun || false;
       inputRunNotes.value = run.notes || "";
     }
@@ -133,8 +121,6 @@ export function closeRunModal() {
 }
 
 export function openSettingsModal() {
-  const s = state.settings;
-  inputSettingOffset.value = s.offset || 0;
   modalSettingsOverlay.classList.add("active");
 }
 
