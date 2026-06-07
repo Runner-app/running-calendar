@@ -41,7 +41,7 @@ export function loadData() {
     document.body.classList.add("light-mode");
     const themeBtn = document.getElementById("btn-theme-toggle");
     if (themeBtn) {
-      themeBtn.innerHTML = "<span>🌙</span> Tryb ciemny";
+      themeBtn.innerHTML = "<span>🌙</span> Dark mode";
     }
   }
 }

@@ -10,7 +10,6 @@ const calendarDaysGrid = document.getElementById('calendar-days-grid');
 const calendarMonthYear = document.getElementById('calendar-month-year');
 const statsTotalRuns = document.getElementById('stats-total-runs');
 const statsTotalDistance = document.getElementById('stats-total-distance');
-const statsAvgPace = document.getElementById('stats-avg-pace');
 const statsCurrentStreak = document.getElementById('stats-current-streak');
 
 export function renderCalendar() {
@@ -94,7 +93,7 @@ export function renderCalendar() {
             });
 
             let avgPaceStr = '--:--';
-            let paceText = `🏃 Średnie tempo: --:-- /km`;
+            let paceText = `🏃 Avg pace: --:-- /km`;
             if (totalDist > 0 && totalSeconds > 0) {
                 const avgSecondsPerKm = totalSeconds / totalDist;
                 const avgMin = Math.floor(avgSecondsPerKm / 60);
@@ -105,7 +104,7 @@ export function renderCalendar() {
             }
 
             const weekNum = getRunningWeekNumber(weekMonday);
-            const weekNumText = weekNum && weekNum > 0 ? `${weekNum}` : `Tydzień --`;
+            const weekNumText = weekNum && weekNum > 0 ? `${weekNum}` : `Week --`;
             const hrText = avgHr ? `❤️ ${avgHr} bpm` : `❤️ -- bpm`;
 
             const weeklyGoal = weekDailyGoal * 7;
@@ -119,7 +118,7 @@ export function renderCalendar() {
                 <span class="week-summary-item">${hrText}</span>
                 <span class="week-summary-item">${paceText}</span>
                 <span class="week-summary-item week-goal-wrapper">
-                    🎯 Cel: <input type="number" class="input-weekly-goal" value="${weekDailyGoal}" min="0" step="0.5"> km/dzień
+                    🎯 Goal: <input type="number" class="input-weekly-goal" value="${weekDailyGoal}" min="0" step="0.5"> km/day
                 </span>
             `;
 
@@ -249,7 +248,6 @@ export function updateStats() {
     if (state.runs.length === 0) {
         statsTotalRuns.textContent = '0';
         statsTotalDistance.textContent = '0.0 km';
-        statsAvgPace.textContent = '--:-- /km';
         statsCurrentStreak.textContent = '0 dni';
         return;
     }
@@ -258,7 +256,8 @@ export function updateStats() {
     statsTotalRuns.textContent = runsWithMetrics.length;
 
     const totalDist = runsWithMetrics.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
-    statsTotalDistance.textContent = `${totalDist.toFixed(1)} km`;
+    const formattedDist = new Intl.NumberFormat('pl-PL').format(Math.round(totalDist));
+    statsTotalDistance.textContent = `${formattedDist} km`;
 
     let totalSeconds = 0;
     runsWithMetrics.forEach((run) => {
@@ -273,16 +272,6 @@ export function updateStats() {
             totalSeconds += (paceSec * (parseFloat(run.distance) || 0));
         }
     });
-
-    if (totalDist > 0 && totalSeconds > 0) {
-        const avgSecondsPerKm = totalSeconds / totalDist;
-        const avgMin = Math.floor(avgSecondsPerKm / 60);
-        const avgSec = Math.round(avgSecondsPerKm % 60);
-        const avgSecStr = String(avgSec === 60 ? 59 : avgSec).padStart(2, '0');
-        statsAvgPace.textContent = `${avgMin}:${avgSecStr}/km`;
-    } else {
-        statsAvgPace.textContent = '--:--/km';
-    }
 
     const runDates = new Set(runsWithMetrics.map(r => r.date));
     let activeStreak = 0;
@@ -304,5 +293,5 @@ export function updateStats() {
             }
         }
     }
-    statsCurrentStreak.textContent = `${activeStreak} ${activeStreak === 1 ? 'dzień' : 'dni'}`;
+    statsCurrentStreak.textContent = `${activeStreak} ${activeStreak === 1 ? 'day' : 'days'}`;
 }

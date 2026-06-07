@@ -119,8 +119,8 @@ function setupEventListeners() {
         isLight ? "light" : "dark",
       );
       btnThemeToggle.innerHTML = isLight
-        ? "<span>🌙</span> Tryb ciemny"
-        : "<span>☀️</span> Tryb jasny";
+        ? "<span>🌙</span> Dark mode"
+        : "<span>☀️</span> Light mode";
     });
   }
 
@@ -131,8 +131,8 @@ function setupEventListeners() {
     btnToggleSidebar.innerHTML = appContainer.classList.contains(
       "sidebar-hidden",
     )
-      ? "<span>📊</span> Pokaż panel"
-      : "<span>📊</span> Ukryj panel";
+      ? "<span>📊</span> Show panel"
+      : "<span>📊</span> Hide panel";
   });
 
   // Zamknięcia Modali
