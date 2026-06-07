@@ -1,0 +1,305 @@
+import React from 'react';
+import { 
+  formatDate, 
+  getWeekKey, 
+  getRunningWeekNumber, 
+  computeRunMetrics,
+  getMonday,
+  getPaceZoneIndex,  
+  getPaceZoneColor,  
+  getHrClass
+} from '../utils/RunUtils.js';
+
+function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, theme, onToggleTheme, settings, onSaveSettings, onAddRunClick }) {
+  
+  const polishMonths = [
+    "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
+    "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
+  ];
+
+  const startDate = new Date(currentDate.getTime());
+  const endDate = new Date(currentDate.getTime());
+  endDate.setDate(endDate.getDate() + 20);
+
+  const startMonth = polishMonths[startDate.getMonth()];
+  const startYear = startDate.getFullYear();
+  const endMonth = polishMonths[endDate.getMonth()];
+  const endYear = endDate.getFullYear();
+
+  let headerTitle = "";
+  if (startDate.getMonth() === endDate.getMonth()) {
+    headerTitle = `${startMonth} ${startYear}`;
+  } else {
+    if (startYear === endYear) {
+      headerTitle = `${startMonth} – ${endMonth} ${startYear}`;
+    } else {
+      headerTitle = `${startMonth} ${startYear} – ${endMonth} ${endYear}`;
+    }
+  }
+
+  // Nawigacja
+  const handlePrevMonth = () => { const n = new Date(currentDate); n.setDate(n.getDate() - 21); setCurrentDate(n); };
+  const handleNextMonth = () => { const n = new Date(currentDate); n.setDate(n.getDate() + 21); setCurrentDate(n); };
+  const handlePrevYear = () => { const n = new Date(currentDate); n.setFullYear(n.getFullYear() - 1); setCurrentDate(n); };
+  const handleNextYear = () => { const n = new Date(currentDate); n.setFullYear(n.getFullYear() + 1); setCurrentDate(n); };
+  const handleToday = () => { setCurrentDate(new Date()); };
+
+  const runsWithMetrics = computeRunMetrics(runs || []);
+  const calendarStartDate = getMonday(currentDate);
+  const gridElements = [];
+
+  // 1. Odtworzenie celów dziennych (dayGoalsMap) na podstawie właściwych kluczy getWeekKey
+  const dayGoalsMap = {};
+  const weeklyGoals = settings?.weeklyGoals || {};
+
+  for (let w = 0; w < 3; w++) {
+    const weekMonday = new Date(calendarStartDate.getTime());
+    weekMonday.setDate(weekMonday.getDate() + (w * 7));
+    const weekKey = getWeekKey(weekMonday, runs || []);
+    const weekDailyGoal = weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 14;
+
+    for (let d = 0; d < 7; d++) {
+      const dayDate = new Date(weekMonday.getTime());
+      dayDate.setDate(dayDate.getDate() + d);
+      dayGoalsMap[formatDate(dayDate)] = weekDailyGoal;
+    }
+  }
+
+  // 2. Generowanie struktury siatki (21 dni + paski podsumowań tygodnia)
+  for (let i = 0; i < 21; i++) {
+    const currentGridDate = new Date(calendarStartDate.getTime());
+    currentGridDate.setDate(calendarStartDate.getDate() + i);
+    const dateStr = formatDate(currentGridDate);
+
+    // Co 7 dni dodajemy pasek podsumowania tygodnia na początku wiersza
+    if (i % 7 === 0) {
+      const weekMonday = new Date(currentGridDate.getTime());
+      const weekKey = getWeekKey(weekMonday, runs || []);
+      
+      // FIX: Pobieramy cel tygodniowy bezpośrednio z mapy ustawień za pomocą weekKey
+      const weekDailyGoal = weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 14;
+
+      const weekDates = [];
+      for (let d = 0; d < 7; d++) {
+        const dDate = new Date(weekMonday.getTime());
+        dDate.setDate(dDate.getDate() + d);
+        weekDates.push(formatDate(dDate));
+      }
+
+      const runsInWeek = runsWithMetrics.filter(r => weekDates.includes(r.date));
+      const totalDist = runsInWeek.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
+      const runsWithHr = runsInWeek.filter(r => (parseInt(r.hr) || 0) > 0);
+      const avgHr = runsWithHr.length > 0 ? Math.round(runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length) : null;
+
+      let totalSeconds = 0;
+      runsInWeek.forEach((run) => {
+        const h = parseInt(run.durationH) || 0;
+        const m = parseInt(run.durationM) || 0;
+        const s = parseInt(run.durationS) || 0;
+        const durationSeconds = (h * 3600) + (m * 60) + s;
+        if (durationSeconds > 0) {
+          totalSeconds += durationSeconds;
+        } else {
+          const paceSec = ((parseInt(run.paceM) || 0) * 60) + (parseInt(run.paceS) || 0);
+          totalSeconds += (paceSec * (parseFloat(run.distance) || 0));
+        }
+      });
+
+      let avgPaceStr = '--:--';
+      let paceText = `🏃 Avg pace: --:-- /km`;
+      if (totalDist > 0 && totalSeconds > 0) {
+        const avgSecondsPerKm = totalSeconds / totalDist;
+        const avgMin = Math.floor(avgSecondsPerKm / 60);
+        const avgSec = Math.round(avgSecondsPerKm % 60);
+        const avgSecStr = String(avgSec === 60 ? 59 : avgSec).padStart(2, '0');
+        avgPaceStr = `${avgMin}:${avgSecStr}`;
+        paceText = `🏃 ${avgPaceStr} min/km`;
+      }
+
+      const weekNum = getRunningWeekNumber(weekMonday, runs || []);
+      const weekNumText = weekNum && weekNum > 0 ? `${weekNum}` : `Week --`;
+      const hrText = avgHr ? `❤️ ${avgHr} bpm` : `❤️ -- bpm`;
+
+      const weeklyGoal = weekDailyGoal * 7;
+      let distText = weekDailyGoal > 0 ? `📈 ${totalDist.toFixed(1)} / ${weeklyGoal.toFixed(1)} km` : `📈 ${totalDist.toFixed(1)} km`;
+
+      gridElements.push({
+        type: 'summary',
+        id: `summary-${weekKey}`,
+        weekKey: weekKey,
+        weekNumText: weekNumText,
+        distText: distText,
+        hrText: hrText,
+        paceText: paceText,
+        weekDailyGoal: weekDailyGoal
+      });
+    }
+
+    // Dodawanie pojedynczego kafelka dnia
+    const runsOnThisDay = runsWithMetrics.filter(r => r.date === dateStr);
+    
+    // FIX: Pobieramy cel dla danego dnia z wcześniej uzupełnionej mapy celów
+    const currentDailyGoal = dayGoalsMap[dateStr] !== undefined ? dayGoalsMap[dateStr] : 14;
+
+    const dayTotalDist = runsOnThisDay.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
+   
+    const isToday = dateStr === formatDate(new Date());
+    
+    // Klasa błędu celu: jeśli cel dzienny > 0, a nabiegaliśmy mniej (lub wcale)
+    const isGoalFailed = currentDailyGoal > 0 && (runsOnThisDay.length === 0 || dayTotalDist < currentDailyGoal);
+
+    gridElements.push({
+      type: 'day',
+      id: `day-${dateStr}`,
+      dateStr: dateStr,
+      dayNumber: currentGridDate.getDate(),
+      isToday: isToday,
+      isGoalFailed: isGoalFailed,
+      runs: runsOnThisDay,
+      currentDailyGoal: currentDailyGoal
+    });
+  }
+
+  // Funkcja zapisu celu (odpowiednik starego listenera 'change')
+  const handleGoalChange = (weekKey, value) => {
+    const val = parseFloat(value);
+    const targetVal = isNaN(val) ? 0 : val;
+    const updatedSettings = {
+      ...settings,
+      weeklyGoals: {
+        ...(settings?.weeklyGoals || {}),
+        [weekKey]: targetVal
+      }
+    };
+    onSaveSettings(updatedSettings); // Przekazujemy do App.jsx, by zapisać stan w localStorage
+  };
+
+  return (
+    <>
+      <header className="calendar-header">
+        <div className="calendar-navigation">
+          <button className="nav-btn" onClick={handlePrevYear}>⏪</button>
+          <button className="nav-btn" onClick={handlePrevMonth} aria-label="Previous month">◀</button>
+          <h2 className="month-title">{headerTitle}</h2>
+          <button className="nav-btn" onClick={handleNextMonth} aria-label="Next month">▶</button>
+          <button className="nav-btn" onClick={handleNextYear}>⏩</button>
+        </div>
+        <div className="calendar-actions">
+          <button className="btn btn-secondary" onClick={onToggleSidebar} title="Show/Hide sidebar">
+            <span>📊</span> Show Panel
+          </button>
+          <button className="btn btn-secondary" onClick={onToggleTheme} title="Toggle theme">
+            {theme === 'light' ? <><span>🌙</span> Dark mode</> : <><span>☀️</span> Light mode</>}
+          </button>
+          <button className="btn btn-secondary btn-today" onClick={handleToday} title="Wróć do dzisiaj">
+            Today
+          </button>
+        </div>
+      </header>
+
+      <div className="calendar-weekdays">
+        <div className="weekday">Mon</div>
+        <div className="weekday">Tue</div>
+        <div className="weekday">Wed</div>
+        <div className="weekday">Thu</div>
+        <div className="weekday">Fri</div>
+        <div className="weekday">Sat</div>
+        <div className="weekday">Sun</div>
+      </div>
+      
+      <div className="calendar-grid">
+        {gridElements.map((el, idx) => {
+          if (el.type === 'summary') {
+            return (
+              <div className="week-summary-bar" key={`summary-${el.weekKey}-${idx}`}>
+                <span className="week-summary-title">{el.weekNumText}</span>
+                <span className="week-summary-item">{el.distText}</span>
+                <span className="week-summary-item">{el.hrText}</span>
+                <span className="week-summary-item">{el.paceText}</span>
+                <span className="week-summary-item week-goal-wrapper">
+                  🎯 Goal: 
+                  <input 
+                    type="number" 
+                    className="input-weekly-goal" 
+                    value={settings?.weeklyGoals?.[el.weekKey] !== undefined ? settings.weeklyGoals[el.weekKey] : el.weekDailyGoal} 
+                    min="0" 
+                    step="0.5" 
+                    onChange={(e) => handleGoalChange(el.weekKey, e.target.value)}
+                  /> km/day
+                </span>
+              </div>
+            );
+          }
+
+          // Renderowanie kafelka dnia
+          return (
+            <div 
+              className={`day-cell ${el.isToday ? 'today' : ''}`} 
+              key={`day-${el.dateStr}-${idx}`}
+              onClick={() => el.runs.length === 0 && onAddRunClick(null, el.dateStr)}
+              style={{ cursor: el.runs.length === 0 ? 'pointer' : 'default' }}
+            >
+              <div className="day-header">
+                <span className="day-number">{el.dayNumber}</span>
+                <button 
+                  className="add-run-btn-cell" 
+                  title="Dodaj bieg pod tą datą"
+                  onClick={(e) => { e.stopPropagation(); onAddRunClick(null, el.dateStr); }}
+                >
+                  ➕
+                </button>
+              </div>
+
+              {el.runs.length > 0 && (
+                <div className={`day-run-container ${el.isGoalFailed ? 'goal-failed' : ''}`}>
+                  {el.runs.map((run) => {
+                    const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
+                    const zoneColor = getPaceZoneColor(zoneIndex);
+                    const paceSecStr = String(run.paceS || 0).padStart(2, '0');
+                    
+                    const hStr = run.durationH > 0 ? `${run.durationH}:` : '';
+                    const mStr = String(run.durationM || 0).padStart(2, '0');
+                    const sStr = String(run.durationS || 0).padStart(2, '0');
+
+                    const distFormatted = typeof run.distance === 'number' ? run.distance.toFixed(1) : parseFloat(run.distance || 0).toFixed(1);
+                    const mountainEmoji = run.mountainRun ? ' ⛰️' : '';
+                    const notesEmoji = run.notes ? ' 📝' : '';
+
+                    return (
+                      <div 
+                        key={run.id} 
+                        onClick={(e) => { e.stopPropagation(); onAddRunClick(run.id); }}
+                        style={{ cursor: 'pointer' }}
+                        className="run-single-data-container"
+                      >
+                        <div className="run-bar" style={{ background: zoneColor }}>
+                          🏃 {run.paceM || 0}:{paceSecStr} min/km
+                        </div>
+
+                        {run.hr && parseInt(run.hr) > 0 && (
+                          <div className={`run-bar ${getHrClass(run.hr)}`}>
+                            ❤️ {run.hr || 0} bpm
+                          </div>
+                        )}
+
+                        <div className="run-bar bar-duration">
+                          ⏱️ {hStr}{mStr}:{sStr}
+                        </div>
+
+                        <div className="run-bar bar-details" title={run.notes || ''}>
+                          <span>🕖 {run.time || '--:--'} •</span> {run.computedNumber || 0} || {distFormatted} km [{run.computedStreak || 1}]{mountainEmoji}{notesEmoji}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+export default CalendarView;

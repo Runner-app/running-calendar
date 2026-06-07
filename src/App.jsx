@@ -1,122 +1,184 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// src/App.jsx
+import { useState, useEffect } from 'react';
+import SidePanel from './components/SidePanel';
+import CalendarView from './components/CalendarView';
+import StatsPage from './components/StatsPage';
+import RunEditModal from './components/RunEditModal';
+import './index.less';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // ==========================================
+  // 1. STANY KOMPONENTU (Zawsze na samym początku)
+  // ==========================================
+  
+  // Motyw graficzny
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("running_calendar_theme") || "light";
+  });
+
+  // Ustawienia (cele tygodniowe itp.)
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem("running_calendar_settings");
+    return saved ? JSON.parse(saved) : { weeklyGoals: {} };
+  });
+
+  // Bieżąca data w kalendarzu
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Lista biegów z localStorage
+  const [runs, setRuns] = useState(() => {
+    const savedRuns = localStorage.getItem('running_calendar_runs');
+    return savedRuns ? JSON.parse(savedRuns) : [];
+  });
+
+  // Widoczność paneli i modali
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeView, setActiveView] = useState('calendar');
+  const [isRunModalOpen, setIsRunModalOpen] = useState(false);
+  
+  // Przechowuje ID wybranego biegu (null = nowy bieg, id = edycja)
+  const [selectedRun, setSelectedRun] = useState(null);
+  // Domyślna data przekazywana do modalu przy kliknięciu konkretnego dnia
+  const [defaultRunDate, setDefaultRunDate] = useState(null);
+
+  // ==========================================
+  // 2. EFEKTY (useEffect)
+  // ==========================================
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.classList.add("light-mode");
+    } else {
+      document.body.classList.remove("light-mode");
+    }
+    localStorage.setItem("running_calendar_theme", theme);
+  }, [theme]);
+
+  // ==========================================
+  // 3. FUNKCJE I HANDLERY
+  // ==========================================
+  const onToggleTheme = () => {
+    setTheme(prevTheme => prevTheme === "light" ? "dark" : "light");
+  };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  // Zapisywanie ustawień celów
+  const handleSaveSettings = (newSettings) => {
+    setSettings(newSettings);
+    localStorage.setItem("running_calendar_settings", JSON.stringify(newSettings));
+  };
+
+  // Import danych z pliku JSON
+  const handleImportJSON = (jsonText) => {
+    try {
+      const parsedData = JSON.parse(jsonText);
+      let runsArray = null;
+
+      // Przypadek 1: Plik to czysta tablica biegów
+      if (Array.isArray(parsedData)) {
+        runsArray = parsedData;
+      } 
+      // Przypadek 2: Plik to cały obiekt stanu z tablicą .runs
+      else if (parsedData && Array.isArray(parsedData.runs)) {
+        runsArray = parsedData.runs;
+        
+        if (parsedData.settings && parsedData.settings.weeklyGoals) {
+          setSettings(parsedData.settings);
+          localStorage.setItem("running_calendar_settings", JSON.stringify(parsedData.settings));
+        }
+      }
+
+      if (runsArray) {
+        setRuns(runsArray);
+        localStorage.setItem("running_calendar_runs", JSON.stringify(runsArray));
+        alert(`Sukces! Zaimportowano pomyślnie ${runsArray.length} biegów.`);
+      } else {
+        alert("Błąd: Plik JSON nie zawiera prawidłowej listy biegów.");
+      }
+    } catch (error) {
+      alert("Błąd podczas czytania pliku JSON. Upewnij się, że plik jest nieuszkodzony.");
+      console.error(error);
+    }
+  };
+
+  // Dodawanie / edycja pojedynczego biegu z poziomu modalu
+  const handleSaveRun = (savedRun) => {
+    setRuns((prevRuns) => {
+      const exists = prevRuns.some(r => r.id === savedRun.id);
+      let updatedRuns;
+      if (exists) {
+        updatedRuns = prevRuns.map(r => r.id === savedRun.id ? savedRun : r);
+      } else {
+        updatedRuns = [savedRun, ...prevRuns];
+      }
+      localStorage.setItem("running_calendar_runs", JSON.stringify(updatedRuns));
+      return updatedRuns;
+    });
+    setIsRunModalOpen(false);
+  };
+
+  // Usuwanie biegu z poziomu modalu
+  const handleDeleteRun = (runIdToDelete) => {
+    if (window.confirm("Czy na pewno chcesz usunąć ten bieg?")) {
+      setRuns((prevRuns) => {
+        const updatedRuns = prevRuns.filter(r => r.id !== runIdToDelete);
+        localStorage.setItem("running_calendar_runs", JSON.stringify(updatedRuns));
+        return updatedRuns;
+      });
+      setIsRunModalOpen(false);
+    }
+  };
+
+  const handleAddRunClick = (runId = null, dateStr = null) => {
+    setSelectedRun(runId);
+    setDefaultRunDate(dateStr);
+    setIsRunModalOpen(true);
+  };
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <div className={`app-container ${isSidebarOpen ? '' : 'sidebar-hidden'}`}>
+        <SidePanel 
+          onAddRunClick={() => handleAddRunClick(null, null)}
+          onStatsClick={() => setActiveView('stats')}
+          onCalendarClick={() => setActiveView('calendar')}
+          onImportJSON={handleImportJSON}
+          runs={runs}
+        />
 
-      <div className="ticks"></div>
+        <main className="calendar-panel glass-panel" style={{ display: activeView === 'calendar' ? 'block' : 'none' }}>
+          <CalendarView 
+            currentDate={currentDate} 
+            setCurrentDate={setCurrentDate}
+            onToggleSidebar={toggleSidebar}
+            runs={runs}
+            theme={theme}
+            onToggleTheme={onToggleTheme}
+            settings={settings}
+            onSaveSettings={handleSaveSettings}
+            onAddRunClick={handleAddRunClick}
+          />
+        </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {activeView === 'stats' && (
+          <StatsPage 
+            runs={runs} 
+            onBackClick={() => setActiveView('calendar')}
+          />
+        )}
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <RunEditModal 
+        isOpen={isRunModalOpen}
+        runId={selectedRun}
+        defaultDate={defaultRunDate}
+        runs={runs}
+        onClose={() => setIsRunModalOpen(false)}
+        onSave={handleSaveRun}
+        onDelete={handleDeleteRun}
+      />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
