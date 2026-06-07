@@ -1,0 +1,32 @@
+        <header class="calendar-header">
+          <div class="calendar-navigation">
+            <button class="nav-btn" id="btn-prev-year">⏪</button>
+            <button class="nav-btn" id="btn-prev-month" aria-label="Previous month">◀</button>
+            <h2 class="month-title" id="calendar-month-year">May 2026</h2>
+            <button class="nav-btn" id="btn-next-month" aria-label="Next month">▶</button>
+            <button class="nav-btn" id="btn-next-year">⏩</button>
+          </div>
+          <div class="year-nav" id="year-nav-container"></div>
+          <div class="calendar-actions">
+            <button class="btn btn-secondary" id="btn-toggle-sidebar" title="Show/Hide sidebar" >
+              <span>📊</span> Show Panel
+            </button>
+            <button class="btn btn-secondary" id="btn-today" title="Go to today">
+              <span>📅</span> Today
+            </button>
+            <button class="btn btn-secondary" id="btn-theme-toggle" title="Toggle light/dark mode">
+              <span>☀️</span> Light Mode
+            </button>
+          </div>
+        </header>
+
+        <div class="calendar-weekdays">
+          <div class="weekday">Mon</div>
+          <div class="weekday">Tue</div>
+          <div class="weekday">Wed</div>
+          <div class="weekday">Thu</div>
+          <div class="weekday">Fri</div>
+          <div class="weekday">Sat</div>
+          <div class="weekday">Sun</div>
+        </div>
+        <div class="calendar-grid" id="calendar-days-grid"></div>

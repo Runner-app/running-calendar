@@ -79,7 +79,7 @@ export function updateDurationFromPace() {
 export function openRunModal(runId = null, defaultDate = null) {
   formRun.reset();
   if (runId) {
-    modalRunTitle.textContent = "Edytuj Bieg";
+    modalRunTitle.textContent = "Edit Run";
     btnDeleteRun.style.display = "block";
     const run = state.runs.find((r) => r.id === runId);
     if (run) {
@@ -99,7 +99,7 @@ export function openRunModal(runId = null, defaultDate = null) {
       inputRunNotes.value = run.notes || "";
     }
   } else {
-    modalRunTitle.textContent = "Dodaj Bieg";
+    modalRunTitle.textContent = "Add Run";
     btnDeleteRun.style.display = "none";
     inputRunId.value = "";
     inputRunDate.value = defaultDate || formatDate(new Date());

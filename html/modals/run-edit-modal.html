@@ -1,0 +1,102 @@
+<div class="modal-overlay" id="modal-run-overlay">
+      <div class="modal-content">
+
+        <header class="modal-header">
+          <h3 class="modal-title" id="modal-run-title">Add Run</h3>
+          <button class="modal-close" id="btn-close-run-modal" aria-label="Close modal">
+            &times;
+          </button>
+        </header>
+        
+        <div class="modal-body">
+          <form id="form-run">
+            <input type="hidden" id="input-run-id" />
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-run-date">Run Date</label>
+                <input type="date" id="input-run-date" required />
+              </div>
+              <div class="form-group">
+                <label for="input-run-time">Run Time</label>
+                <input type="time" id="input-run-time" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-run-distance">Distance (km)</label>
+                <input type="number" id="input-run-distance" step="0.01" min="0.01" placeholder="e.g., 10.50" required />
+              </div>
+              <div class="form-group">
+                <label for="input-run-hr">Average HR (bpm)</label>
+                <input type="number" id="input-run-hr" min="40" max="240" placeholder="e.g., 150" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Duration (hrs : mins : secs)</label>
+                <div class="inline-input-group">
+                  <input type="number" id="input-duration-h" min="0" max="99" placeholder="g" value="0" />
+                  <span class="unit-label">:</span>
+                  <input type="number" id="input-duration-m" min="0" max="59" placeholder="m" value="0" />
+                  <span class="unit-label">:</span>
+                  <input type="number" id="input-duration-s" min="0" max="59" placeholder="s" value="0" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Average Pace (min : sec /km)</label>
+                <div class="inline-input-group">
+                  <input type="number" id="input-pace-m" min="1" max="25" placeholder="min" required />
+                  <span class="unit-label">:</span>
+                  <input type="number" id="input-pace-s" min="0" max="59" placeholder="sek" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="select-weather-type">Weather</label>
+                <select id="select-weather-type" required>
+                  <option value="sunny">☀️ Sunny</option>
+                  <option value="cloudy">☁️ Cloudy</option>
+                  <option value="rainy">🌧️ Rainy</option>
+                  <option value="snowy">❄️ Snowy</option>
+                  <option value="windy">💨 Windy</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="input-weather-temp">Temperature (°C)</label>
+                <input type="number" id="input-weather-temp" step="1" placeholder="e.g., 18" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="checkbox-mountain-run" />
+                <label for="checkbox-mountain-run">⛰️ Mountain Run</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="input-run-notes">Notes (optional)</div>
+              <textarea id="input-run-notes" rows="2" placeholder="How did today's run go?"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="btn-delete-run" style="display: none; margin-right: auto">
+            Delete
+          </button>
+          <button class="btn btn-secondary" id="btn-cancel-run-modal">
+            Cancel
+          </button>
+          <button class="btn" id="btn-save-run" type="submit" form="form-run">
+            Save
+          </button>
+        </div>
+
+      </div>
+    </div>
