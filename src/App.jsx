@@ -151,6 +151,7 @@ function App() {
             currentDate={currentDate} 
             setCurrentDate={setCurrentDate}
             onToggleSidebar={toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
             runs={runs}
             theme={theme}
             onToggleTheme={onToggleTheme}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { 
   formatDate, 
   getWeekKey, 
@@ -10,7 +10,7 @@ import {
   getHrClass
 } from '../utils/RunUtils.js';
 
-function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, theme, onToggleTheme, settings, onSaveSettings, onAddRunClick }) {
+function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, isSidebarOpen, runs, theme, onToggleTheme, settings, onSaveSettings, onAddRunClick }) {
   
   const polishMonths = [
     "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
@@ -37,18 +37,48 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
     }
   }
 
-  // Nawigacja
   const handlePrevMonth = () => { const n = new Date(currentDate); n.setDate(n.getDate() - 21); setCurrentDate(n); };
   const handleNextMonth = () => { const n = new Date(currentDate); n.setDate(n.getDate() + 21); setCurrentDate(n); };
   const handlePrevYear = () => { const n = new Date(currentDate); n.setFullYear(n.getFullYear() - 1); setCurrentDate(n); };
   const handleNextYear = () => { const n = new Date(currentDate); n.setFullYear(n.getFullYear() + 1); setCurrentDate(n); };
   const handleToday = () => { setCurrentDate(new Date()); };
+  
+  const isScrolling = useRef(false);
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    const gridElement = gridRef.current;
+    if (!gridElement) return;
+
+    const handleWheel = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+
+        if (isScrolling.current) return;
+        isScrolling.current = true;
+
+        if (e.deltaY > 0) {
+          handleNextMonth();
+        } else {
+          handlePrevMonth();
+        }
+
+        setTimeout(() => {
+          isScrolling.current = false;
+        }, 400);
+      }
+    };
+
+    gridElement.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      gridElement.removeEventListener('wheel', handleWheel);
+    };
+  }, [currentDate]);
 
   const runsWithMetrics = computeRunMetrics(runs || []);
   const calendarStartDate = getMonday(currentDate);
   const gridElements = [];
-
-  // 1. Odtworzenie celów dziennych (dayGoalsMap) na podstawie właściwych kluczy getWeekKey
   const dayGoalsMap = {};
   const weeklyGoals = settings?.weeklyGoals || {};
 
@@ -65,21 +95,17 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
     }
   }
 
-  // 2. Generowanie struktury siatki (21 dni + paski podsumowań tygodnia)
   for (let i = 0; i < 21; i++) {
     const currentGridDate = new Date(calendarStartDate.getTime());
     currentGridDate.setDate(calendarStartDate.getDate() + i);
     const dateStr = formatDate(currentGridDate);
 
-    // Co 7 dni dodajemy pasek podsumowania tygodnia na początku wiersza
     if (i % 7 === 0) {
       const weekMonday = new Date(currentGridDate.getTime());
       const weekKey = getWeekKey(weekMonday, runs || []);
-      
-      // FIX: Pobieramy cel tygodniowy bezpośrednio z mapy ustawień za pomocą weekKey
       const weekDailyGoal = weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 14;
-
       const weekDates = [];
+
       for (let d = 0; d < 7; d++) {
         const dDate = new Date(weekMonday.getTime());
         dDate.setDate(dDate.getDate() + d);
@@ -135,17 +161,10 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
       });
     }
 
-    // Dodawanie pojedynczego kafelka dnia
     const runsOnThisDay = runsWithMetrics.filter(r => r.date === dateStr);
-    
-    // FIX: Pobieramy cel dla danego dnia z wcześniej uzupełnionej mapy celów
     const currentDailyGoal = dayGoalsMap[dateStr] !== undefined ? dayGoalsMap[dateStr] : 14;
-
     const dayTotalDist = runsOnThisDay.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
-   
     const isToday = dateStr === formatDate(new Date());
-    
-    // Klasa błędu celu: jeśli cel dzienny > 0, a nabiegaliśmy mniej (lub wcale)
     const isGoalFailed = currentDailyGoal > 0 && (runsOnThisDay.length === 0 || dayTotalDist < currentDailyGoal);
 
     gridElements.push({
@@ -160,7 +179,6 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
     });
   }
 
-  // Funkcja zapisu celu (odpowiednik starego listenera 'change')
   const handleGoalChange = (weekKey, value) => {
     const val = parseFloat(value);
     const targetVal = isNaN(val) ? 0 : val;
@@ -171,7 +189,7 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
         [weekKey]: targetVal
       }
     };
-    onSaveSettings(updatedSettings); // Przekazujemy do App.jsx, by zapisać stan w localStorage
+    onSaveSettings(updatedSettings);
   };
 
   return (
@@ -186,7 +204,7 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
         </div>
         <div className="calendar-actions">
           <button className="btn btn-secondary" onClick={onToggleSidebar} title="Show/Hide sidebar">
-            <span>📊</span> Show Panel
+            <span>📊</span> {isSidebarOpen ? 'Hide' : 'Show'} Panel
           </button>
           <button className="btn btn-secondary" onClick={onToggleTheme} title="Toggle theme">
             {theme === 'light' ? <><span>🌙</span> Dark mode</> : <><span>☀️</span> Light mode</>}
@@ -207,7 +225,7 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
         <div className="weekday">Sun</div>
       </div>
       
-      <div className="calendar-grid">
+      <div className="calendar-grid" ref={gridRef}>
         {gridElements.map((el, idx) => {
           if (el.type === 'summary') {
             return (
@@ -215,7 +233,7 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
                 <span className="week-summary-title">{el.weekNumText}</span>
                 <span className="week-summary-item">{el.distText}</span>
                 <span className="week-summary-item">{el.hrText}</span>
-                <span className="week-summary-item">{el.paceText}</span>
+                <span className="week-summary-item">{el.paceText}</span> 
                 <span className="week-summary-item week-goal-wrapper">
                   🎯 Goal: 
                   <input 
@@ -231,7 +249,6 @@ function CalendarView({ currentDate, setCurrentDate, onToggleSidebar, runs, them
             );
           }
 
-          // Renderowanie kafelka dnia
           return (
             <div 
               className={`day-cell ${el.isToday ? 'today' : ''}`} 
