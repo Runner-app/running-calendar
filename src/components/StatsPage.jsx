@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { computeRunMetrics } from '../utils/RunUtils.js'; // Upewnij się, że ścieżka i nazwa pliku są poprawne
+import { useMemo } from 'react';
+import { computeRunMetrics } from '../utils/RunUtils.js';
 
 function StatsPage({ runs, onBackClick }) {
   const monthNames = [
@@ -7,12 +7,10 @@ function StatsPage({ runs, onBackClick }) {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  // Pobieramy biegi z wyliczonymi metrykami
   const runsWithMetrics = useMemo(() => {
     return computeRunMetrics(runs || []);
   }, [runs]);
 
-  // 1. Obliczanie statystyk rocznych (odpowiednik starego generateYearlyStats)
   const yearlyStats = useMemo(() => {
     const yearlyMap = {};
 
@@ -30,7 +28,6 @@ function StatsPage({ runs, onBackClick }) {
     return Object.values(yearlyMap).sort((a, b) => b.year - a.year);
   }, [runsWithMetrics]);
 
-  // 2. Obliczanie rankingów miesięcznych (odpowiednik starego generateMonthlyRankings)
   const monthlyStats = useMemo(() => {
     const monthlyMap = {};
 
@@ -55,20 +52,11 @@ function StatsPage({ runs, onBackClick }) {
   return (
     <div className="stats-page glass-panel" id="stats-page">
       <header className="stats-header">
-        {/* Podpięty powrót do kalendarza */}
-        <button 
-          className="nav-btn" 
-          id="btn-back-stats" 
-          aria-label="Back to calendar"
-          onClick={onBackClick}
-        >
-          ◀
-        </button>
+        <button className="nav-btn" id="btn-back-stats" aria-label="Back to calendar"onClick={onBackClick}>◀</button>
         <h2 className="stats-title">Statistics</h2>
       </header>
 
       <div className="stats-content">
-        {/* SEKCJA ROCZNA */}
         <div className="stats-section">
           <h3 className="stats-section-title">📅 Yearly Breakdown</h3>
           <div id="yearly-stats-container">
@@ -87,7 +75,6 @@ function StatsPage({ runs, onBackClick }) {
           </div>
         </div>
 
-        {/* SEKCJA MIESIĘCZNA */}
         <div className="stats-section">
           <h3 className="stats-section-title">🏆 Monthly Rankings (By Distance)</h3>
           <div id="monthly-stats-container">

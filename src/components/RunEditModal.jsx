@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { formatDate } from "../utils/RunUtils.js"; // dostosuj ścieżkę jeśli trzeba
+import { useState, useEffect } from "react";
+import { formatDate } from "../utils/RunUtils.js";
 
 function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDelete }) {
-  // 1. Definiujemy stan dla wszystkich pól formularza
+  
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [distance, setDistance] = useState("");
@@ -17,15 +17,13 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
   const [mountainRun, setMountainRun] = useState(false);
   const [notes, setNotes] = useState("");
 
-  // Pamiętamy co użytkownik edytował jako ostatnie, żeby kalkulator wiedział co przeliczyć
+  
   const [lastEditedGroup, setLastEditedGroup] = useState("pace"); 
 
-  // 2. useEffect do ładowania danych: wyzwala się przy otwarciu okna lub zmianie wybranego biegu
   useEffect(() => {
     if (!isOpen) return;
 
     if (runId) {
-      // Tryb EDYCJI: szukamy istniejącego biegu w tablicy
       const run = runs.find((r) => r.id === runId);
       if (run) {
         setDate(run.date || "");
@@ -43,7 +41,6 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
         setNotes(run.notes || "");
       }
     } else {
-      // Tryb DODAWANIA nowego biegu: ustawiamy wartości domyślne
       setDate(defaultDate || formatDate(new Date()));
       const now = new Date();
       setTime(`${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`);
@@ -61,7 +58,6 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
     }
   }, [isOpen, runId, defaultDate, runs]);
 
-  // 3. Logika kalkulatora biegowego (odpowiedniki Twoich starych funkcji)
   const updatePaceFromDuration = (currentDist, h, m, s) => {
     const dist = parseFloat(currentDist);
     if (!dist || dist <= 0) return;
@@ -92,7 +88,6 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
     setDurationS(s === 60 ? 59 : s);
   };
 
-  // 4. Handlery reagujące na wpisywanie danych w pola tekstowe
   const handleDistanceChange = (val) => {
     setDistance(val);
     if (lastEditedGroup === "duration") {
@@ -123,7 +118,6 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
     updateDurationFromPace(distance, pm, ps);
   };
 
-  // 5. Zapis formularza
   const handleSubmit = (e) => {
     e.preventDefault();
     const runData = {
@@ -145,7 +139,7 @@ function RunEditModal({ isOpen, runId, defaultDate, runs, onClose, onSave, onDel
     onSave(runData);
   };
 
-  if (!isOpen) return null; // Jeśli modal jest zamknięty, nic nie renderujemy
+  if(!isOpen) return null;
 
   return (
     <div className="modal-overlay active" id="modal-run-overlay" onClick={onClose}>

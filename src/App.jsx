@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
 import SidePanel from './components/SidePanel';
 import CalendarView from './components/CalendarView';
@@ -7,43 +6,24 @@ import RunEditModal from './components/RunEditModal';
 import './index.less';
 
 function App() {
-  // ==========================================
-  // 1. STANY KOMPONENTU (Zawsze na samym początku)
-  // ==========================================
-  
-  // Motyw graficzny
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("running_calendar_theme") || "light";
   });
-
-  // Ustawienia (cele tygodniowe itp.)
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("running_calendar_settings");
     return saved ? JSON.parse(saved) : { weeklyGoals: {} };
   });
-
-  // Bieżąca data w kalendarzu
   const [currentDate, setCurrentDate] = useState(new Date());
-  
-  // Lista biegów z localStorage
   const [runs, setRuns] = useState(() => {
     const savedRuns = localStorage.getItem('running_calendar_runs');
     return savedRuns ? JSON.parse(savedRuns) : [];
   });
-
-  // Widoczność paneli i modali
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState('calendar');
   const [isRunModalOpen, setIsRunModalOpen] = useState(false);
-  
-  // Przechowuje ID wybranego biegu (null = nowy bieg, id = edycja)
   const [selectedRun, setSelectedRun] = useState(null);
-  // Domyślna data przekazywana do modalu przy kliknięciu konkretnego dnia
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
-  // ==========================================
-  // 2. EFEKTY (useEffect)
-  // ==========================================
   useEffect(() => {
     if (theme === "light") {
       document.body.classList.add("light-mode");
@@ -53,32 +33,25 @@ function App() {
     localStorage.setItem("running_calendar_theme", theme);
   }, [theme]);
 
-  // ==========================================
-  // 3. FUNKCJE I HANDLERY
-  // ==========================================
   const onToggleTheme = () => {
     setTheme(prevTheme => prevTheme === "light" ? "dark" : "light");
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Zapisywanie ustawień celów
   const handleSaveSettings = (newSettings) => {
     setSettings(newSettings);
     localStorage.setItem("running_calendar_settings", JSON.stringify(newSettings));
   };
 
-  // Import danych z pliku JSON
   const handleImportJSON = (jsonText) => {
     try {
       const parsedData = JSON.parse(jsonText);
       let runsArray = null;
 
-      // Przypadek 1: Plik to czysta tablica biegów
       if (Array.isArray(parsedData)) {
         runsArray = parsedData;
       } 
-      // Przypadek 2: Plik to cały obiekt stanu z tablicą .runs
       else if (parsedData && Array.isArray(parsedData.runs)) {
         runsArray = parsedData.runs;
         
@@ -101,7 +74,6 @@ function App() {
     }
   };
 
-  // Dodawanie / edycja pojedynczego biegu z poziomu modalu
   const handleSaveRun = (savedRun) => {
     setRuns((prevRuns) => {
       const exists = prevRuns.some(r => r.id === savedRun.id);
@@ -117,7 +89,6 @@ function App() {
     setIsRunModalOpen(false);
   };
 
-  // Usuwanie biegu z poziomu modalu
   const handleDeleteRun = (runIdToDelete) => {
     if (window.confirm("Czy na pewno chcesz usunąć ten bieg?")) {
       setRuns((prevRuns) => {
@@ -162,10 +133,7 @@ function App() {
         </main>
 
         {activeView === 'stats' && (
-          <StatsPage 
-            runs={runs} 
-            onBackClick={() => setActiveView('calendar')}
-          />
+          <StatsPage runs={runs} onBackClick={() => setActiveView('calendar')}/>
         )}
       </div>
 

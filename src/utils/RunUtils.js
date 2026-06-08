@@ -32,7 +32,6 @@ export function getWeekKey(mondayDate, runs) {
     return `${year}-W${weekNum}`;
 }
 
-// 3. Strefy tempa i tętna (zostają bez zmian)
 export function getPaceZoneIndex(min, sec) {
     const totalSec = (parseInt(min) || 0) * 60 + (parseInt(sec) || 0);
     if (totalSec > 429) return 0;
