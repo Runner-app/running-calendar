@@ -3,7 +3,7 @@ import SidePanel from './components/SidePanel';
 import CalendarView from './components/CalendarView';
 import StatsPage from './components/StatsPage';
 import RunEditModal from './components/RunEditModal';
-import './index.less';
+import './styles/index.less';
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -25,7 +25,7 @@ function App() {
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
   useEffect(() => {
-    if (theme === "light") {
+    if (theme === "dark") {
       document.body.classList.add("light-mode");
     } else {
       document.body.classList.remove("light-mode");

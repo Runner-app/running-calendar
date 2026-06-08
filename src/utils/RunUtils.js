@@ -40,13 +40,9 @@ export function getPaceZoneIndex(min, sec) {
 }
 
 export function getPaceZoneColor(zoneIndex) {
-    const zoneColors = {
-        0: '#b10000ff', 1: '#d43838ff', 2: '#f72302ff', 3: '#ff5500ff', 4: '#ff863fff',
-        5: '#ff9625ff', 6: '#fcbb52ff', 7: '#ffd326ff', 8: '#fff336ff', 9: '#e2f536ff',
-        10: '#b9e50cff', 11: '#8ce510ff', 12: '#64cf1dff', 13: '#49b800ff', 14: '#13d16dff',
-        15: '#0fb7b1ff', 16: '#2fd4cfff', 17: '#82ebe7ff', 18: '#b4f4ffff'
-    };
-    return zoneColors[zoneIndex] || '#cccccc';
+    if (zoneIndex < 0 || zoneIndex > 18) return '#cccccc';
+    
+    return `var(--pace-${zoneIndex})`;
 }
 
 export function getHrClass(hr) {
