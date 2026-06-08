@@ -133,7 +133,11 @@ function App() {
         </main>
 
         {activeView === 'stats' && (
-          <StatsPage runs={runs} onBackClick={() => setActiveView('calendar')}/>
+          <StatsPage 
+            runs={runs} 
+            onBackClick={() => setActiveView('calendar')} 
+            onToggleSidebar={toggleSidebar} 
+            isSidebarOpen={isSidebarOpen}/>
         )}
       </div>
 

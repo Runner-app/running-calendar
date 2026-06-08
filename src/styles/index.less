@@ -3,29 +3,9 @@
 @import './main.less';
 @import './calendar.less';
 
-
-
-/* --- Layout --- */
-.app-container {
-    background-color: var(--background-grey-light);
-    max-width: 1900px;
-    width: 100%;
-    margin: 0 auto;
-    padding-left: 15px;
-    display: flex;
-    gap: 1rem;
-    flex-grow: 1;
-    transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.calendar-panel {
-    flex-grow: 1;
-    min-width: 0;
-}
-
 /* --- Sidebar --- */
 .sidebar {
-    width: 350px;
+    width: 300px;
     background-color: var(--background-grey-light);
     flex-shrink: 0;
     display: flex;
@@ -218,6 +198,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    font-size: 20px;
     &:hover {
         background: rgba(255, 255, 255, 0.15);
     }
@@ -346,20 +327,15 @@
 }
 
 .bar-details {
-    background: rgba(255, 255, 255, 0.08);
-    font-size: 0.75rem;
+    background: var(--details-bar-background);
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
 .bar-duration {
-    background: rgb(224, 224, 224, 0.5);
-    font-weight: 400;
-}
-
-
-.bar-weather {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--duration-bar-background);
     color: var(--text-secondary);
+    font-weight: 400;
 }
 
 /* --- Modals & Forms --- */
