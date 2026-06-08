@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { computeRunMetrics } from '../utils/RunUtils.js';
 
-function StatsPage({ runs, onBackClick }) {
+function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June', 
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -54,6 +54,13 @@ function StatsPage({ runs, onBackClick }) {
       <header className="stats-header">
         <button className="nav-btn" id="btn-back-stats" aria-label="Back to calendar"onClick={onBackClick}>◀</button>
         <h2 className="stats-title">Statistics</h2>
+                  <button
+            className="btn btn-secondary"
+            onClick={onToggleSidebar}
+            title="Show/Hide sidebar"
+          >
+            <span>📊</span> {isSidebarOpen ? "Hide" : "Show"} Panel
+          </button>
       </header>
 
       <div className="stats-content">

@@ -133,17 +133,9 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
       const runsInWeek = runsWithMetrics.filter((r) =>
         weekDates.includes(r.date),
       );
-      const totalDist = runsInWeek.reduce(
-        (sum, run) => sum + (parseFloat(run.distance) || 0),
-        0,
-      );
+      const totalDist = runsInWeek.reduce((sum, run) => sum + (parseFloat(run.distance) || 0), 0);
       const runsWithHr = runsInWeek.filter((r) => (parseInt(r.hr) || 0) > 0);
-      const avgHr =
-        runsWithHr.length > 0
-          ? Math.round(
-              runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length,
-            )
-          : null;
+      const avgHr = runsWithHr.length > 0 ? Math.round(runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length) : null;
 
       let totalSeconds = 0;
       runsInWeek.forEach((run) => {
@@ -234,57 +226,29 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
     <>
       <header className="calendar-header">
         <div className="calendar-navigation">
-          <button className="nav-btn" onClick={handlePrevYear}>
-            ⏪
+          <button className="nav-btn" onClick={handlePrevYear} title="Previous year">
+            &lt;&lt;
           </button>
-          <button
-            className="nav-btn"
-            onClick={handlePrevMonth}
-            aria-label="Previous month"
-          >
-            ◀
+          <button className="nav-btn" onClick={handlePrevMonth} title="Previous month">
+            &lt;
           </button>
           <h2 className="month-title">{headerTitle}</h2>
-          <button
-            className="nav-btn"
-            onClick={handleNextMonth}
-            aria-label="Next month"
-          >
-            ▶
+          <button className="nav-btn" onClick={handleNextMonth} title="Next month">
+            &gt;
           </button>
-          <button className="nav-btn" onClick={handleNextYear}>
-            ⏩
+          <button className="nav-btn" onClick={handleNextYear} title="Next year">
+            &gt;&gt;
+          </button>
+          <button className="btn btn-secondary btn-today" onClick={handleToday} title="Back to current day">
+            Today
           </button>
         </div>
         <div className="calendar-actions">
-          <button
-            className="btn btn-secondary"
-            onClick={onToggleSidebar}
-            title="Show/Hide sidebar"
-          >
-            <span>📊</span> {isSidebarOpen ? "Hide" : "Show"} Panel
+          <button className="btn btn-secondary" onClick={onToggleSidebar} title="Show/Hide sidebar">
+            📊 {isSidebarOpen ? "Hide" : "Show"} Panel
           </button>
-          <button
-            className="btn btn-secondary"
-            onClick={onToggleTheme}
-            title="Toggle theme"
-          >
-            {theme === "dark" ? (
-              <>
-                <span>🌙</span> Dark mode
-              </>
-            ) : (
-              <>
-                <span>☀️</span> Light mode
-              </>
-            )}
-          </button>
-          <button
-            className="btn btn-secondary btn-today"
-            onClick={handleToday}
-            title="Wróć do dzisiaj"
-          >
-            Today
+          <button className="btn btn-secondary" onClick={onToggleTheme} title="Toggle theme">
+            {theme === "dark" ? '🌙' : '☀️'}
           </button>
         </div>
       </header>
@@ -303,10 +267,7 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
         {gridElements.map((el, idx) => {
           if (el.type === "summary") {
             return (
-              <div
-                className="week-summary-bar"
-                key={`summary-${el.weekKey}-${idx}`}
-              >
+              <div className="week-summary-bar" key={`summary-${el.weekKey}-${idx}`}>
                 <span className="week-summary-title">{el.weekNumText}</span>
                 <span className="week-summary-item">{el.distText}</span>
                 <span className="week-summary-item">{el.hrText}</span>
@@ -357,9 +318,7 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
               </div>
 
               {el.runs.length > 0 && (
-                <div
-                  className={`day-run-container ${el.isGoalFailed ? "goal-failed" : ""}`}
-                >
+                <div className={`day-run-container ${el.isGoalFailed ? "goal-failed" : ""}`}>
                   {el.runs.map((run) => {
                     const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
                     const zoneColor = getPaceZoneColor(zoneIndex);
@@ -377,19 +336,8 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
                     const notesEmoji = run.notes ? " 📝" : "";
 
                     return (
-                      <div
-                        key={run.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddRunClick(run.id);
-                        }}
-                        style={{ cursor: "pointer" }}
-                        className="run-single-data-container"
-                      >
-                        <div
-                          className="run-bar"
-                          style={{ background: zoneColor }}
-                        >
+                      <div key={run.id} onClick={(e) => {e.stopPropagation();onAddRunClick(run.id);}} className="run-single-data-container">
+                        <div className="run-bar" style={{ background: zoneColor }}>
                           🏃 {run.paceM || 0}:{paceSecStr} min/km
                         </div>
 
@@ -400,15 +348,11 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
                         )}
 
                         <div className="run-bar bar-duration">
-                          ⏱️ {hStr}
-                          {mStr}:{sStr}
+                          ⏱️ {hStr}{mStr}:{sStr}
                         </div>
 
-                        <div
-                          className="run-bar bar-details"
-                          title={run.notes || ""}
-                        >
-                          <span>🕖 {run.time || "--:--"} •</span>{" "}
+                        <div className="run-bar bar-details" title={run.notes || ""}>
+                          <span>🕖 {run.time || "--:--"} • </span>
                           {run.computedNumber || 0} || {distFormatted} km [
                           {run.computedStreak || 1}]{mountainEmoji}
                           {notesEmoji}
