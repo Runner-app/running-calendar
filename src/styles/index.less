@@ -1,88 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+@import './variables.less';
+@import './main.less';
+@import './calendar.less';
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'DM Sans', sans-serif;
-}
 
-@font-size-base: 14px;
-@font-size-bigger: 22px;
-
-@background-primary-dark: #0b0f19;
-@background-primary-light: #f3f4f6;
-@background-grey-light: #eef0f3;
-:root {
-    --glass-bg: rgba(17, 25, 40, 0.75);
-    --glass-bg-hover: rgba(28, 37, 56, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.22);
-    --glass-border-focus: rgba(139, 92, 246, 0.4);
-
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-dark: #0e1118;
-
-    --modal-bg: #0f1420;
-    --stat-card-bg: rgba(255, 255, 255, 0.03);
-    --stat-card-bg-hover: rgba(255, 255, 255, 0.05);
-    --stat-card-border: rgba(255, 255, 255, 0.04);
-    --day-cell-bg: rgba(255, 255, 255, 0.02);
-    --day-cell-bg-hover: rgba(255, 255, 255, 0.04);
-    --input-bg: rgba(255, 255, 255, 0.04);
-
-    --color-primary: #8b5cf6; 
-    --color-primary-glow: rgba(139, 92, 246, 0.25);
-    --color-primary-hover: #a78bfa;
-    --color-accent: #3b82f6;
-
-    /* HR Zones Colors */
-    --hr-under-130: rgb(33, 190, 135);
-    --hr-130-134: rgb(33, 190, 135);
-    --hr-135-139: rgb(156, 224, 79);
-    --hr-140-144: rgb(161, 189, 85);
-    --hr-145-149: rgb(255, 197, 109);
-    --hr-150-154: rgb(255, 185, 150);
-    --hr-155-159: rgb(240, 161, 157);
-    --hr-160-164: rgb(228, 111, 134);
-    --hr-165-plus: rgb(194, 58, 76);
-
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 18px;
-}
-
-body.light-mode {
-    background-color: @background-primary-light;
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-bg-hover: rgba(243, 244, 246, 0.85);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-border-focus: rgba(139, 92, 246, 0.5);
-
-    --text-primary: #1f2937;
-    --text-secondary: #4b5563;
-    --text-dark: #0e1118;
-
-    --modal-bg: #ffffff;
-    --stat-card-bg: rgba(0, 0, 0, 0.02);
-    --stat-card-bg-hover: rgba(0, 0, 0, 0.04);
-    --stat-card-border: rgba(0, 0, 0, 0.05);
-    --day-cell-bg: rgba(0, 0, 0, 0.015);
-    --day-cell-bg-hover: rgba(0, 0, 0, 0.035);
-    --input-bg: rgba(0, 0, 0, 0.03);
-}
-
-body {
-    background-color: @background-primary-dark;
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-}
 
 /* --- Layout --- */
 .app-container {
+    background-color: var(--background-grey-light);
     max-width: 1900px;
     width: 100%;
     margin: 0 auto;
@@ -98,10 +23,10 @@ body {
     min-width: 0;
 }
 
-
 /* --- Sidebar --- */
 .sidebar {
     width: 350px;
+    background-color: var(--background-grey-light);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -431,42 +356,6 @@ body {
     font-weight: 400;
 }
 
-/* HR Bars */
-.bar-hr-under-130 {
-    background-color: var(--hr-under-130);
-}
-
-.bar-hr-130-134 {
-    background-color: var(--hr-130-134);
-}
-
-.bar-hr-135-139 {
-    background-color: var(--hr-135-139);
-}
-
-.bar-hr-140-144 {
-    background-color: var(--hr-140-144);
-}
-
-.bar-hr-145-149 {
-    background-color: var(--hr-145-149);
-}
-
-.bar-hr-150-154 {
-    background-color: var(--hr-150-154);
-}
-
-.bar-hr-155-159 {
-    background-color: var(--hr-155-159);
-}
-
-.bar-hr-160-164 {
-    background-color: var(--hr-160-164);
-}
-
-.bar-hr-165-plus {
-    background-color: var(--hr-165-plus);
-}
 
 .bar-weather {
     background: rgba(255, 255, 255, 0.05);
@@ -647,7 +536,7 @@ textarea:focus {
 }
 
 .week-summary-bar {
-    background-color: @background-grey-light;
+    background-color: var(--background-grey-light);
     grid-column: span 7;
     border: 1px solid rgba(139, 92, 246, 0.15);
     border-bottom: none;
