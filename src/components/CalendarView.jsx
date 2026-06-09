@@ -307,7 +307,7 @@ function CalendarView({currentDate, setCurrentDate, onToggleSidebar, isSidebarOp
                 <span className="day-number">{el.dayNumber}</span>
                 <button
                   className="add-run-btn-cell"
-                  title="Dodaj bieg pod tą datą"
+                  title="Add run"
                   onClick={(e) => {
                     e.stopPropagation();
                     onAddRunClick(null, el.dateStr);

@@ -1,27 +1,27 @@
-@import './variables.less';
+@import "./variables.less";
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'DM Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DM Sans", sans-serif;
 }
 
 body {
-    color: var(--text-primary);
-    min-height: 100vh;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  .app-container {
+    background-color: var(--background-grey-light);
+    max-width: 1900px;
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 15px;
     display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    .app-container {
-        background-color: var(--background-grey-light);
-        max-width: 1900px;
-        width: 100%;
-        margin: 0 auto;
-        padding-left: 15px;
-        display: flex;
-        gap: 1rem;
-        flex-grow: 1;
-        transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    gap: 1rem;
+    flex-grow: 1;
+    transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
