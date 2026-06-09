@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
+import { supabase } from "./config/supabaseClient";
 import SidePanel from "./components/SidePanel";
 import CalendarView from "./components/CalendarView";
 import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
+import LoginScreen from "./components/LoginScreen"; // <-- NOWY IMPORT
 import "./styles/index.less";
 
 function App() {
+  // Stany autentykacji
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Pozostałe stany aplikacji
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("running_calendar_theme") || "light";
   });
@@ -14,16 +21,32 @@ function App() {
     return saved ? JSON.parse(saved) : { weeklyGoals: {} };
   });
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [runs, setRuns] = useState(() => {
-    const savedRuns = localStorage.getItem("running_calendar_runs");
-    return savedRuns ? JSON.parse(savedRuns) : [];
-  });
+  const [runs, setRuns] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState("calendar");
   const [isRunModalOpen, setIsRunModalOpen] = useState(false);
   const [selectedRun, setSelectedRun] = useState(null);
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
+  // 1. SŁUCHANIE STANÓW LOGOWANIA
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Motyw
   useEffect(() => {
     if (theme === "dark") {
       document.body.classList.add("light-mode");
@@ -37,6 +60,71 @@ function App() {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  // 2. POBIERANIE DANYCH Z SUPABASE
+  const fetchRuns = async () => {
+    if (!session?.user) return;
+
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from("runs")
+        .select("*")
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+
+      const formattedRuns = data.map((run) => {
+        const h = Math.floor(run.duration / 3600);
+        const m = Math.floor((run.duration % 3600) / 60);
+        const s = run.duration % 60;
+
+        const totalMinutes = run.duration / 60;
+        const rawPace = run.distance > 0 ? totalMinutes / run.distance : 0;
+        const paceM = Math.floor(rawPace);
+        const paceS = Math.round((rawPace - paceM) * 60);
+
+        const cleanDate =
+          run.date && typeof run.date === "string"
+            ? run.date.substring(0, 10)
+            : run.date;
+
+        return {
+          id: run.id,
+          date: cleanDate,
+          distance: run.distance,
+          hr: run.avg_hr,
+          durationH: h,
+          durationM: m,
+          durationS: s,
+          paceM: paceM,
+          paceS: paceS,
+          notes: run.notes || "",
+          source: run.source,
+          time: run.time || "19:00",
+          computedNumber: run.id,
+          computedStreak: 1,
+        };
+      });
+
+      setRuns(formattedRuns);
+    } catch (error) {
+      console.error("Błąd podczas ładowania biegów z Supabase:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchRuns();
+    }
+  }, [session]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setRuns([]);
+  };
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleSaveSettings = (newSettings) => {
@@ -47,74 +135,71 @@ function App() {
     );
   };
 
-  const handleImportJSON = (jsonText) => {
+  const handleImportJSON = () => {
+    alert(
+      "Funkcja lokalnego importu została wyłączona na rzecz synchronizacji z Supabase.",
+    );
+  };
+
+  // 3. ZAPIS / EDYCJA BIEGU
+  const handleSaveRun = async (savedRun) => {
     try {
-      const parsedData = JSON.parse(jsonText);
-      let runsArray = null;
+      const totalSeconds =
+        Number(savedRun.durationH || 0) * 3600 +
+        Number(savedRun.durationM || 0) * 60 +
+        Number(savedRun.durationS || 0);
 
-      if (Array.isArray(parsedData)) {
-        runsArray = parsedData;
-      } else if (parsedData && Array.isArray(parsedData.runs)) {
-        runsArray = parsedData.runs;
+      const runDbPayload = {
+        date: savedRun.date,
+        distance: Number(savedRun.distance),
+        duration: totalSeconds,
+        avg_hr: savedRun.hr ? Number(savedRun.hr) : null,
+        notes: savedRun.notes || null,
+        source: savedRun.source || "manual",
+        user_id: session.user.id,
+      };
 
-        if (parsedData.settings && parsedData.settings.weeklyGoals) {
-          setSettings(parsedData.settings);
-          localStorage.setItem(
-            "running_calendar_settings",
-            JSON.stringify(parsedData.settings),
-          );
-        }
-      }
+      const isEditing =
+        typeof savedRun.id === "number" ||
+        (typeof savedRun.id === "string" && !savedRun.id.startsWith("run_"));
 
-      if (runsArray) {
-        setRuns(runsArray);
-        localStorage.setItem(
-          "running_calendar_runs",
-          JSON.stringify(runsArray),
-        );
-        alert(`Sukces! Zaimportowano pomyślnie ${runsArray.length} biegów.`);
+      if (isEditing) {
+        const { error } = await supabase
+          .from("runs")
+          .update(runDbPayload)
+          .eq("id", savedRun.id);
+
+        if (error) throw error;
       } else {
-        alert("Błąd: Plik JSON nie zawiera prawidłowej listy biegów.");
+        const { error } = await supabase.from("runs").insert([runDbPayload]);
+
+        if (error) throw error;
       }
+
+      setIsRunModalOpen(false);
+      fetchRuns();
     } catch (error) {
-      alert(
-        "Błąd podczas czytania pliku JSON. Upewnij się, że plik jest nieuszkodzony.",
-      );
-      console.error(error);
+      console.error("Błąd zapisu biegu:", error.message);
+      alert("Nie udało się zapisać biegu.");
     }
   };
 
-  const handleSaveRun = (savedRun) => {
-    setRuns((prevRuns) => {
-      const exists = prevRuns.some((r) => r.id === savedRun.id);
-      let updatedRuns;
-      if (exists) {
-        updatedRuns = prevRuns.map((r) =>
-          r.id === savedRun.id ? savedRun : r,
-        );
-      } else {
-        updatedRuns = [savedRun, ...prevRuns];
-      }
-      localStorage.setItem(
-        "running_calendar_runs",
-        JSON.stringify(updatedRuns),
-      );
-      return updatedRuns;
-    });
-    setIsRunModalOpen(false);
-  };
+  const handleDeleteRun = async (runIdToDelete) => {
+    if (window.confirm("Czy na pewno chcesz usunąć ten bieg z bazy danych?")) {
+      try {
+        const { error } = await supabase
+          .from("runs")
+          .delete()
+          .eq("id", runIdToDelete);
 
-  const handleDeleteRun = (runIdToDelete) => {
-    if (window.confirm("Czy na pewno chcesz usunąć ten bieg?")) {
-      setRuns((prevRuns) => {
-        const updatedRuns = prevRuns.filter((r) => r.id !== runIdToDelete);
-        localStorage.setItem(
-          "running_calendar_runs",
-          JSON.stringify(updatedRuns),
-        );
-        return updatedRuns;
-      });
-      setIsRunModalOpen(false);
+        if (error) throw error;
+
+        setIsRunModalOpen(false);
+        fetchRuns();
+      } catch (error) {
+        console.error("Błąd podczas usuwania biegu:", error.message);
+        alert("Nie udało się usunąć biegu.");
+      }
     }
   };
 
@@ -123,6 +208,49 @@ function App() {
     setDefaultRunDate(dateStr);
     setIsRunModalOpen(true);
   };
+
+  if (authLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          color: "#fff",
+          background: "#121212",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <h2>
+          Weryfikacja sesji bezpiecznego kalendarza... Tarcza RLS aktywna 🛡️
+        </h2>
+      </div>
+    );
+  }
+
+  // REWOLUCJA: Jeśli nie ma sesji, renderujemy dedykowany, czysty komponent
+  if (!session) {
+    return <LoginScreen />;
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          color: "#fff",
+          background: "#121212",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <h2>Bezpieczne wczytywanie Twoich kilometrów... 🏃‍♂️☁️</h2>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -139,6 +267,21 @@ function App() {
           className="calendar-panel glass-panel"
           style={{ display: activeView === "calendar" ? "block" : "none" }}
         >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              padding: "10px 20px 0 0",
+            }}
+          >
+            <button
+              onClick={handleLogout}
+              className="btn btn-secondary"
+              style={{ background: "#d32f2f", color: "white", border: "none" }}
+            >
+              🚪 Wyloguj
+            </button>
+          </div>
           <CalendarView
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
