@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { formatDate } from "../utils/RunUtils.js";
-import FitParser from "fit-file-parser"; // <-- Importujemy parser plików .fit
+import FitParser from "fit-file-parser";
 
 function RunEditModal({
   isOpen,
@@ -26,7 +26,6 @@ function RunEditModal({
   const [notes, setNotes] = useState("");
   const [chartRecords, setChartRecords] = useState(null);
 
-  // Stany dla strefy drag & drop
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -151,7 +150,6 @@ function RunEditModal({
     updateDurationFromPace(distance, pm, ps);
   };
 
-  // LOGIKA PARSOWANIA PLIKU .FIT
   const handleProcessFitFile = (file) => {
     if (!file) return;
 
@@ -159,7 +157,6 @@ function RunEditModal({
     reader.onload = (e) => {
       const arrayBuffer = e.target.result;
 
-      // Inicjalizacja parsera
       const fitParser = new FitParser({
         force: true,
         speedUnit: "km/h",
@@ -176,21 +173,16 @@ function RunEditModal({
           return;
         }
 
-        // Pobieramy główne podsumowanie sesji biegowej
         const session = data.sessions?.[0] || data.activity?.sessions?.[0];
-
         const records = data.records || [];
 
-        // Mapujemy tylko te dane, które nas naprawdę interesują + dodajemy współrzędne GPS dla mapy
         const cleanedRecords = records.map((r) => {
-          // Funkcja pomocnicza: konwersja semicircles na stopnie dziesiętne GPS
           const semicirclesToDegrees = (val) =>
             val ? val * (180 / Math.pow(2, 31)) : null;
 
           let lat = r.position_lat || null;
           let lng = r.position_long || null;
 
-          // Jeśli wartości są w semicircles (wartości bez przecinka rzędu milionów), konwertujemy je na stopnie
           if (lat && Math.abs(lat) > 180) lat = semicirclesToDegrees(lat);
           if (lng && Math.abs(lng) > 180) lng = semicirclesToDegrees(lng);
 
@@ -199,7 +191,6 @@ function RunEditModal({
             distance: r.distance || 0,
             hr: r.heart_rate || null,
             speed: r.speed || 0,
-            // Nowe pola, które Leaflet bez problemu odczyta:
             lat: lat ? parseFloat(lat.toFixed(6)) : null,
             lng: lng ? parseFloat(lng.toFixed(6)) : null,
           };
@@ -212,7 +203,6 @@ function RunEditModal({
           return;
         }
 
-        // 1. Data i godzina startu
         if (session.start_time) {
           const startTime = new Date(session.start_time);
           setDate(formatDate(startTime));
@@ -221,16 +211,13 @@ function RunEditModal({
           );
         }
 
-        // 2. Dystans (FIT czasami zwraca w metrach, sprawdzamy to)
         let dist = session.total_distance;
         if (dist > 500) {
-          // Jeśli wartość jest duża, to prawdopodobnie metry
           dist = dist / 1000;
         }
         const finalDistance = parseFloat(dist).toFixed(2);
         setDistance(finalDistance);
 
-        // 3. Czas trwania (w sekundach)
         const totalSeconds = Math.round(
           session.total_timer_time || session.total_elapsed_time || 0,
         );
@@ -241,15 +228,12 @@ function RunEditModal({
         setDurationM(m);
         setDurationS(s);
 
-        // 4. Średnie tętno
         if (session.avg_heart_rate) {
           setHr(Math.round(session.avg_heart_rate));
         }
 
-        // 5. Automatycznie wyliczamy tempo dla wczytanych danych
         updatePaceFromDuration(finalDistance, h, m, s);
 
-        // Informacja w notatkach, skąd pochodzi plik
         setNotes((prev) => (prev ? prev : ""));
       });
     };
@@ -257,7 +241,6 @@ function RunEditModal({
     reader.readAsArrayBuffer(file);
   };
 
-  // Obsługa przeciągania myszką
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -333,7 +316,6 @@ function RunEditModal({
         </header>
 
         <div className="modal-body">
-          {/* Sekcja wrzucania pliku FIT (tylko przy dodawaniu nowego biegu) */}
           {!runId && (
             <div
               className={`fit-dropzone ${isDragging ? "dragging" : ""}`}
@@ -543,11 +525,7 @@ function RunEditModal({
 
         <div className="modal-footer">
           {runId && (
-            <button
-              className="btn btn-danger"
-              style={{ marginRight: "auto" }}
-              onClick={() => onDelete(runId)}
-            >
+            <button className="btn btn-danger" onClick={() => onDelete(runId)}>
               Delete
             </button>
           )}

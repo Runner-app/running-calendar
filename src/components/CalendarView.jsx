@@ -244,56 +244,28 @@ function CalendarView({
     <>
       <header className="calendar-header">
         <div className="calendar-navigation">
-          <button
-            className="nav-btn"
-            onClick={handlePrevYear}
-            title="Previous year"
-          >
+          <button className="nav-btn" onClick={handlePrevYear}>
             &lt;&lt;
           </button>
-          <button
-            className="nav-btn"
-            onClick={handlePrevMonth}
-            title="Previous month"
-          >
+          <button className="nav-btn" onClick={handlePrevMonth}>
             &lt;
           </button>
           <h2 className="month-title">{headerTitle}</h2>
-          <button
-            className="nav-btn"
-            onClick={handleNextMonth}
-            title="Next month"
-          >
+          <button className="nav-btn" onClick={handleNextMonth}>
             &gt;
           </button>
-          <button
-            className="nav-btn"
-            onClick={handleNextYear}
-            title="Next year"
-          >
+          <button className="nav-btn" onClick={handleNextYear}>
             &gt;&gt;
           </button>
-          <button
-            className="btn btn-secondary btn-today"
-            onClick={handleToday}
-            title="Back to current day"
-          >
+          <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today
           </button>
         </div>
         <div className="calendar-actions">
-          <button
-            className="btn btn-secondary"
-            onClick={onToggleSidebar}
-            title="Show/Hide sidebar"
-          >
+          <button className="btn btn-secondary" onClick={onToggleSidebar}>
             📊 {isSidebarOpen ? "Hide" : "Show"} Panel
           </button>
-          <button
-            className="btn btn-secondary"
-            onClick={onToggleTheme}
-            title="Toggle theme"
-          >
+          <button className="btn btn-secondary" onClick={onToggleTheme}>
             {theme === "dark" ? "🌙" : "☀️"}
           </button>
         </div>

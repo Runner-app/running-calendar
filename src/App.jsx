@@ -4,16 +4,14 @@ import SidePanel from "./components/SidePanel";
 import CalendarView from "./components/CalendarView";
 import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
-import LoginScreen from "./components/LoginScreen"; // <-- NOWY IMPORT
+import LoginScreen from "./components/LoginScreen";
 import RunDetailsView from "./components/RunDetailsView";
 import "./styles/index.less";
 
 function App() {
-  // Stany autentykacji
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Pozostałe stany aplikacji
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("running_calendar_theme") || "light";
   });
@@ -31,7 +29,6 @@ function App() {
   const [selectedRun, setSelectedRun] = useState(null);
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
-  // 1. SŁUCHANIE STANÓW LOGOWANIA
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -47,7 +44,6 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Motyw
   useEffect(() => {
     if (theme === "dark") {
       document.body.classList.add("light-mode");
@@ -84,9 +80,7 @@ function App() {
         const paceM = Math.floor(rawPace);
         const paceS = Math.round((rawPace - paceM) * 60);
         const cleanDate =
-          run.date && typeof run.date === "string"
-            ? run.date.substring(0, 10)
-            : run.date;
+          run.date && typeof run.date === "string" ? run.date.substring(0, 10) : run.date;
 
         let computedTime = "19:00";
 
@@ -223,11 +217,9 @@ function App() {
 
   const handleAddRunClick = (runId = null, dateStr = null) => {
     if (runId) {
-      // Kliknięto istniejący bieg -> Pokaż szczegóły!
       setSelectedRun(runId);
       setActiveView("details");
     } else {
-      // Kliknięto pusty dzień -> Dodaj nowy bieg przez modal
       setSelectedRun(null);
       setDefaultRunDate(dateStr);
       setIsRunModalOpen(true);
@@ -254,7 +246,6 @@ function App() {
     );
   }
 
-  // REWOLUCJA: Jeśli nie ma sesji, renderujemy dedykowany, czysty komponent
   if (!session) {
     return <LoginScreen />;
   }
@@ -269,10 +260,9 @@ function App() {
           height: "100vh",
           color: "#fff",
           background: "#121212",
-          fontFamily: "sans-serif",
         }}
       >
-        <h2>Bezpieczne wczytywanie Twoich kilometrów... 🏃‍♂️☁️</h2>
+        <h2>Running 🏃</h2>
       </div>
     );
   }
@@ -292,7 +282,7 @@ function App() {
           <RunDetailsView
             run={runs.find((r) => r.id === selectedRun)}
             onBackClick={() => setActiveView("calendar")}
-            onEditClick={() => setIsRunModalOpen(true)} // Z poziomu szczegółów możemy odpalić edycję
+            onEditClick={() => setIsRunModalOpen(true)}
           />
         )}
 
@@ -309,10 +299,9 @@ function App() {
           >
             <button
               onClick={handleLogout}
-              className="btn btn-secondary"
-              style={{ background: "#d32f2f", color: "white", border: "none" }}
+              className="btn btn-secondary btn-danger"
             >
-              🚪 Wyloguj
+              Wyloguj
             </button>
           </div>
           <CalendarView
