@@ -5,6 +5,7 @@ import CalendarView from "./components/CalendarView";
 import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
 import LoginScreen from "./components/LoginScreen"; // <-- NOWY IMPORT
+import RunDetailsView from "./components/RunDetailsView";
 import "./styles/index.less";
 
 function App() {
@@ -60,7 +61,6 @@ function App() {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
-  // 2. POBIERANIE DANYCH Z SUPABASE
   const fetchRuns = async () => {
     if (!session?.user) return;
 
@@ -74,6 +74,7 @@ function App() {
       if (error) throw error;
 
       const formattedRuns = data.map((run) => {
+        console.log("Surowy rekord z bazy:", run.date);
         const h = Math.floor(run.duration / 3600);
         const m = Math.floor((run.duration % 3600) / 60);
         const s = run.duration % 60;
@@ -82,11 +83,20 @@ function App() {
         const rawPace = run.distance > 0 ? totalMinutes / run.distance : 0;
         const paceM = Math.floor(rawPace);
         const paceS = Math.round((rawPace - paceM) * 60);
-
         const cleanDate =
           run.date && typeof run.date === "string"
             ? run.date.substring(0, 10)
             : run.date;
+
+        let computedTime = "19:00";
+
+        if (
+          run.date &&
+          typeof run.date === "string" &&
+          run.date.includes("T")
+        ) {
+          computedTime = run.date.substring(11, 16);
+        }
 
         return {
           id: run.id,
@@ -100,9 +110,10 @@ function App() {
           paceS: paceS,
           notes: run.notes || "",
           source: run.source,
-          time: run.time || "19:00",
+          time: computedTime,
           computedNumber: run.id,
           computedStreak: 1,
+          chart_records: run.chart_records,
         };
       });
 
@@ -141,7 +152,6 @@ function App() {
     );
   };
 
-  // 3. ZAPIS / EDYCJA BIEGU
   const handleSaveRun = async (savedRun) => {
     try {
       const totalSeconds =
@@ -149,14 +159,18 @@ function App() {
         Number(savedRun.durationM || 0) * 60 +
         Number(savedRun.durationS || 0);
 
+      const runTime = savedRun.time || "19:00";
+      const fullDateTimeString = `${savedRun.date}T${runTime}:00`;
+
       const runDbPayload = {
-        date: savedRun.date,
+        date: fullDateTimeString,
         distance: Number(savedRun.distance),
         duration: totalSeconds,
         avg_hr: savedRun.hr ? Number(savedRun.hr) : null,
         notes: savedRun.notes || null,
         source: savedRun.source || "manual",
         user_id: session.user.id,
+        chart_records: savedRun.chart_records || null,
       };
 
       const isEditing =
@@ -164,9 +178,11 @@ function App() {
         (typeof savedRun.id === "string" && !savedRun.id.startsWith("run_"));
 
       if (isEditing) {
+        const { ...updatePayload } = runDbPayload;
+
         const { error } = await supabase
           .from("runs")
-          .update(runDbPayload)
+          .update(updatePayload)
           .eq("id", savedRun.id);
 
         if (error) throw error;
@@ -182,6 +198,7 @@ function App() {
       console.error("Błąd zapisu biegu:", error.message);
       alert("Nie udało się zapisać biegu.");
     }
+    setActiveView("calendar");
   };
 
   const handleDeleteRun = async (runIdToDelete) => {
@@ -201,12 +218,20 @@ function App() {
         alert("Nie udało się usunąć biegu.");
       }
     }
+    setActiveView("calendar");
   };
 
   const handleAddRunClick = (runId = null, dateStr = null) => {
-    setSelectedRun(runId);
-    setDefaultRunDate(dateStr);
-    setIsRunModalOpen(true);
+    if (runId) {
+      // Kliknięto istniejący bieg -> Pokaż szczegóły!
+      setSelectedRun(runId);
+      setActiveView("details");
+    } else {
+      // Kliknięto pusty dzień -> Dodaj nowy bieg przez modal
+      setSelectedRun(null);
+      setDefaultRunDate(dateStr);
+      setIsRunModalOpen(true);
+    }
   };
 
   if (authLoading) {
@@ -262,6 +287,14 @@ function App() {
           onImportJSON={handleImportJSON}
           runs={runs}
         />
+
+        {activeView === "details" && (
+          <RunDetailsView
+            run={runs.find((r) => r.id === selectedRun)}
+            onBackClick={() => setActiveView("calendar")}
+            onEditClick={() => setIsRunModalOpen(true)} // Z poziomu szczegółów możemy odpalić edycję
+          />
+        )}
 
         <main
           className="calendar-panel glass-panel"
