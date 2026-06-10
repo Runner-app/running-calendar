@@ -4,7 +4,6 @@
 @import "./calendar.less";
 @import "./run-details-container.less";
 
-/* --- Sidebar --- */
 .sidebar {
   width: 300px;
   background-color: var(--background-grey-light);
@@ -53,7 +52,6 @@
   padding: 1.5rem;
 }
 
-/* --- Stats --- */
 .stats-header {
   font-size: 1.25rem;
   font-weight: 600;
@@ -117,7 +115,6 @@
   margin-top: 0.1rem;
 }
 
-/* --- Buttons --- */
 .btn {
   background: var(--color-primary);
   color: white;
@@ -162,7 +159,6 @@
   width: 100%;
 }
 
-/* --- Calendar Core --- */
 .calendar-header {
   display: flex;
   align-items: center;
@@ -328,7 +324,6 @@
   font-weight: 400;
 }
 
-/* --- Modals & Forms --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -608,7 +603,6 @@ body.light-mode .run-notes-tooltip {
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Stats Page Styles */
 .stats-page {
   display: flex;
   flex-direction: column;
@@ -715,6 +709,32 @@ body.light-mode .run-notes-tooltip {
   padding: 2rem 1rem;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+.weekly-history-scroll-container {
+  padding-bottom: 12px;
+
+  &::-webkit-scrollbar {
+    height: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 83, 0.4);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+    
+    &:hover {
+      background: rgba(0, 200, 83, 0.8);
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 200, 83, 0.4) rgba(255, 255, 255, 0.03);
 }
 
 body.light-mode {

@@ -1,19 +1,17 @@
 import {
   ResponsiveContainer,
-  ComposedChart, // Zmieniamy AreaChart na ComposedChart, żeby łączyć typy
-  Area,
-  Line, // Dorzucamy linię dla tempa
+  ComposedChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
   Legend,
 } from "recharts";
-// NOWE IMPORTY DLA MAPY:
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import L from "leaflet";
 
-// Rozwiązanie problemu ze ścieżkami do domyślnych ikon Leafleta w środowiskach bundlerów (Vite/Webpack)
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -27,7 +25,7 @@ L.Icon.Default.mergeOptions({
 function RunDetailsView({ run, onBackClick, onEditClick }) {
   if (!run) return null;
 
-  // 1. Przygotowanie danych do wykresu oraz wyciąganie punktów GPS
+
   const formatChartData = () => {
     if (!run.chart_records || !Array.isArray(run.chart_records)) {
       return { chartData: [], gpsCoords: [] };
@@ -37,13 +35,9 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
     const chartData = run.chart_records.map((record, index) => {
       let paceStr = "-";
-      // Parser podaje prędkość w km/h
       const speedKmH = record.speed || 0;
-
-      // Zmienna do rysowania wykresu (szukamy km/h, żeby górki na wykresie to była prędkość)
       let speedForChart = 0;
 
-      // Sensowna prędkość biegowa (odcinamy marsz i błędy GPS)
       if (speedKmH > 3 && speedKmH < 35) {
         speedForChart = parseFloat(speedKmH.toFixed(1));
         const paceDecimal = 60 / speedKmH;
@@ -52,12 +46,10 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         paceStr = `${mins}:${String(secs).padStart(2, "0")}`;
       }
 
-      // Jeśli w rekordzie są współrzędne, zapisujemy je jako tablicę [lat, lng] dla Leafleta
       if (record.lat && record.lng) {
         gpsCoords.push([record.lat, record.lng]);
       }
 
-      // Formatowanie czasu osi X (indeks sekundy na MM:SS)
       const totalSecs = index;
       const h = Math.floor(totalSecs / 3600);
       const m = Math.floor((totalSecs % 3600) / 60);
@@ -71,8 +63,8 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         name: timeLabel,
         "Tętno (bpm)": record.hr || 0,
         distance: (record.distance || 0).toFixed(2),
-        tempoStr: paceStr, // Do tooltipa
-        speedKmH: speedForChart, // Do rysowania wykresu
+        tempoStr: paceStr,
+        speedKmH: speedForChart,
       };
     });
 
@@ -82,9 +74,8 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
   const { chartData, gpsCoords } = formatChartData();
 
-  // Dynamiczne obliczanie środka mapy (średnia ze wszystkich punktów trasy)
   const getMapCenter = () => {
-    if (gpsCoords.length === 0) return [52.237, 21.017]; // Domyślnie Warszawa
+    if (gpsCoords.length === 0) return [52.237, 21.017];
     const latSum = gpsCoords.reduce((sum, coord) => sum + coord[0], 0);
     const lngSum = gpsCoords.reduce((sum, coord) => sum + coord[1], 0);
     return [latSum / gpsCoords.length, lngSum / gpsCoords.length];
@@ -92,7 +83,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
   const mapCenter = getMapCenter();
 
-  // Własny styl Tooltipa (teraz pokazuje oba parametry)
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const hrPayload = payload.find((p) => p.dataKey === "Tętno (bpm)");
@@ -203,7 +193,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         </p>
       </header>
 
-      {/* Karty statystyk */}
       <div
         style={{
           display: "grid",
@@ -264,7 +253,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         ))}
       </div>
 
-      {/* SEKCJA ANALITYCZNA (DWUKOLUMNOWY GRID DLA MAPY I WYKRESU) */}
       <div
         style={{
           display: "grid",
@@ -273,7 +261,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
           marginBottom: "30px",
         }}
       >
-        {/* LEWA KOLUMNA: MAPA (Renderuje się tylko gdy mamy punkty GPS) */}
         {gpsCoords.length > 0 && (
           <div
             style={{
@@ -300,12 +287,10 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                 zoom={14}
                 style={{ width: "100%", height: "100%" }}
               >
-                {/* Ciemne kafelki dopasowane do klimatu aplikacji */}
                 <TileLayer
                   url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 />
-                {/* Ścieżka biegu jako linia neonowo-błękitna */}
                 <Polyline
                   positions={gpsCoords}
                   color="#00e5ff"
@@ -317,7 +302,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
           </div>
         )}
 
-        {/* PRAWA KOLUMNA: WYKRES */}
         {chartData.length > 0 ? (
           <div
             style={{
@@ -357,7 +341,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                     minTickGap={60}
                   />
 
-                  {/* Oś Y lewa (Tętno) */}
                   <YAxis
                     yAxisId="left"
                     domain={["dataMin - 10", "dataMax + 5"]}
@@ -367,7 +350,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                     axisLine={false}
                   />
 
-                  {/* Oś Y prawa (Prędkość) */}
                   <YAxis
                     yAxisId="right"
                     orientation="right"
@@ -391,7 +373,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                     wrapperStyle={{ fontSize: "11px", paddingTop: "5px" }}
                   />
 
-                  {/* 1. Tętno jako wypełniony obszar (Area) */}
                   <Area
                     yAxisId="left"
                     type="monotone"
@@ -402,7 +383,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                     fill="url(#colorHr)"
                   />
 
-                  {/* 2. Prędkość jako linia (Line) */}
                   <Line
                     yAxisId="right"
                     type="monotone"

@@ -289,8 +289,8 @@ function RunEditModal({
       weatherTemp: parseInt(weatherTemp) || 15,
       mountainRun,
       notes,
-      source: runId && existingRun ? existingRun.source : "fit_file", // zachowujemy oryginalne źródło
-      chart_records: finalChartRecords, // <--- Przekazujemy uratowaną telemetrię!
+      source: runId && existingRun ? existingRun.source : "fit_file",
+      chart_records: finalChartRecords,
     };
     onSave(runData);
   };

@@ -6,6 +6,7 @@ import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
 import LoginScreen from "./components/LoginScreen";
 import RunDetailsView from "./components/RunDetailsView";
+import WeeklyPaceHistoryChart from "./components/WeeklyPaceHistoryChart";
 import "./styles/index.less";
 
 function App() {
@@ -327,6 +328,9 @@ function App() {
           />
         )}
       </div>
+
+      
+        <WeeklyPaceHistoryChart runs={runs} />
 
       <RunEditModal
         isOpen={isRunModalOpen}
