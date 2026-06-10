@@ -166,10 +166,8 @@ function RunEditModal({
 
       fitParser.parse(arrayBuffer, (error, data) => {
         if (error) {
-          console.error("Błąd dekodowania pliku FIT:", error);
-          alert(
-            "Nie udało się odczytać pliku .fit. Upewnij się, że plik jest poprawny.",
-          );
+          console.error("Error decoding FIT file:", error);
+          alert("Failed to read .fit file. Please ensure the file is valid.");
           return;
         }
 
@@ -199,7 +197,7 @@ function RunEditModal({
         setChartRecords(cleanedRecords);
 
         if (!session) {
-          alert("Nie znaleziono podsumowania treningu w pliku .fit.");
+          alert("Failed to find run summary in the .fit file.");
           return;
         }
 
@@ -257,7 +255,7 @@ function RunEditModal({
     if (file && file.name.endsWith(".fit")) {
       handleProcessFitFile(file);
     } else {
-      alert("Proszę upuścić plik z rozszerzeniem .fit");
+      alert("Please drop a file with the .fit extension");
     }
   };
 
@@ -338,10 +336,10 @@ function RunEditModal({
             >
               <span style={{ fontSize: "24px" }}>⌚</span>
               <p style={{ margin: "10px 0 5px 0", fontWeight: "bold" }}>
-                Przeciągnij i upuść plik .fit ze Stravy
+                Drag and drop a .fit file from Strava
               </p>
               <p style={{ fontSize: "12px", color: "#aaa", margin: 0 }}>
-                lub kliknij tutaj, aby wybrać go z komputera
+                or click here to select it from your computer
               </p>
               <input
                 type="file"

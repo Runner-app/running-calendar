@@ -7,10 +7,10 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  Area,
 } from "recharts";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import L from "leaflet";
-
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -24,7 +24,6 @@ L.Icon.Default.mergeOptions({
 
 function RunDetailsView({ run, onBackClick, onEditClick }) {
   if (!run) return null;
-
 
   const formatChartData = () => {
     if (!run.chart_records || !Array.isArray(run.chart_records)) {
@@ -61,7 +60,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
       return {
         name: timeLabel,
-        "Tętno (bpm)": record.hr || 0,
+        "Heart Rate (bpm)": record.hr || 0,
         distance: (record.distance || 0).toFixed(2),
         tempoStr: paceStr,
         speedKmH: speedForChart,
@@ -85,7 +84,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      const hrPayload = payload.find((p) => p.dataKey === "Tętno (bpm)");
+      const hrPayload = payload.find((p) => p.dataKey === "Heart Rate (bpm)");
       const speedPayload = payload.find((p) => p.dataKey === "speedKmH");
 
       return (
@@ -108,7 +107,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
               paddingBottom: "5px",
             }}
           >
-            Czas: {hrPayload?.payload.name}
+            Time: {hrPayload?.payload.name}
           </p>
           {hrPayload && (
             <p
@@ -119,7 +118,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                 fontWeight: "bold",
               }}
             >
-              ❤️ Tętno: {hrPayload.value} bpm
+              ❤️ Heart Rate: {hrPayload.value} bpm
             </p>
           )}
           {speedPayload && (
@@ -149,7 +148,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
               textAlign: "right",
             }}
           >
-            📍 Dystans: {hrPayload?.payload.distance} km
+            📍 Distance: {hrPayload?.payload.distance} km
           </p>
         </div>
       );
@@ -178,18 +177,18 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         }}
       >
         <button onClick={onBackClick} className="btn btn-secondary">
-          ⬅️ Powrót
+          ⬅️ Back
         </button>
         <button onClick={onEditClick} className="btn">
-          ⚙️ Opcje
+          ⚙️ Options
         </button>
       </div>
 
       <header style={{ marginBottom: "30px" }}>
-        <h2 style={{ margin: 0, fontSize: "28px" }}>Podsumowanie Biegu 🏃‍♂️</h2>
+        <h2 style={{ margin: 0, fontSize: "28px" }}>Run Summary 🏃‍♂️</h2>
         <p style={{ color: "#aaa", margin: "5px 0 0 0" }}>
-          {run.date} o godzinie {run.time}{" "}
-          {run.source === "fit_file" ? "• ⌚ Zaimportowano z FIT" : ""}
+          {run.date} at {run.time}{" "}
+          {run.source === "fit_file" ? "• ⌚ Imported from FIT" : ""}
         </p>
       </header>
 
@@ -202,19 +201,19 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         }}
       >
         {[
-          { label: "DYSTANS", value: `${run.distance} km`, color: "#00c853" },
+          { label: "DISTANCE", value: `${run.distance} km`, color: "#00c853" },
           {
-            label: "CZAS TRWANIA",
+            label: "DURATION",
             value: `${run.durationH > 0 ? `${run.durationH}h ` : ""}${run.durationM}m ${run.durationS}s`,
             color: "#fff",
           },
           {
-            label: "ŚREDNIE TEMPO",
+            label: "AVERAGE PACE",
             value: `${run.paceM}:${String(run.paceS).padStart(2, "0")} /km`,
             color: "#00e5ff",
           },
           {
-            label: "ŚREDNIE TĘTNO",
+            label: "AVERAGE HEART RATE",
             value: run.hr ? `${run.hr} bpm` : "--",
             color: "#ff5252",
           },
@@ -272,7 +271,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
             }}
           >
             <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
-              Trasa biegu 🗺️
+              Run Route 🗺️
             </h4>
             <div
               style={{
@@ -313,7 +312,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
             }}
           >
             <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
-              Analiza telemetryczna 📈
+              Telemetry Analysis 📈
             </h4>
             <div style={{ width: "100%", height: "calc(100% - 35px)" }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -376,7 +375,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                   <Area
                     yAxisId="left"
                     type="monotone"
-                    dataKey="Tętno (bpm)"
+                    dataKey="Heart Rate (bpm)"
                     stroke="#ff5252"
                     strokeWidth={2}
                     fillOpacity={1}
@@ -387,7 +386,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                     yAxisId="right"
                     type="monotone"
                     dataKey="speedKmH"
-                    name="Prędkość (km/h)"
+                    name="Speed (km/h)"
                     stroke="#00e5ff"
                     strokeWidth={2}
                     dot={false}
@@ -408,7 +407,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
               fontStyle: "italic",
             }}
           >
-            Brak szczegółowych danych telemetrycznych dla tego biegu.
+            No detailed telemetry data available for this run.
           </div>
         )}
       </div>
@@ -430,7 +429,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
               paddingBottom: "8px",
             }}
           >
-            Notatki z treningu
+            Notes from the Run
           </h4>
           <p
             style={{

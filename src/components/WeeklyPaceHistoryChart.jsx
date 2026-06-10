@@ -15,7 +15,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     if (!runs || runs.length === 0) return [];
 
     const runsWithMetrics = computeRunMetrics([...runs]).sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
+      (a, b) => new Date(a.date) - new Date(b.date),
     );
 
     const weeksMap = {};
@@ -23,7 +23,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     runsWithMetrics.forEach((run) => {
       if (!run.date) return;
       const runDate = new Date(run.date);
-      
+
       const weekKey = getWeekKey(runDate, runsWithMetrics);
 
       if (!weeksMap[weekKey]) {
@@ -45,7 +45,8 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       if (durationSeconds > 0) {
         weeksMap[weekKey].totalSeconds += durationSeconds;
       } else {
-        const paceSec = (parseInt(run.paceM) || 0) * 60 + (parseInt(run.paceS) || 0);
+        const paceSec =
+          (parseInt(run.paceM) || 0) * 60 + (parseInt(run.paceS) || 0);
         weeksMap[weekKey].totalSeconds += paceSec * dist;
       }
     });
@@ -61,20 +62,21 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
           const avgSecondsPerKm = group.totalSeconds / group.totalDist;
           const avgMin = Math.floor(avgSecondsPerKm / 60);
           const avgSec = Math.round(avgSecondsPerKm % 60);
-          
+
           const finalMin = avgSec === 60 ? avgMin + 1 : avgMin;
           const finalSec = avgSec === 60 ? 0 : avgSec;
-          
+
           const avgSecStr = String(finalSec).padStart(2, "0");
           paceStr = `${finalMin}:${avgSecStr}`;
-          
+
           paceDecimal = finalMin + finalSec / 60;
         }
 
         return {
           weekKey: group.displayLabel,
           distance: parseFloat(group.totalDist.toFixed(1)),
-          paceDecimal: paceDecimal > 0 ? parseFloat(paceDecimal.toFixed(2)) : null,
+          paceDecimal:
+            paceDecimal > 0 ? parseFloat(paceDecimal.toFixed(2)) : null,
           paceStr: paceStr,
         };
       })
@@ -91,16 +93,25 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="chart-custom-tooltip" style={{
-          background: "rgba(20, 20, 20, 0.9)",
-          border: "1px solid #00c853",
-          padding: "10px",
-          borderRadius: "6px",
-          fontSize: "13px"
-        }}>
-          <p style={{ margin: "0 0 5px 0", fontWeight: "bold", color: "#fff" }}>Tydzień: {data.weekKey}</p>
-          <p style={{ margin: "0 0 3px 0", color: "#00c853" }}>🏃 Średnie tempo: <strong>{data.paceStr} min/km</strong></p>
-          <p style={{ margin: 0, color: "#aaa" }}>📈 Dystans: {data.distance} km</p>
+        <div
+          className="chart-custom-tooltip"
+          style={{
+            background: "rgba(20, 20, 20, 0.9)",
+            border: "1px solid #00c853",
+            padding: "10px",
+            borderRadius: "6px",
+            fontSize: "13px",
+          }}
+        >
+          <p style={{ margin: "0 0 5px 0", fontWeight: "bold", color: "#fff" }}>
+            Week: {data.weekKey}
+          </p>
+          <p style={{ margin: "0 0 3px 0", color: "#00c853" }}>
+            🏃 Average Pace: <strong>{data.paceStr} min/km</strong>
+          </p>
+          <p style={{ margin: 0, color: "#aaa" }}>
+            📈 Distance: {data.distance} km
+          </p>
         </div>
       );
     }
@@ -114,29 +125,44 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
   };
 
   if (chartData.length === 0) {
-    return <div style={{ padding: "20px", color: "#aaa" }}>Brak danych do wyświetlenia wykresu historycznego.</div>;
+    return (
+      <div style={{ padding: "20px", color: "#aaa" }}>
+        No data available for the pace history chart.
+      </div>
+    );
   }
 
   return (
-    <div className="glass-panel pace-history-panel" style={{ padding: "20px", marginBottom: "25px" }}>
-      <h3 style={{ marginTop: 0, marginBottom: "20px" }}>📈 Historia Tygodniowego Tempa Progresywnego</h3>
-      
-      <div 
-        className="weekly-history-scroll-container" 
+    <div
+      className="glass-panel pace-history-panel"
+      style={{ padding: "20px", marginBottom: "25px" }}
+    >
+      <h3 style={{ marginTop: 0, marginBottom: "20px" }}>
+        📈 Weekly Pace History
+      </h3>
+
+      <div
+        className="weekly-history-scroll-container"
         style={{ width: "100%", overflowX: "auto", overflowY: "hidden" }}
       >
         <div style={{ width: `${dynamicWidth}px`, height: "350px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis 
-                dataKey="weekKey" 
-                stroke="#727272" 
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(255,255,255,0.05)"
+              />
+              <XAxis
+                dataKey="weekKey"
+                stroke="#727272"
                 tick={{ fontSize: 11 }}
                 dy={10}
               />
-              <YAxis 
-                domain={["dataMin - 0.2", "dataMax + 0.2"]} 
+              <YAxis
+                domain={["dataMin - 0.2", "dataMax + 0.2"]}
                 reversed={true}
                 stroke="#6d6b6b"
                 tickFormatter={formatYAxis}

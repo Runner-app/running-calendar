@@ -71,7 +71,6 @@ function App() {
       if (error) throw error;
 
       const formattedRuns = data.map((run) => {
-        console.log("Surowy rekord z bazy:", run.date);
         const h = Math.floor(run.duration / 3600);
         const m = Math.floor((run.duration % 3600) / 60);
         const s = run.duration % 60;
@@ -81,7 +80,9 @@ function App() {
         const paceM = Math.floor(rawPace);
         const paceS = Math.round((rawPace - paceM) * 60);
         const cleanDate =
-          run.date && typeof run.date === "string" ? run.date.substring(0, 10) : run.date;
+          run.date && typeof run.date === "string"
+            ? run.date.substring(0, 10)
+            : run.date;
 
         let computedTime = "19:00";
 
@@ -114,7 +115,7 @@ function App() {
 
       setRuns(formattedRuns);
     } catch (error) {
-      console.error("Błąd podczas ładowania biegów z Supabase:", error.message);
+      console.error("Error while fetching runs from Supabase:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +144,7 @@ function App() {
 
   const handleImportJSON = () => {
     alert(
-      "Funkcja lokalnego importu została wyłączona na rzecz synchronizacji z Supabase.",
+      "The local import function has been disabled in favor of synchronization with Supabase.",
     );
   };
 
@@ -190,14 +191,18 @@ function App() {
       setIsRunModalOpen(false);
       fetchRuns();
     } catch (error) {
-      console.error("Błąd zapisu biegu:", error.message);
-      alert("Nie udało się zapisać biegu.");
+      console.error("Error while saving run:", error.message);
+      alert("Failed to save run.");
     }
     setActiveView("calendar");
   };
 
   const handleDeleteRun = async (runIdToDelete) => {
-    if (window.confirm("Czy na pewno chcesz usunąć ten bieg z bazy danych?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this run from the database?",
+      )
+    ) {
       try {
         const { error } = await supabase
           .from("runs")
@@ -209,8 +214,8 @@ function App() {
         setIsRunModalOpen(false);
         fetchRuns();
       } catch (error) {
-        console.error("Błąd podczas usuwania biegu:", error.message);
-        alert("Nie udało się usunąć biegu.");
+        console.error("Error while deleting run:", error.message);
+        alert("Failed to delete run.");
       }
     }
     setActiveView("calendar");
@@ -227,45 +232,21 @@ function App() {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          color: "#fff",
-          background: "#121212",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <h2>
-          Weryfikacja sesji bezpiecznego kalendarza... Tarcza RLS aktywna 🛡️
-        </h2>
-      </div>
-    );
-  }
+  const renderLoadingScreen = () => (
+    <div className="loading-screen">
+      <h2>Running 🏃</h2>
+    </div>
+  );
 
   if (!session) {
+    if (authLoading) {
+      return renderLoadingScreen();
+    }
     return <LoginScreen />;
   }
 
   if (isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          color: "#fff",
-          background: "#121212",
-        }}
-      >
-        <h2>Running 🏃</h2>
-      </div>
-    );
+    return renderLoadingScreen();
   }
 
   return (
@@ -302,7 +283,7 @@ function App() {
               onClick={handleLogout}
               className="btn btn-secondary btn-danger"
             >
-              Wyloguj
+              Sign out
             </button>
           </div>
           <CalendarView
@@ -329,8 +310,7 @@ function App() {
         )}
       </div>
 
-      
-        <WeeklyPaceHistoryChart runs={runs} />
+      <WeeklyPaceHistoryChart runs={runs} />
 
       <RunEditModal
         isOpen={isRunModalOpen}

@@ -16,7 +16,7 @@ function LoginScreen() {
     });
 
     if (error) {
-      alert(`Błąd logowania: ${error.message}`);
+      alert(`Login error: ${error.message}`);
     }
     setIsSubmitting(false);
   };
@@ -44,7 +44,7 @@ function LoginScreen() {
         }}
       >
         <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-          Logowanie do Biegalnika 🏃‍♂️
+          Log in to RunUp 🏃‍♂️
         </h2>
         <form
           onSubmit={handleLogin}
@@ -70,7 +70,7 @@ function LoginScreen() {
             />
           </label>
           <label>
-            Hasło:
+            Password:
             <input
               type="password"
               value={password}
@@ -103,7 +103,7 @@ function LoginScreen() {
             }}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Logowanie..." : "Zaloguj się"}
+            {isSubmitting ? "Logging in..." : "Log in"}
           </button>
         </form>
       </div>
