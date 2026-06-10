@@ -37,7 +37,7 @@ export function getRunningWeekNumber(mondayDate, runs) {
 export function getWeekKey(mondayDate, runs) {
   const year = mondayDate.getFullYear();
   const weekNum = getRunningWeekNumber(mondayDate, runs) || 0;
-  return `${year}-W${weekNum}`;
+  return `Week ${weekNum} (${year})`;
 }
 
 export function getPaceZoneIndex(min, sec) {

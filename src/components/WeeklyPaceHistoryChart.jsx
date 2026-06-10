@@ -93,25 +93,12 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div
-          className="chart-custom-tooltip"
-          style={{
-            background: "rgba(20, 20, 20, 0.9)",
-            border: "1px solid #00c853",
-            padding: "10px",
-            borderRadius: "6px",
-            fontSize: "13px",
-          }}
-        >
-          <p style={{ margin: "0 0 5px 0", fontWeight: "bold", color: "#fff" }}>
-            Week: {data.weekKey}
+        <div className="chart-custom-tooltip">
+          <p className="week">Week: {data.weekKey}</p>
+          <p className="pace">
+            Pace: <strong>{data.paceStr} min/km</strong>
           </p>
-          <p style={{ margin: "0 0 3px 0", color: "#00c853" }}>
-            🏃 Average Pace: <strong>{data.paceStr} min/km</strong>
-          </p>
-          <p style={{ margin: 0, color: "#aaa" }}>
-            📈 Distance: {data.distance} km
-          </p>
+          <p className="distance">📈 Distance: {data.distance} km</p>
         </div>
       );
     }
@@ -125,26 +112,14 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
   };
 
   if (chartData.length === 0) {
-    return (
-      <div style={{ padding: "20px", color: "#aaa" }}>
-        No data available for the pace history chart.
-      </div>
-    );
+    return <div>No data available for the pace history chart.</div>;
   }
 
   return (
-    <div
-      className="glass-panel pace-history-panel"
-      style={{ padding: "20px", marginBottom: "25px" }}
-    >
-      <h3 style={{ marginTop: 0, marginBottom: "20px" }}>
-        📈 Weekly Pace History
-      </h3>
+    <div className="glass-panel pace-history-panel">
+      <h3 class="center">📈 Weekly Pace History</h3>
 
-      <div
-        className="weekly-history-scroll-container"
-        style={{ width: "100%", overflowX: "auto", overflowY: "hidden" }}
-      >
+      <div className="weekly-history-scroll-container">
         <div style={{ width: `${dynamicWidth}px`, height: "350px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart

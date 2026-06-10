@@ -1,0 +1,36 @@
+@import "./variables.less";
+@import "./main.less";
+
+.pace-history-panel {
+  padding: 20px;
+  margin-bottom: 25px;
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  .weekly-history-scroll-container {
+    overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+  }
+}
+
+.chart-custom-tooltip {
+  background: var(--glass-bg);
+  border: 1px solid var(--pace-14);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: @font-size-sm;
+  p.week {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  p.pace {
+    margin-bottom: 3px;
+    color: var(--pace-14);
+  }
+  p.distance {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+}
