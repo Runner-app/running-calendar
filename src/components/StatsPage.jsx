@@ -80,13 +80,6 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
           ◀
         </button>
         <h2 className="stats-title">Statistics</h2>
-        <button
-          className="btn btn-secondary"
-          onClick={onToggleSidebar}
-          title="Show/Hide sidebar"
-        >
-          <span>📊</span> {isSidebarOpen ? "Hide" : "Show"} Panel
-        </button>
       </header>
 
       <div className="stats-content">

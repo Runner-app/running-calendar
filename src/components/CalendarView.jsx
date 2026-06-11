@@ -13,11 +13,7 @@ import {
 function CalendarView({
   currentDate,
   setCurrentDate,
-  onToggleSidebar,
-  isSidebarOpen,
   runs,
-  theme,
-  onToggleTheme,
   settings,
   onSaveSettings,
   onAddRunClick,
@@ -259,14 +255,6 @@ function CalendarView({
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today
-          </button>
-        </div>
-        <div className="calendar-actions">
-          <button className="btn btn-secondary" onClick={onToggleSidebar}>
-            📊 {isSidebarOpen ? "Hide" : "Show"} Panel
-          </button>
-          <button className="btn btn-secondary" onClick={onToggleTheme}>
-            {theme === "dark" ? "🌙" : "☀️"}
           </button>
         </div>
       </header>

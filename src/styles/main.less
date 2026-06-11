@@ -12,6 +12,14 @@
   text-align: center;
 }
 
+.menu-actions {
+  .centerFlex();
+  gap: 15px;
+  position: absolute;
+  top: 25px;
+  right: 25px;
+}
+
 body {
   color: var(--text-primary);
   min-height: 100vh;
@@ -28,6 +36,7 @@ body {
     gap: 1rem;
     flex-grow: 1;
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
   }
   .loading-screen {
     .centerFlex();

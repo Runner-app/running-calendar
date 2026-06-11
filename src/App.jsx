@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./config/supabaseClient";
 import SidePanel from "./components/SidePanel";
+import TopMenu from "./components/TopMenu";
 import CalendarView from "./components/CalendarView";
 import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
@@ -46,7 +47,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (theme === "dark") {
+    if (theme === "light") {
       document.body.classList.add("light-mode");
     } else {
       document.body.classList.remove("light-mode");
@@ -139,12 +140,6 @@ function App() {
     localStorage.setItem(
       "running_calendar_settings",
       JSON.stringify(newSettings),
-    );
-  };
-
-  const handleImportJSON = () => {
-    alert(
-      "The local import function has been disabled in favor of synchronization with Supabase.",
     );
   };
 
@@ -252,6 +247,12 @@ function App() {
   return (
     <>
       <div className={`app-container ${isSidebarOpen ? "" : "sidebar-hidden"}`}>
+        <TopMenu
+          onToggleSidebar={toggleSidebar}
+          onToggleTheme={onToggleTheme}
+          handleLogout={handleLogout}
+        />
+
         <SidePanel
           onAddRunClick={() => handleAddRunClick(null, null)}
           onStatsClick={() => setActiveView("stats")}
@@ -271,28 +272,12 @@ function App() {
           className="calendar-panel glass-panel"
           style={{ display: activeView === "calendar" ? "block" : "none" }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              padding: "10px 20px 0 0",
-            }}
-          >
-            <button
-              onClick={handleLogout}
-              className="btn btn-secondary btn-danger"
-            >
-              Sign out
-            </button>
-          </div>
           <CalendarView
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
-            onToggleSidebar={toggleSidebar}
             isSidebarOpen={isSidebarOpen}
             runs={runs}
             theme={theme}
-            onToggleTheme={onToggleTheme}
             settings={settings}
             onSaveSettings={handleSaveSettings}
             onAddRunClick={handleAddRunClick}
