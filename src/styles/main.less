@@ -1,4 +1,5 @@
 @import "./variables.less";
+@import "./mixins.less";
 
 * {
   margin: 0;
@@ -29,11 +30,9 @@ body {
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .loading-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    .centerFlex();
     height: 100vh;
     color: var(--text-primary);
-    background: var(--text-dark);
+    background-color: var(--text-dark);
   }
 }

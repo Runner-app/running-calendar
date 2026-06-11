@@ -256,7 +256,6 @@ function App() {
           onAddRunClick={() => handleAddRunClick(null, null)}
           onStatsClick={() => setActiveView("stats")}
           onCalendarClick={() => setActiveView("calendar")}
-          onImportJSON={handleImportJSON}
           runs={runs}
         />
 

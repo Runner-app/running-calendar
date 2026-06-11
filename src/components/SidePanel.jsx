@@ -1,6 +1,6 @@
 import { computeRunMetrics } from "../utils/RunUtils.js";
 
-function SidePanel({ onAddRunClick, onStatsClick, onImportJSON, runs }) {
+function SidePanel({ onAddRunClick, onStatsClick, runs }) {
   const runsWithMetrics = computeRunMetrics(runs || []);
   const totalRuns = runsWithMetrics.length;
   const totalDistance = runsWithMetrics.reduce(
@@ -18,30 +18,15 @@ function SidePanel({ onAddRunClick, onStatsClick, onImportJSON, runs }) {
     currentStreak = sortedRuns[0].computedStreak || 0;
   }
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target.result;
-      onImportJSON(text);
-    };
-    reader.readAsText(file);
-    event.target.value = "";
-  };
-
   return (
     <aside className="sidebar">
       <div className="brand-section">
         <span className="brand-icon">🏃</span>
         <h1 className="brand-logo">RunUp</h1>
       </div>
-
       <button className="btn btn-full" onClick={onAddRunClick}>
         Add Run
       </button>
-
       <div className="glass-panel">
         <div className="stats-header">
           <span>📊 My Stats</span>
@@ -54,7 +39,6 @@ function SidePanel({ onAddRunClick, onStatsClick, onImportJSON, runs }) {
               <span className="stat-value">{totalRuns}</span>
             </div>
           </div>
-
           <div className="stat-card">
             <div className="stat-icon">🗺️</div>
             <div className="stat-info">
@@ -64,7 +48,6 @@ function SidePanel({ onAddRunClick, onStatsClick, onImportJSON, runs }) {
               </span>
             </div>
           </div>
-
           <div className="stat-card">
             <div className="stat-icon">🔥</div>
             <div className="stat-info">
@@ -76,28 +59,12 @@ function SidePanel({ onAddRunClick, onStatsClick, onImportJSON, runs }) {
           </div>
         </div>
       </div>
-
       <button
         className="btn btn-secondary btn-full"
         id="btn-stats-sidebar"
         onClick={onStatsClick}
       >
         <span>📈</span> Statistics
-      </button>
-
-      <input
-        type="file"
-        id="json-upload-input"
-        accept=".json"
-        onChange={handleFileChange}
-        style={{ display: "none" }}
-      />
-
-      <button
-        className="btn btn-secondary btn-full"
-        onClick={() => document.getElementById("json-upload-input").click()}
-      >
-        <span>📥</span> Import JSON Data
       </button>
     </aside>
   );

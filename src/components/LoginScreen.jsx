@@ -9,12 +9,10 @@ function LoginScreen() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
     if (error) {
       alert(`Login error: ${error.message}`);
     }
@@ -24,7 +22,7 @@ function LoginScreen() {
   return (
     <div className="loginScreen">
       <div className="loginScreenWidget" style={{}}>
-        <h2>Log in to RunUp 🏃‍♂️</h2>
+        <h2 className="center">Log in to RunUp 🏃‍♂️</h2>
         <form onSubmit={handleLogin}>
           <label>
             Email:
