@@ -117,7 +117,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
 
   return (
     <div className="glass-panel pace-history-panel">
-      <h3 class="center">📈 Weekly Pace History</h3>
+      <h3 className="center">📈 Weekly Pace History</h3>
 
       <div className="weekly-history-scroll-container">
         <div style={{ width: `${dynamicWidth}px`, height: "350px" }}>

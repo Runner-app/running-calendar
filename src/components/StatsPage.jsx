@@ -100,7 +100,7 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
                 <div className="stats-item" key={stat.year}>
                   <span className="stats-label">{stat.year}</span>
                   <span className="stats-values">
-                    {stat.totalDistance.toFixed(1)} km • {stat.totalRuns} runs
+                    {Math.round(stat.totalDistance)} km • {stat.totalRuns} runs
                   </span>
                 </div>
               ))
@@ -122,7 +122,7 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
                     {stat.monthName} {stat.year}
                   </span>
                   <span className="stats-values">
-                    {stat.totalDistance.toFixed(1)} km • {stat.runCount} runs
+                    {Math.round(stat.totalDistance)}.0 km • {stat.runCount} runs
                   </span>
                 </div>
               ))

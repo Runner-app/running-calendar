@@ -188,8 +188,8 @@ function CalendarView({
       const weeklyGoal = weekDailyGoal * 7;
       let distText =
         weekDailyGoal > 0
-          ? `📈 ${totalDist.toFixed(1)} / ${weeklyGoal.toFixed(1)} km`
-          : `📈 ${totalDist.toFixed(1)} km`;
+          ? `📈 ${Math.floor(totalDist)}.0 / ${Math.floor(weeklyGoal)}.0 km`
+          : `📈 ${Math.floor(totalDist)}.0 km`;
 
       gridElements.push({
         type: "summary",

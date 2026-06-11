@@ -310,7 +310,7 @@ function App() {
         )}
       </div>
 
-      <WeeklyPaceHistoryChart runs={runs} />
+      {/* <WeeklyPaceHistoryChart runs={runs} /> */}
 
       <RunEditModal
         isOpen={isRunModalOpen}
