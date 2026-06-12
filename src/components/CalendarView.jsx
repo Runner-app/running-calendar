@@ -326,7 +326,7 @@ function CalendarView({
 
               {el.runs.length > 0 && (
                 <div
-                  className={`day-run-container ${el.isGoalFailed ? "goal-failed" : ""}`}
+                  className={`day-run-container ${el.isGoalFailed ? "goal-failed" : ""} ${el.runs.length == 2 ? "double" : ""}`}
                 >
                   {el.runs.map((run) => {
                     const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);

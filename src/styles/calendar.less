@@ -1,39 +1,63 @@
 .calendar-panel {
   flex-grow: 1;
 
-  .bar-hr-under-130 {
-    background-color: var(--hr-under-130);
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    text-align: center;
+    padding-bottom: 0.75rem;
+    margin-top: 1rem;
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
-  .bar-hr-130-134 {
-    background-color: var(--hr-130-134);
-  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 35px 220px 35px 220px 35px 220px;
+    @media (max-width: 768px) {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px;
+      margin-top: 75px;
+    }
+    .bar-hr-under-130 {
+      background-color: var(--hr-under-130);
+    }
 
-  .bar-hr-135-139 {
-    background-color: var(--hr-135-139);
-  }
+    .bar-hr-130-134 {
+      background-color: var(--hr-130-134);
+    }
 
-  .bar-hr-140-144 {
-    background-color: var(--hr-140-144);
-  }
+    .bar-hr-135-139 {
+      background-color: var(--hr-135-139);
+    }
 
-  .bar-hr-145-149 {
-    background-color: var(--hr-145-149);
-  }
+    .bar-hr-140-144 {
+      background-color: var(--hr-140-144);
+    }
 
-  .bar-hr-150-154 {
-    background-color: var(--hr-150-154);
-  }
+    .bar-hr-145-149 {
+      background-color: var(--hr-145-149);
+    }
 
-  .bar-hr-155-159 {
-    background-color: var(--hr-155-159);
-  }
+    .bar-hr-150-154 {
+      background-color: var(--hr-150-154);
+    }
 
-  .bar-hr-160-164 {
-    background-color: var(--hr-160-164);
-  }
+    .bar-hr-155-159 {
+      background-color: var(--hr-155-159);
+    }
 
-  .bar-hr-165-plus {
-    background-color: var(--hr-165-plus);
+    .bar-hr-160-164 {
+      background-color: var(--hr-160-164);
+    }
+
+    .bar-hr-165-plus {
+      background-color: var(--hr-165-plus);
+    }
   }
 }

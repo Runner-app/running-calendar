@@ -58,6 +58,10 @@
 
 .glass-panel {
   background: var(--glass-bg);
+  padding: 25px 15px;
+  @media (max-width: @mobileScreen) {
+    padding: 0;
+  }
 }
 
 .side-panel-header {
@@ -245,35 +249,11 @@
   border-color: rgba(139, 92, 246, 0.3);
 }
 
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  text-align: center;
-  padding-bottom: 0.75rem;
-  margin-top: 1rem;
-  @media (max-width: 768px) {
-    margin-top: 60px;
-  }
-}
-
 .weekday {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: 30px 240px 30px 240px 30px 240px;
-  @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
 }
 
 .day-cell {
@@ -332,6 +312,12 @@
   flex-direction: column;
   flex-grow: 1;
   cursor: pointer;
+  &.double {
+    flex-direction: row-reverse;
+    .run-single-data-container {
+      width: 50%;
+    }
+  }
 }
 
 .run-bar {
@@ -342,6 +328,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-wrap: auto;
 }
 
 .bar-details,
@@ -527,7 +514,7 @@ textarea:focus {
   grid-column: span 7;
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-bottom: none;
-  padding: 8px 15px;
+  padding: 0 15px;
   display: flex;
   gap: 25px;
   align-items: center;
