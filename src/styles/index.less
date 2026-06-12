@@ -21,6 +21,11 @@
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: left;
+  @media (max-width: 768px) {
+    position: fixed;
+    z-index: 2;
+    background-color: var(--modal-bg);
+  }
 }
 
 .app-container.sidebar-hidden .sidebar {
@@ -53,7 +58,6 @@
 
 .glass-panel {
   background: var(--glass-bg);
-  padding: 1.5rem;
 }
 
 .side-panel-header {
@@ -167,6 +171,15 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    background-color: var(--modal-bg);
+    padding: 15px 5px;
+    justify-content: center;
+    width: 100%;
+    z-index: 2;
+  }
 }
 
 .calendar-navigation {
@@ -180,6 +193,10 @@
   font-weight: 700;
   width: 450px;
   text-align: center;
+  @media (max-width: 768px) {
+    width: auto;
+    font-size: @font-size-base;
+  }
 }
 
 .nav-btn {
@@ -235,6 +252,9 @@
   text-align: center;
   padding-bottom: 0.75rem;
   margin-top: 1rem;
+  @media (max-width: 768px) {
+    margin-top: 60px;
+  }
 }
 
 .weekday {
@@ -248,6 +268,12 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 30px 240px 30px 240px 30px 240px;
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
 }
 
 .day-cell {
@@ -501,13 +527,17 @@ textarea:focus {
   grid-column: span 7;
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-bottom: none;
-  padding: 0.25rem 1rem;
+  padding: 8px 15px;
   display: flex;
   gap: 25px;
   align-items: center;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
 }
 
 .week-summary-title {

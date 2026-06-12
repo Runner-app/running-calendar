@@ -15,6 +15,16 @@
   position: absolute;
   top: 25px;
   right: 25px;
+  @media (max-width: 768px) {
+    position: fixed;
+    z-index: 5;
+    top: unset;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: var(--modal-bg);
+    padding: 15px 5px;
+  }
 }
 
 body {
@@ -30,6 +40,10 @@ body {
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     min-height: 100vh;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      height: auto;
+    }
   }
   .loading-screen {
     .centerFlex();
