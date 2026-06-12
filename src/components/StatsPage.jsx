@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { computeRunMetrics } from "../utils/RunUtils.js";
 
-function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
+function StatsPage({ runs, onBackClick }) {
   const monthNames = [
     "January",
     "February",
@@ -35,7 +35,9 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
       yearlyMap[year].totalRuns += 1;
     });
 
-    return Object.values(yearlyMap).sort((a, b) => b.year - a.year);
+    return Object.values(yearlyMap).sort(
+      (a, b) => b.totalDistance - a.totalDistance,
+    );
   }, [runsWithMetrics]);
 
   const monthlyStats = useMemo(() => {
@@ -77,14 +79,14 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
           aria-label="Back to calendar"
           onClick={onBackClick}
         >
-          ◀
+          <span>&lt;</span>
         </button>
         <h2 className="stats-title">Statistics</h2>
       </header>
 
       <div className="stats-content">
         <div className="stats-section">
-          <h3 className="stats-section-title">📅 Yearly Breakdown</h3>
+          <h3 className="stats-section-title">📅 Yearly Distance Ranking</h3>
           <div id="yearly-stats-container">
             {yearlyStats.length === 0 ? (
               <div className="stats-empty">No data available</div>
@@ -102,9 +104,7 @@ function StatsPage({ runs, onBackClick, onToggleSidebar, isSidebarOpen }) {
         </div>
 
         <div className="stats-section">
-          <h3 className="stats-section-title">
-            🏆 Monthly Rankings (By Distance)
-          </h3>
+          <h3 className="stats-section-title">🏆 Monthly Distance Ranking</h3>
           <div id="monthly-stats-container">
             {monthlyStats.length === 0 ? (
               <div className="stats-empty">No data available</div>

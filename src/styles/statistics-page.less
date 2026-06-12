@@ -1,0 +1,88 @@
+@import "./variables.less";
+@import "./main.less";
+
+.stats-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow: hidden;
+  width: 100%;
+  .stats-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding-bottom: 50px;
+    .stats-title {
+      font-size: @font-size-h2;
+      font-weight: bold;
+      background: linear-gradient(135deg, #a78bfa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+    .nav-btn {
+      font-size: @font-size-lg;
+    }
+  }
+  .stats-content {
+    border: 1px solid var(--glass-border);
+    height: 500px;
+    display: flex;
+    gap: 25px;
+    padding: 15px;
+    border-radius: @border-radius-sm;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      width: 50%;
+      #monthly-stats-container {
+        height: 500px;
+        overflow-x: scroll;
+      }
+      .stats-section-title {
+        font-size: @font-size-md;
+        font-weight: bold;
+        color: var(--text-primary);
+      }
+      .stats-empty {
+        text-align: center;
+        padding: 25px 15px;
+        color: var(--text-secondary);
+      }
+      .stats-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 11px 15px;
+        background: var(--stat-card-bg);
+        border: 1px solid var(--stat-card-border);
+        &:hover {
+          background: var(--stat-card-bg-hover);
+        }
+        .stats-label {
+          font-weight: bold;
+          color: var(--text-primary);
+        }
+        .stats-values {
+          color: var(--text-secondary);
+        }
+      }
+    }
+  }
+}

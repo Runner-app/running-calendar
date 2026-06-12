@@ -105,9 +105,7 @@ function CalendarView({
     weekMonday.setDate(weekMonday.getDate() + w * 7);
     const weekKey = getWeekKey(weekMonday, runs || []);
     const weekDailyGoal =
-      weeklyGoals[weekKey] !== undefined
-        ? parseFloat(weeklyGoals[weekKey])
-        : 14;
+      weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 0;
 
     for (let d = 0; d < 7; d++) {
       const dayDate = new Date(weekMonday.getTime());
@@ -127,7 +125,7 @@ function CalendarView({
       const weekDailyGoal =
         weeklyGoals[weekKey] !== undefined
           ? parseFloat(weeklyGoals[weekKey])
-          : 14;
+          : 0;
       const weekDates = [];
 
       for (let d = 0; d < 7; d++) {
@@ -241,17 +239,17 @@ function CalendarView({
       <header className="calendar-header">
         <div className="calendar-navigation">
           <button className="nav-btn" onClick={handlePrevYear}>
-            &lt;&lt;
+            <span>&lt;&lt;</span>
           </button>
           <button className="nav-btn" onClick={handlePrevMonth}>
-            &lt;
+            <span>&lt;</span>
           </button>
           <h2 className="month-title">{headerTitle}</h2>
           <button className="nav-btn" onClick={handleNextMonth}>
-            &gt;
+            <span>&gt;</span>
           </button>
           <button className="nav-btn" onClick={handleNextYear}>
-            &gt;&gt;
+            <span>&gt;&gt;</span>
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today

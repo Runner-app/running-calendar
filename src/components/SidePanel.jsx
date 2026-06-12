@@ -28,7 +28,7 @@ function SidePanel({ onAddRunClick, onStatsClick, runs }) {
         Add Run
       </button>
       <div className="glass-panel">
-        <div className="stats-header">
+        <div className="side-panel-header">
           <span>📊 My Stats</span>
         </div>
         <div className="stats-grid">

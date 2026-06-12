@@ -251,6 +251,7 @@ function App() {
           onToggleSidebar={toggleSidebar}
           onToggleTheme={onToggleTheme}
           handleLogout={handleLogout}
+          isSidebarOpen={isSidebarOpen}
         />
 
         <SidePanel

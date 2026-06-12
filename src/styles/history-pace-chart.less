@@ -34,3 +34,29 @@
     color: var(--text-secondary);
   }
 }
+
+.weekly-history-scroll-container {
+  padding-bottom: 12px;
+
+  &::-webkit-scrollbar {
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 83, 0.4);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 200, 83, 0.8);
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 200, 83, 0.4) rgba(255, 255, 255, 0.03);
+}
