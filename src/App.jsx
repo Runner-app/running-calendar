@@ -16,10 +16,7 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("running_calendar_theme") || "light";
   });
-  const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem("running_calendar_settings");
-    return saved ? JSON.parse(saved) : { weeklyGoals: {} };
-  });
+  const [settings, setSettings] = useState({ weeklyGoals: {} });
   const [currentDate, setCurrentDate] = useState(new Date());
   const [runs, setRuns] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,13 +32,11 @@ function App() {
       setSession(session);
       setAuthLoading(false);
     });
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -60,16 +55,13 @@ function App() {
 
   const fetchRuns = async () => {
     if (!session?.user) return;
-
     try {
       setIsLoading(true);
       const { data, error } = await supabase
         .from("runs")
         .select("*")
         .order("date", { ascending: false });
-
       if (error) throw error;
-
       const formattedRuns = data.map((run) => {
         const h = Math.floor(run.duration / 3600);
         const m = Math.floor((run.duration % 3600) / 60);
@@ -83,9 +75,7 @@ function App() {
           run.date && typeof run.date === "string"
             ? run.date.substring(0, 10)
             : run.date;
-
         let computedTime = "19:00";
-
         if (
           run.date &&
           typeof run.date === "string" &&
@@ -93,7 +83,6 @@ function App() {
         ) {
           computedTime = run.date.substring(11, 16);
         }
-
         return {
           id: run.id,
           date: cleanDate,
@@ -112,7 +101,6 @@ function App() {
           chart_records: run.chart_records,
         };
       });
-
       setRuns(formattedRuns);
     } catch (error) {
       console.error("Error while fetching runs from Supabase:", error.message);
@@ -132,7 +120,6 @@ function App() {
         acc[curr.week_key] = curr.daily_goal_km;
         return acc;
       }, {});
-
       setSettings({ weeklyGoals: goalsObject });
     } catch (error) {
       console.error(
@@ -158,9 +145,7 @@ function App() {
 
   const handleSaveSettings = async (newSettings) => {
     setSettings(newSettings);
-
     if (!session?.user) return;
-
     try {
       const goals = newSettings.weeklyGoals || {};
       const payload = Object.entries(goals).map(([weekKey, value]) => ({
@@ -168,12 +153,10 @@ function App() {
         week_key: weekKey,
         daily_goal_km: Number(value) || 0,
       }));
-
       if (payload.length === 0) return;
       const { error } = await supabase
         .from("weekly_goals")
         .upsert(payload, { onConflict: "user_id,week_key" });
-
       if (error) throw error;
     } catch (error) {
       console.error(
@@ -190,10 +173,8 @@ function App() {
         Number(savedRun.durationH || 0) * 3600 +
         Number(savedRun.durationM || 0) * 60 +
         Number(savedRun.durationS || 0);
-
       const runTime = savedRun.time || "19:00";
       const fullDateTimeString = `${savedRun.date}T${runTime}:00`;
-
       const runDbPayload = {
         date: fullDateTimeString,
         distance: Number(savedRun.distance),
@@ -204,26 +185,21 @@ function App() {
         user_id: session.user.id,
         chart_records: savedRun.chart_records || null,
       };
-
       const isEditing =
         typeof savedRun.id === "number" ||
         (typeof savedRun.id === "string" && !savedRun.id.startsWith("run_"));
 
       if (isEditing) {
         const { ...updatePayload } = runDbPayload;
-
         const { error } = await supabase
           .from("runs")
           .update(updatePayload)
           .eq("id", savedRun.id);
-
         if (error) throw error;
       } else {
         const { error } = await supabase.from("runs").insert([runDbPayload]);
-
         if (error) throw error;
       }
-
       setIsRunModalOpen(false);
       fetchRuns();
     } catch (error) {
@@ -244,9 +220,7 @@ function App() {
           .from("runs")
           .delete()
           .eq("id", runIdToDelete);
-
         if (error) throw error;
-
         setIsRunModalOpen(false);
         fetchRuns();
       } catch (error) {

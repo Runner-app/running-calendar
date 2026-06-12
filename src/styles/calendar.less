@@ -1,5 +1,37 @@
 .calendar-panel {
   flex-grow: 1;
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    @media (max-width: 768px) {
+      position: fixed;
+      top: 0;
+      background-color: var(--modal-bg);
+      padding: 15px 5px;
+      justify-content: center;
+      width: 100%;
+      z-index: 2;
+    }
+    .calendar-navigation {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      .month-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        width: 450px;
+        text-align: center;
+        @media (max-width: 768px) {
+          width: auto;
+          font-size: @font-size-base;
+        }
+      }
+    }
+  }
 
   .calendar-weekdays {
     display: grid;
@@ -23,6 +55,43 @@
       gap: 15px;
       padding: 10px;
       margin-top: 75px;
+    }
+    .week-summary-bar {
+      background-color: var(--background-grey-light);
+      grid-column: span 7;
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      border-bottom: none;
+      padding: 0 15px;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      @media (max-width: 768px) {
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .week-goal-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        input.input-weekly-goal {
+          width: 45px;
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: inherit;
+          font-family: inherit;
+          font-weight: bold;
+          text-align: center;
+          padding: 0 2px;
+          border-radius: 4px;
+          &:focus {
+            outline: none;
+            border-color: #ff9a00;
+          }
+        }
+      }
     }
     .bar-hr-under-130 {
       background-color: var(--hr-under-130);
