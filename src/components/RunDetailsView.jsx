@@ -253,11 +253,9 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
       </div>
 
       <div
+        className="mapAndChartPanel"
         style={{
-          display: "grid",
           gridTemplateColumns: gpsCoords.length > 0 ? "1fr 1fr" : "1fr",
-          gap: "20px",
-          marginBottom: "30px",
         }}
       >
         {gpsCoords.length > 0 && (

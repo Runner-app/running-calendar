@@ -40,9 +40,10 @@ body {
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     min-height: 100vh;
-    @media (max-width: 768px) {
+    @media (max-width: @mobileScreen) {
       flex-direction: column;
       height: auto;
+      margin-bottom: 85px;
     }
   }
   .loading-screen {
