@@ -121,9 +121,31 @@ function App() {
     }
   };
 
+  const fetchGoals = async () => {
+    if (!session?.user) return;
+    try {
+      const { data, error } = await supabase
+        .from("weekly_goals")
+        .select("week_key, daily_goal_km");
+      if (error) throw error;
+      const goalsObject = data.reduce((acc, curr) => {
+        acc[curr.week_key] = curr.daily_goal_km;
+        return acc;
+      }, {});
+
+      setSettings({ weeklyGoals: goalsObject });
+    } catch (error) {
+      console.error(
+        "Error while fetching weekly goals from Supabase:",
+        error.message,
+      );
+    }
+  };
+
   useEffect(() => {
     if (session) {
       fetchRuns();
+      fetchGoals();
     }
   }, [session]);
 
@@ -134,12 +156,32 @@ function App() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const handleSaveSettings = (newSettings) => {
+  const handleSaveSettings = async (newSettings) => {
     setSettings(newSettings);
-    localStorage.setItem(
-      "running_calendar_settings",
-      JSON.stringify(newSettings),
-    );
+
+    if (!session?.user) return;
+
+    try {
+      const goals = newSettings.weeklyGoals || {};
+      const payload = Object.entries(goals).map(([weekKey, value]) => ({
+        user_id: session.user.id,
+        week_key: weekKey,
+        daily_goal_km: Number(value) || 0,
+      }));
+
+      if (payload.length === 0) return;
+      const { error } = await supabase
+        .from("weekly_goals")
+        .upsert(payload, { onConflict: "user_id,week_key" });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error(
+        "Error while saving weekly goals to Supabase:",
+        error.message,
+      );
+      alert("Failed to save your weekly goal to the cloud.");
+    }
   };
 
   const handleSaveRun = async (savedRun) => {
