@@ -67,7 +67,6 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
       };
     });
 
-    console.log("Surowy pierwszy rekord:", run.chart_records?.[0]);
     return { chartData, gpsCoords };
   };
 
@@ -316,7 +315,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart
                   data={chartData}
-                  margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+                  margin={{ top: 10, right: -35, left: -25, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient id="colorHr" x1="0" y1="0" x2="0" y2="1">
