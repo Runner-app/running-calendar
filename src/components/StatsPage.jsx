@@ -18,6 +18,9 @@ function StatsPage({ runs, onBackClick }) {
     "December",
   ];
 
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
   const runsWithMetrics = useMemo(() => {
     return computeRunMetrics(runs || []);
   }, [runs]);
@@ -92,14 +95,21 @@ function StatsPage({ runs, onBackClick }) {
             {yearlyStats.length === 0 ? (
               <div className="stats-empty">No data available</div>
             ) : (
-              yearlyStats.map((stat) => (
-                <div className="stats-item" key={stat.year}>
-                  <span className="stats-label">{stat.year}</span>
-                  <span className="stats-values">
-                    {Math.round(stat.totalDistance)} km • {stat.totalRuns} runs
-                  </span>
-                </div>
-              ))
+              yearlyStats.map((stat) => {
+                const isCurrentYear = stat.year === currentYear;
+                return (
+                  <div
+                    className={`stats-item ${isCurrentYear ? "is-current-year" : ""}`}
+                    key={stat.year}
+                  >
+                    <span className="stats-label">{stat.year}</span>
+                    <span className="stats-values">
+                      {Math.round(stat.totalDistance)} km • {stat.totalRuns}{" "}
+                      runs
+                    </span>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
@@ -110,16 +120,25 @@ function StatsPage({ runs, onBackClick }) {
             {monthlyStats.length === 0 ? (
               <div className="stats-empty">No data available</div>
             ) : (
-              monthlyStats.map((stat) => (
-                <div className="stats-item" key={stat.key}>
-                  <span className="stats-label">
-                    {stat.monthName} {stat.year}
-                  </span>
-                  <span className="stats-values">
-                    {Math.round(stat.totalDistance)}.0 km • {stat.runCount} runs
-                  </span>
-                </div>
-              ))
+              monthlyStats.map((stat) => {
+                const isCurrentMonth =
+                  stat.year === currentYear && stat.month === currentMonth;
+
+                return (
+                  <div
+                    className={`stats-item ${isCurrentMonth ? "is-current-month" : ""}`}
+                    key={stat.key}
+                  >
+                    <span className="stats-label">
+                      {stat.monthName} {stat.year} {isCurrentMonth && "🏃"}
+                    </span>
+                    <span className="stats-values">
+                      {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
+                      runs
+                    </span>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
