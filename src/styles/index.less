@@ -1,18 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap");
 @import "./variables.less";
+@import "./mixins.less";
 @import "./main.less";
 @import "./calendar.less";
 @import "./run-details-container.less";
-@import "./history-pace-chart.less";
 @import "./login-screen.less";
 @import "./statistics-page.less";
 
 .sidebar {
   width: 300px;
-  background-color: var(--background-grey-light);
+  background-color: var(--glass-bg-hover);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  padding: 15px;
   gap: 1.5rem;
   transition:
     width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -26,9 +27,9 @@
   width: 0;
   opacity: 0;
   transform: scaleX(0);
-  margin-right: -2rem;
   pointer-events: none;
   overflow: hidden;
+  padding: 0;
 }
 
 .brand-section {
@@ -147,12 +148,12 @@
 }
 
 .btn-danger {
-  background: #ef4444;
+  background: #b42222;
   box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
 }
 
 .btn-danger:hover {
-  background: #f87171;
+  background: #972e2e;
 }
 
 .btn-full {
@@ -196,7 +197,7 @@
   font-size: @font-size-lg;
   span {
     position: relative;
-    top: -2px;
+    top: -1px;
   }
   &:hover {
     background: rgba(255, 255, 255, 0.15);

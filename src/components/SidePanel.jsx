@@ -27,38 +27,38 @@ function SidePanel({ onAddRunClick, onStatsClick, runs }) {
       <button className="btn btn-full" onClick={onAddRunClick}>
         Add Run
       </button>
-      <div className="glass-panel">
-        <div className="side-panel-header">
-          <span>📊 My Stats</span>
+
+      <div className="side-panel-header">
+        <span>📊 My Stats</span>
+      </div>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-icon">🏁</div>
+          <div className="stat-info">
+            <span className="stat-label">Total Runs</span>
+            <span className="stat-value">{totalRuns}</span>
+          </div>
         </div>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">🏁</div>
-            <div className="stat-info">
-              <span className="stat-label">Total Runs</span>
-              <span className="stat-value">{totalRuns}</span>
-            </div>
+        <div className="stat-card">
+          <div className="stat-icon">🗺️</div>
+          <div className="stat-info">
+            <span className="stat-label">Total Distance</span>
+            <span className="stat-value">
+              {Math.floor(totalDistance).toLocaleString("pl-PL")} km
+            </span>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">🗺️</div>
-            <div className="stat-info">
-              <span className="stat-label">Total Distance</span>
-              <span className="stat-value">
-                {Math.floor(totalDistance).toLocaleString("pl-PL")} km
-              </span>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🔥</div>
-            <div className="stat-info">
-              <span className="stat-label">Day streak</span>
-              <span className="stat-value">
-                {currentStreak} {currentStreak === 1 ? "day" : "days"}
-              </span>
-            </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">🔥</div>
+          <div className="stat-info">
+            <span className="stat-label">Day streak</span>
+            <span className="stat-value">
+              {currentStreak} {currentStreak === 1 ? "day" : "days"}
+            </span>
           </div>
         </div>
       </div>
+
       <button
         className="btn btn-secondary btn-full"
         id="btn-stats-sidebar"

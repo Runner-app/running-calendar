@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { computeRunMetrics } from "../utils/RunUtils.js";
+import WeeklyPaceHistoryChart from "./WeeklyPaceHistoryChart";
 
 function StatsPage({ runs, onBackClick }) {
   const monthNames = [
@@ -123,6 +124,8 @@ function StatsPage({ runs, onBackClick }) {
           </div>
         </div>
       </div>
+
+      <WeeklyPaceHistoryChart runs={runs} />
     </div>
   );
 }
