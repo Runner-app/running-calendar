@@ -17,26 +17,29 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     const runsWithMetrics = computeRunMetrics([...runs]).sort(
       (a, b) => new Date(a.date) - new Date(b.date),
     );
-
     const weeksMap = {};
 
     runsWithMetrics.forEach((run) => {
       if (!run.date) return;
       const runDate = new Date(run.date);
-
       const weekKey = getWeekKey(runDate, runsWithMetrics);
 
       if (!weeksMap[weekKey]) {
+        const day = runDate.getDay();
+        const diff = runDate.getDate() - day + (day === 0 ? -6 : 1);
+        const mondayDate = new Date(runDate.setDate(diff));
+        mondayDate.setHours(0, 0, 0, 0);
+
         weeksMap[weekKey] = {
           totalDist: 0,
           totalSeconds: 0,
           displayLabel: weekKey,
+          timestamp: mondayDate.getTime(),
         };
       }
 
       const dist = parseFloat(run.distance) || 0;
       weeksMap[weekKey].totalDist += dist;
-
       const h = parseInt(run.durationH) || 0;
       const m = parseInt(run.durationM) || 0;
       const s = parseInt(run.durationS) || 0;
@@ -51,10 +54,9 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       }
     });
 
-    return Object.keys(weeksMap)
-      .sort()
-      .map((key) => {
-        const group = weeksMap[key];
+    return Object.values(weeksMap)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map((group) => {
         let paceDecimal = 0;
         let paceStr = "--:--";
 
@@ -94,7 +96,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       const data = payload[0].payload;
       return (
         <div className="chart-custom-tooltip">
-          <p className="week">Week: {data.weekKey}</p>
+          <p className="week">{data.weekKey}</p>
           <p className="pace">
             Pace: <strong>{data.paceStr} min/km</strong>
           </p>

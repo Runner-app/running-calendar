@@ -46,29 +46,37 @@ function StatsPage({ runs, onBackClick }) {
 
   const monthlyStats = useMemo(() => {
     const monthlyMap = {};
+    const startDate = new Date(2019, 8, 1);
+    const endDate = new Date();
+
+    let iterDate = new Date(startDate);
+    while (iterDate <= endDate) {
+      const year = iterDate.getFullYear();
+      const month = iterDate.getMonth();
+      const monthName = monthNames[month];
+      const key = `${year}-${month}`;
+      monthlyMap[key] = {
+        year,
+        month,
+        monthName,
+        key,
+        totalDistance: 0,
+        runCount: 0,
+      };
+      iterDate.setMonth(iterDate.getMonth() + 1);
+    }
 
     runsWithMetrics.forEach((run) => {
       const date = new Date(run.date);
       const year = date.getFullYear();
       const month = date.getMonth();
-      const monthName = monthNames[month];
       const key = `${year}-${month}`;
       const distance = parseFloat(run.distance) || 0;
-
-      if (!monthlyMap[key]) {
-        monthlyMap[key] = {
-          year,
-          month,
-          monthName,
-          key,
-          totalDistance: 0,
-          runCount: 0,
-        };
+      if (monthlyMap[key]) {
+        monthlyMap[key].totalDistance += distance;
+        monthlyMap[key].runCount += 1;
       }
-      monthlyMap[key].totalDistance += distance;
-      monthlyMap[key].runCount += 1;
     });
-
     return Object.values(monthlyMap).sort(
       (a, b) => b.totalDistance - a.totalDistance,
     );
@@ -130,11 +138,11 @@ function StatsPage({ runs, onBackClick }) {
                     key={stat.key}
                   >
                     <span className="stats-label">
-                      {stat.monthName} {stat.year} {isCurrentMonth && "🏃"}
+                      {stat.monthName} {stat.year}
                     </span>
                     <span className="stats-values">
                       {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
-                      runs
+                      {`${stat.runCount == 1 ? "run" : "runs"}`}
                     </span>
                   </div>
                 );
