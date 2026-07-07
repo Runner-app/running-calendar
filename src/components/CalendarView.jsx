@@ -100,6 +100,15 @@ function CalendarView({
   const dayGoalsMap = {};
   const weeklyGoals = settings?.weeklyGoals || {};
 
+  // Mapa emotek dla tooltipa pogodowego
+  const weatherEmojis = {
+    sunny: "☀️ Sunny",
+    cloudy: "☁️ Cloudy",
+    rainy: "🌧️ Rainy",
+    snowy: "❄️ Snowy",
+    windy: "💨 Windy",
+  };
+
   for (let w = 0; w < 3; w++) {
     const weekMonday = new Date(calendarStartDate.getTime());
     weekMonday.setDate(weekMonday.getDate() + w * 7);
@@ -344,6 +353,9 @@ function CalendarView({
                     const mountainEmoji = run.mountainRun ? " ⛰️" : "";
                     const notesEmoji = run.notes ? " 📝" : "";
 
+                    // Odczyt surowych danych pogodowych dla konkretnego biegu
+                    const weather = run.weather_data;
+
                     return (
                       <div
                         key={run.id}
@@ -380,6 +392,14 @@ function CalendarView({
                           {run.computedStreak || 1}]{mountainEmoji}
                           {notesEmoji}
                         </div>
+
+                        {/* NOWY TOOLTIP: Pokazuje się po najechaniu myszką na .run-single-data-container */}
+                        {weather && (
+                          <span className="run-weather-tooltip">
+                            {weatherEmojis[weather.type] || "☀️"} •{" "}
+                            {weather.temp}°C • 💧{weather.humidity || 60}%
+                          </span>
+                        )}
                       </div>
                     );
                   })}

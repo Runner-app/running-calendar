@@ -99,6 +99,8 @@ function App() {
           computedNumber: run.id,
           computedStreak: 1,
           chart_records: run.chart_records,
+          weather_data: run.weather_data,
+          mountainRun: run.mountain_run || false,
         };
       });
       setRuns(formattedRuns);
@@ -184,6 +186,8 @@ function App() {
         source: savedRun.source || "manual",
         user_id: session.user.id,
         chart_records: savedRun.chart_records || null,
+        weather_data: savedRun.weather_data || null,
+        mountain_run: savedRun.mountainRun || false,
       };
       const isEditing =
         typeof savedRun.id === "number" ||

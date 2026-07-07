@@ -22,6 +22,7 @@ function RunEditModal({
   const [paceS, setPaceS] = useState("");
   const [weatherType, setWeatherType] = useState("sunny");
   const [weatherTemp, setWeatherTemp] = useState("15");
+  const [weatherHumidity, setWeatherHumidity] = useState("60");
   const [mountainRun, setMountainRun] = useState(false);
   const [notes, setNotes] = useState("");
   const [chartRecords, setChartRecords] = useState(null);
@@ -46,10 +47,21 @@ function RunEditModal({
         setDurationS(run.durationS || 0);
         setPaceM(run.paceM || "");
         setPaceS(run.paceS || "");
-        setWeatherType(run.weatherType || "sunny");
-        setWeatherTemp(run.weatherTemp || "15");
         setMountainRun(run.mountainRun || false);
         setNotes(run.notes || "");
+        if (run.weather_data) {
+          setWeatherType(run.weather_data.type || "sunny");
+          setWeatherTemp(String(run.weather_data.temp ?? "15"));
+          setWeatherHumidity(String(run.weather_data.humidity ?? "60"));
+        } else if (run.weatherType || run.weatherTemp) {
+          setWeatherType(run.weatherType || "sunny");
+          setWeatherTemp(String(run.weatherTemp || "15"));
+          setWeatherHumidity(String(run.weatherHumidity || "60"));
+        } else {
+          setWeatherType("sunny");
+          setWeatherTemp("15");
+          setWeatherHumidity("60");
+        }
       }
     } else {
       setDate(defaultDate || formatDate(new Date()));
@@ -150,13 +162,25 @@ function RunEditModal({
     updateDurationFromPace(distance, pm, ps);
   };
 
-  const handleProcessFitFile = (file) => {
-    if (!file) return;
+  // Kalkulator dystansu dla punktów GPX (Haversine)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Promień Ziemi w km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
+  const handleProcessFitFile = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const arrayBuffer = e.target.result;
-
       const fitParser = new FitParser({
         force: true,
         speedUnit: "km/h",
@@ -210,9 +234,7 @@ function RunEditModal({
         }
 
         let dist = session.total_distance;
-        if (dist > 500) {
-          dist = dist / 1000;
-        }
+        if (dist > 500) dist = dist / 1000;
         const finalDistance = parseFloat(dist).toFixed(2);
         setDistance(finalDistance);
 
@@ -229,14 +251,122 @@ function RunEditModal({
         if (session.avg_heart_rate) {
           setHr(Math.round(session.avg_heart_rate));
         }
-
+        setMountainRun(false);
         updatePaceFromDuration(finalDistance, h, m, s);
-
-        setNotes((prev) => (prev ? prev : ""));
       });
     };
-
     reader.readAsArrayBuffer(file);
+  };
+
+  const handleProcessGpxFile = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(text, "text/xml");
+
+      const trackpoints = xmlDoc.getElementsByTagName("trkpt");
+      if (trackpoints.length === 0) {
+        alert("No GPS trackpoints found in this GPX file.");
+        return;
+      }
+
+      let totalDistanceKm = 0;
+      let hrSum = 0;
+      let hrCount = 0;
+      const cleanedRecords = [];
+
+      let startTime = null;
+      let endTime = null;
+
+      for (let i = 0; i < trackpoints.length; i++) {
+        const pt = trackpoints[i];
+        const lat = parseFloat(pt.getAttribute("lat"));
+        const lon = parseFloat(pt.getAttribute("lon"));
+
+        const timeNode = pt.getElementsByTagName("time")[0];
+        const ptTime = timeNode ? new Date(timeNode.textContent) : null;
+
+        if (i === 0 && ptTime) startTime = ptTime;
+        if (i === trackpoints.length - 1 && ptTime) endTime = ptTime;
+
+        // Liczenie dystansu narastająco
+        if (i > 0) {
+          const prevPt = trackpoints[i - 1];
+          const prevLat = parseFloat(prevPt.getAttribute("lat"));
+          const prevLon = parseFloat(prevPt.getAttribute("lon"));
+          totalDistanceKm += calculateDistance(prevLat, prevLon, lat, lon);
+        }
+
+        // Wyciąganie tętna (częsty format z Garmina/Strava)
+        const hrNode =
+          pt.getElementsByTagName("hr")[0] ||
+          pt.getElementsByTagName("gpxtpx:hr")[0];
+        let pointHr = null;
+        if (hrNode) {
+          pointHr = parseInt(hrNode.textContent);
+          hrSum += pointHr;
+          hrCount++;
+        }
+
+        const elapsedSeconds =
+          startTime && ptTime ? Math.round((ptTime - startTime) / 1000) : 0;
+
+        cleanedRecords.push({
+          elapsed: elapsedSeconds,
+          distance: totalDistanceKm,
+          hr: pointHr,
+          speed: 0, // GPX zazwyczaj nie ma gotowej prędkości wprost w punkcie
+          lat: parseFloat(lat.toFixed(6)),
+          lng: parseFloat(lon.toFixed(6)),
+        });
+      }
+
+      setChartRecords(cleanedRecords);
+
+      // Ustawianie daty i godziny rozpoczęcia
+      if (startTime) {
+        setDate(formatDate(startTime));
+        setTime(
+          `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`,
+        );
+      }
+
+      // Ustawianie dystansu
+      const finalDistance = totalDistanceKm.toFixed(2);
+      setDistance(finalDistance);
+
+      // Ustawianie czasu trwania
+      let totalSeconds = 0;
+      if (startTime && endTime) {
+        totalSeconds = Math.round((endTime - startTime) / 1000);
+      }
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      setDurationH(h);
+      setDurationM(m);
+      setDurationS(s);
+
+      // Średnie tętno
+      if (hrCount > 0) {
+        setHr(Math.round(hrSum / hrCount));
+      }
+      setMountainRun(false);
+      updatePaceFromDuration(finalDistance, h, m, s);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleFileRoute = (file) => {
+    if (!file) return;
+    if (file.name.endsWith(".fit")) {
+      handleProcessFitFile(file);
+    } else if (file.name.endsWith(".gpx")) {
+      handleProcessGpxFile(file);
+    } else {
+      alert("Please upload a .fit or .gpx file.");
+    }
   };
 
   const handleDragOver = (e) => {
@@ -252,16 +382,12 @@ function RunEditModal({
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith(".fit")) {
-      handleProcessFitFile(file);
-    } else {
-      alert("Please drop a file with the .fit extension");
-    }
+    handleFileRoute(file);
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) handleProcessFitFile(file);
+    handleFileRoute(file);
   };
 
   const handleSubmit = (e) => {
@@ -287,8 +413,13 @@ function RunEditModal({
       weatherTemp: parseInt(weatherTemp) || 15,
       mountainRun,
       notes,
-      source: runId && existingRun ? existingRun.source : "fit_file",
+      source: runId && existingRun ? existingRun.source : "activity_file",
       chart_records: finalChartRecords,
+      weather_data: {
+        type: weatherType,
+        temp: parseInt(weatherTemp) || 15,
+        humidity: parseInt(weatherHumidity) || 60,
+      },
     };
     onSave(runData);
   };
@@ -336,7 +467,7 @@ function RunEditModal({
             >
               <span style={{ fontSize: "24px" }}>⌚</span>
               <p style={{ margin: "10px 0 5px 0", fontWeight: "bold" }}>
-                Drag and drop a .fit file from Strava
+                Drag and drop a .fit or .gpx file
               </p>
               <p style={{ fontSize: "12px", color: "#aaa", margin: 0 }}>
                 or click here to select it from your computer
@@ -345,7 +476,7 @@ function RunEditModal({
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept=".fit"
+                accept=".fit,.gpx"
                 style={{ display: "none" }}
               />
             </div>
@@ -492,6 +623,18 @@ function RunEditModal({
                   placeholder="e.g., 18"
                   value={weatherTemp}
                   onChange={(e) => setWeatherTemp(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="input-weather-humidity">Humidity (%)</label>
+                <input
+                  type="number"
+                  id="input-weather-humidity"
+                  min="0"
+                  max="100"
+                  placeholder="e.g., 60"
+                  value={weatherHumidity}
+                  onChange={(e) => setWeatherHumidity(e.target.value)}
                 />
               </div>
             </div>

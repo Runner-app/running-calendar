@@ -25,6 +25,16 @@ L.Icon.Default.mergeOptions({
 function RunDetailsView({ run, onBackClick, onEditClick }) {
   if (!run) return null;
 
+  const weatherIcons = {
+    sunny: "☀️ Sunny",
+    cloudy: "☁️ Cloudy",
+    rainy: "🌧️ Rainy",
+    snowy: "❄️ Snowy",
+    windy: "💨 Windy",
+  };
+
+  const weather = run?.weather_data;
+
   const formatChartData = () => {
     if (!run.chart_records || !Array.isArray(run.chart_records)) {
       return { chartData: [], gpsCoords: [] };
@@ -130,7 +140,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
                   fontWeight: "bold",
                 }}
               >
-                🏃‍♂️ Tempo: {speedPayload.payload.tempoStr} /km
+                🏃‍♂️ Tempo: {speedPayload.payload.tempoStr} min/km
               </p>
               <p
                 style={{ margin: "2px 0 0 0", color: "#666", fontSize: "11px" }}
@@ -208,7 +218,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
           },
           {
             label: "AVERAGE PACE",
-            value: `${run.paceM}:${String(run.paceS).padStart(2, "0")} /km`,
+            value: `${run.paceM}:${String(run.paceS).padStart(2, "0")} min/km`,
             color: "#00e5ff",
           },
           {
@@ -408,6 +418,32 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
           </div>
         )}
       </div>
+
+      {weather && (
+        <div
+          className="weather-summary-box"
+          style={{
+            display: "flex",
+            gap: "20px",
+            background: "rgba(255,255,255,0.05)",
+            padding: "12px",
+            borderRadius: "8px",
+            marginTop: "15px",
+          }}
+        >
+          <div>
+            <strong>Weather:</strong> {weatherIcons[weather.type] || "☀️"}
+          </div>
+          <div>
+            <strong>Temperature:</strong> {weather.temp}°C
+          </div>
+          {weather.humidity && (
+            <div>
+              <strong>Humidity:</strong> {weather.humidity}%
+            </div>
+          )}
+        </div>
+      )}
 
       {run.notes && (
         <div
