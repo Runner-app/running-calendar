@@ -162,7 +162,7 @@ function RunEditModal({
     updateDurationFromPace(distance, pm, ps);
   };
 
-  // Kalkulator dystansu dla punktów GPX (Haversine)
+  // Kalkulator dystansu (Haversine)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Promień Ziemi w km
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -170,9 +170,9 @@ function RunEditModal({
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
@@ -238,6 +238,7 @@ function RunEditModal({
         const finalDistance = parseFloat(dist).toFixed(2);
         setDistance(finalDistance);
 
+        // Używamy czasu ze stoperka (total_timer_time = czas bez autopauzy/pauzy)
         const totalSeconds = Math.round(
           session.total_timer_time || session.total_elapsed_time || 0,
         );
@@ -272,12 +273,12 @@ function RunEditModal({
       }
 
       let totalDistanceKm = 0;
+      let movingSeconds = 0;
       let hrSum = 0;
       let hrCount = 0;
       const cleanedRecords = [];
 
       let startTime = null;
-      let endTime = null;
 
       for (let i = 0; i < trackpoints.length; i++) {
         const pt = trackpoints[i];
@@ -288,17 +289,33 @@ function RunEditModal({
         const ptTime = timeNode ? new Date(timeNode.textContent) : null;
 
         if (i === 0 && ptTime) startTime = ptTime;
-        if (i === trackpoints.length - 1 && ptTime) endTime = ptTime;
 
-        // Liczenie dystansu narastająco
+        let segmentDist = 0;
+        let timeDiffSec = 0;
+
         if (i > 0) {
           const prevPt = trackpoints[i - 1];
           const prevLat = parseFloat(prevPt.getAttribute("lat"));
           const prevLon = parseFloat(prevPt.getAttribute("lon"));
-          totalDistanceKm += calculateDistance(prevLat, prevLon, lat, lon);
+          const prevTimeNode = prevPt.getElementsByTagName("time")[0];
+          const prevTime = prevTimeNode ? new Date(prevTimeNode.textContent) : null;
+
+          segmentDist = calculateDistance(prevLat, prevLon, lat, lon);
+          totalDistanceKm += segmentDist;
+
+          if (ptTime && prevTime) {
+            timeDiffSec = (ptTime - prevTime) / 1000;
+          }
+
+          // Filtrowanie postoju (np. średnia prędkość w segmencie > 1.2 km/h)
+          if (timeDiffSec > 0 && timeDiffSec < 60) {
+            const speedKmH = (segmentDist / (timeDiffSec / 3600));
+            if (speedKmH > 1.2) {
+              movingSeconds += timeDiffSec;
+            }
+          }
         }
 
-        // Wyciąganie tętna (częsty format z Garmina/Strava)
         const hrNode =
           pt.getElementsByTagName("hr")[0] ||
           pt.getElementsByTagName("gpxtpx:hr")[0];
@@ -316,7 +333,7 @@ function RunEditModal({
           elapsed: elapsedSeconds,
           distance: totalDistanceKm,
           hr: pointHr,
-          speed: 0, // GPX zazwyczaj nie ma gotowej prędkości wprost w punkcie
+          speed: 0,
           lat: parseFloat(lat.toFixed(6)),
           lng: parseFloat(lon.toFixed(6)),
         });
@@ -324,7 +341,6 @@ function RunEditModal({
 
       setChartRecords(cleanedRecords);
 
-      // Ustawianie daty i godziny rozpoczęcia
       if (startTime) {
         setDate(formatDate(startTime));
         setTime(
@@ -332,23 +348,150 @@ function RunEditModal({
         );
       }
 
-      // Ustawianie dystansu
       const finalDistance = totalDistanceKm.toFixed(2);
       setDistance(finalDistance);
 
-      // Ustawianie czasu trwania
-      let totalSeconds = 0;
-      if (startTime && endTime) {
-        totalSeconds = Math.round((endTime - startTime) / 1000);
-      }
-      const h = Math.floor(totalSeconds / 3600);
-      const m = Math.floor((totalSeconds % 3600) / 60);
-      const s = totalSeconds % 60;
+      const h = Math.floor(movingSeconds / 3600);
+      const m = Math.floor((movingSeconds % 3600) / 60);
+      const s = Math.round(movingSeconds % 60);
       setDurationH(h);
       setDurationM(m);
       setDurationS(s);
 
-      // Średnie tętno
+      if (hrCount > 0) {
+        setHr(Math.round(hrSum / hrCount));
+      }
+      setMountainRun(false);
+      updatePaceFromDuration(finalDistance, h, m, s);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleProcessTcxFile = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(text, "text/xml");
+
+      const trackpoints = xmlDoc.getElementsByTagName("Trackpoint");
+      if (trackpoints.length === 0) {
+        alert("No Trackpoints found in this TCX file.");
+        return;
+      }
+
+      let totalDistanceKm = 0;
+      let movingSeconds = 0;
+      let hrSum = 0;
+      let hrCount = 0;
+      const cleanedRecords = [];
+
+      let startTime = null;
+
+      for (let i = 0; i < trackpoints.length; i++) {
+        const pt = trackpoints[i];
+
+        const latNode = pt.getElementsByTagName("LatitudeDegrees")[0];
+        const lonNode = pt.getElementsByTagName("LongitudeDegrees")[0];
+        const lat = latNode ? parseFloat(latNode.textContent) : null;
+        const lon = lonNode ? parseFloat(lonNode.textContent) : null;
+
+        const timeNode = pt.getElementsByTagName("Time")[0];
+        const ptTime = timeNode ? new Date(timeNode.textContent) : null;
+
+        if (i === 0 && ptTime) startTime = ptTime;
+
+        const distNode = pt.getElementsByTagName("DistanceMeters")[0];
+        let currentDistKm = totalDistanceKm;
+
+        if (distNode) {
+          currentDistKm = parseFloat(distNode.textContent) / 1000;
+        } else if (i > 0 && lat && lon) {
+          const prevPt = trackpoints[i - 1];
+          const prevLatNode = prevPt.getElementsByTagName("LatitudeDegrees")[0];
+          const prevLonNode = prevPt.getElementsByTagName("LongitudeDegrees")[0];
+          if (prevLatNode && prevLonNode) {
+            currentDistKm += calculateDistance(
+              parseFloat(prevLatNode.textContent),
+              parseFloat(prevLonNode.textContent),
+              lat,
+              lon
+            );
+          }
+        }
+
+        // Kalkulacja Moving Time (Czasu Ruchu)
+        if (i > 0) {
+          const prevPt = trackpoints[i - 1];
+          const prevTimeNode = prevPt.getElementsByTagName("Time")[0];
+          const prevTime = prevTimeNode ? new Date(prevTimeNode.textContent) : null;
+
+          const distDeltaKm = currentDistKm - totalDistanceKm;
+          let timeDiffSec = 0;
+
+          if (ptTime && prevTime) {
+            timeDiffSec = (ptTime - prevTime) / 1000;
+          }
+
+          // Odliczamy pauzy: jeśli w trakcie segmentu poruszaliśmy się szybciej niż ~1.2 km/h
+          if (timeDiffSec > 0 && timeDiffSec < 60) {
+            const speedKmH = distDeltaKm / (timeDiffSec / 3600);
+            if (speedKmH > 1.2 || distDeltaKm > 0.002) {
+              movingSeconds += timeDiffSec;
+            }
+          }
+        }
+
+        totalDistanceKm = currentDistKm;
+
+        // Tętno
+        const hrNode = pt.getElementsByTagName("Value")[0];
+        let pointHr = null;
+        if (hrNode) {
+          pointHr = parseInt(hrNode.textContent);
+          hrSum += pointHr;
+          hrCount++;
+        }
+
+        const elapsedSeconds =
+          startTime && ptTime ? Math.round((ptTime - startTime) / 1000) : 0;
+
+        cleanedRecords.push({
+          elapsed: elapsedSeconds,
+          distance: totalDistanceKm,
+          hr: pointHr,
+          speed: 0,
+          lat: lat ? parseFloat(lat.toFixed(6)) : null,
+          lng: lon ? parseFloat(lon.toFixed(6)) : null,
+        });
+      }
+
+      setChartRecords(cleanedRecords);
+
+      if (startTime) {
+        setDate(formatDate(startTime));
+        setTime(
+          `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`,
+        );
+      }
+
+      const finalDistance = totalDistanceKm.toFixed(2);
+      setDistance(finalDistance);
+
+      // Jeżeli nie udało się policzyć stoperem ruchowym (np. skoki GPS), dajemy całkowity czas
+      if (movingSeconds === 0 && startTime && trackpoints.length > 1) {
+        const lastTimeNode = trackpoints[trackpoints.length - 1].getElementsByTagName("Time")[0];
+        const endTime = lastTimeNode ? new Date(lastTimeNode.textContent) : null;
+        if (endTime) movingSeconds = (endTime - startTime) / 1000;
+      }
+
+      const h = Math.floor(movingSeconds / 3600);
+      const m = Math.floor((movingSeconds % 3600) / 60);
+      const s = Math.round(movingSeconds % 60);
+      setDurationH(h);
+      setDurationM(m);
+      setDurationS(s);
+
       if (hrCount > 0) {
         setHr(Math.round(hrSum / hrCount));
       }
@@ -360,12 +503,15 @@ function RunEditModal({
 
   const handleFileRoute = (file) => {
     if (!file) return;
-    if (file.name.endsWith(".fit")) {
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith(".fit")) {
       handleProcessFitFile(file);
-    } else if (file.name.endsWith(".gpx")) {
+    } else if (fileName.endsWith(".gpx")) {
       handleProcessGpxFile(file);
+    } else if (fileName.endsWith(".tcx")) {
+      handleProcessTcxFile(file);
     } else {
-      alert("Please upload a .fit or .gpx file.");
+      alert("Please upload a .fit, .gpx, or .tcx file.");
     }
   };
 
@@ -467,7 +613,7 @@ function RunEditModal({
             >
               <span style={{ fontSize: "24px" }}>⌚</span>
               <p style={{ margin: "10px 0 5px 0", fontWeight: "bold" }}>
-                Drag and drop a .fit or .gpx file
+                Drag and drop a .fit, .gpx, or .tcx file
               </p>
               <p style={{ fontSize: "12px", color: "#aaa", margin: 0 }}>
                 or click here to select it from your computer
@@ -476,7 +622,7 @@ function RunEditModal({
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept=".fit,.gpx"
+                accept=".fit,.gpx,.tcx"
                 style={{ display: "none" }}
               />
             </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "./config/supabaseClient";
 import SidePanel from "./components/SidePanel";
 import TopMenu from "./components/TopMenu";
@@ -12,6 +12,9 @@ import "./styles/index.less";
 function App() {
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  // Keep a ref so fetchRuns/fetchGoals always see the latest session
+  // without needing session as a dependency (which would re-trigger on token refresh).
+  const sessionRef = useRef(null);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("running_calendar_theme") || "light";
@@ -27,36 +30,10 @@ function App() {
   const [selectedRun, setSelectedRun] = useState(null);
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setAuthLoading(false);
-    });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (theme === "light") {
-      document.body.classList.add("light-mode");
-    } else {
-      document.body.classList.remove("light-mode");
-    }
-    localStorage.setItem("running_calendar_theme", theme);
-  }, [theme]);
-
-  const onToggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  };
-
-  const fetchRuns = async () => {
-    if (!session?.user) return;
+  // fetchRuns without background toggle of global isLoading
+  const fetchRuns = useCallback(async () => {
+    if (!sessionRef.current?.user) return;
     try {
-      setIsLoading(true);
       const { data, error } = await supabase
         .from("runs")
         .select("*")
@@ -106,13 +83,11 @@ function App() {
       setRuns(formattedRuns);
     } catch (error) {
       console.error("Error while fetching runs from Supabase:", error.message);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const fetchGoals = async () => {
-    if (!session?.user) return;
+  const fetchGoals = useCallback(async () => {
+    if (!sessionRef.current?.user) return;
     try {
       const { data, error } = await supabase
         .from("weekly_goals")
@@ -129,14 +104,70 @@ function App() {
         error.message,
       );
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (session) {
-      fetchRuns();
-      fetchGoals();
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      sessionRef.current = s;
+      setSession(s);
+      setAuthLoading(false);
+      if (s) {
+        setIsLoading(true);
+        Promise.all([fetchRuns(), fetchGoals()]).finally(() => {
+          if (isMounted) setIsLoading(false);
+        });
+      } else {
+        setIsLoading(false);
+      }
+      // Switch from Supabase's default visibility-based auto-refresh to a
+      // continuous ticker. `startAutoRefresh()` removes the built-in
+      // `visibilitychange` listener (which was causing reloads on tab switch)
+      // and starts a background interval that refreshes the token proactively.
+      supabase.auth.startAutoRefresh();
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, s) => {
+      // Always keep the ref up-to-date (for API calls that need a fresh token)
+      sessionRef.current = s;
+
+      if (event === "SIGNED_OUT") {
+        setSession(null);
+        setRuns([]);
+        setIsLoading(false);
+      } else if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        setSession(s);
+        setIsLoading(true);
+        Promise.all([fetchRuns(), fetchGoals()]).finally(() => {
+          if (isMounted) setIsLoading(false);
+        });
+      }
+      // TOKEN_REFRESHED: only update the ref (done above), skip setSession
+      // to avoid re-renders and loading screens on tab switch.
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+      supabase.auth.stopAutoRefresh();
+    };
+  }, [fetchRuns, fetchGoals]);
+
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.classList.add("light-mode");
+    } else {
+      document.body.classList.remove("light-mode");
     }
-  }, [session]);
+    localStorage.setItem("running_calendar_theme", theme);
+  }, [theme]);
+
+  const onToggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -147,11 +178,11 @@ function App() {
 
   const handleSaveSettings = async (newSettings) => {
     setSettings(newSettings);
-    if (!session?.user) return;
+    if (!sessionRef.current?.user) return;
     try {
       const goals = newSettings.weeklyGoals || {};
       const payload = Object.entries(goals).map(([weekKey, value]) => ({
-        user_id: session.user.id,
+        user_id: sessionRef.current.user.id,
         week_key: weekKey,
         daily_goal_km: Number(value) || 0,
       }));
@@ -184,7 +215,7 @@ function App() {
         avg_hr: savedRun.hr ? Number(savedRun.hr) : null,
         notes: savedRun.notes || null,
         source: savedRun.source || "manual",
-        user_id: session.user.id,
+        user_id: sessionRef.current.user.id,
         chart_records: savedRun.chart_records || null,
         weather_data: savedRun.weather_data || null,
         mountain_run: savedRun.mountainRun || false,
@@ -205,6 +236,8 @@ function App() {
         if (error) throw error;
       }
       setIsRunModalOpen(false);
+      setSelectedRun(null);
+      setDefaultRunDate(null);
       fetchRuns();
     } catch (error) {
       console.error("Error while saving run:", error.message);
@@ -226,6 +259,8 @@ function App() {
           .eq("id", runIdToDelete);
         if (error) throw error;
         setIsRunModalOpen(false);
+        setSelectedRun(null);
+        setDefaultRunDate(null);
         fetchRuns();
       } catch (error) {
         console.error("Error while deleting run:", error.message);
