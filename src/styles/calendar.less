@@ -1,5 +1,42 @@
 .calendar-panel {
   flex-grow: 1;
+
+  .bar-hr-under-130 {
+    background-color: var(--hr-under-130);
+  }
+
+  .bar-hr-130-134 {
+    background-color: var(--hr-130-134);
+  }
+
+  .bar-hr-135-139 {
+    background-color: var(--hr-135-139);
+  }
+
+  .bar-hr-140-144 {
+    background-color: var(--hr-140-144);
+  }
+
+  .bar-hr-145-149 {
+    background-color: var(--hr-145-149);
+  }
+
+  .bar-hr-150-154 {
+    background-color: var(--hr-150-154);
+  }
+
+  .bar-hr-155-159 {
+    background-color: var(--hr-155-159);
+  }
+
+  .bar-hr-160-164 {
+    background-color: var(--hr-160-164);
+  }
+
+  .bar-hr-165-plus {
+    background-color: var(--hr-165-plus);
+  }
+
   .calendar-header {
     display: flex;
     align-items: center;
@@ -7,7 +44,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    @media (max-width: 768px) {
+    @media (max-width: @mobileScreen) {
       position: fixed;
       top: 0;
       background-color: var(--modal-bg);
@@ -25,7 +62,7 @@
         font-weight: 700;
         width: 450px;
         text-align: center;
-        @media (max-width: 768px) {
+        @media (max-width: @mobileScreen) {
           width: auto;
           font-size: @fontSizeNormal;
         }
@@ -36,11 +73,10 @@
   .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
     text-align: center;
     padding-bottom: 0.75rem;
     margin-top: 1rem;
-    @media (max-width: 768px) {
+    @media (max-width: @mobileScreen) {
       display: none;
     }
   }
@@ -49,7 +85,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 35px 220px 35px 220px 35px 220px;
-    @media (max-width: 768px) {
+    @media (max-width: @mobileScreen) {
       display: flex;
       flex-direction: column;
       gap: 15px;
@@ -68,9 +104,13 @@
       font-size: 0.8rem;
       font-weight: 500;
       color: var(--text-secondary);
-      @media (max-width: 768px) {
+      @media (max-width: @mobileScreen) {
         flex-wrap: wrap;
         gap: 15px;
+      }
+      .week-summary-title {
+        font-weight: 700;
+        font-size: @fontSizeNormal;
       }
       .week-goal-wrapper {
         display: flex;
@@ -93,70 +133,96 @@
         }
       }
     }
-    .bar-hr-under-130 {
-      background-color: var(--hr-under-130);
-    }
-
-    .bar-hr-130-134 {
-      background-color: var(--hr-130-134);
-    }
-
-    .bar-hr-135-139 {
-      background-color: var(--hr-135-139);
-    }
-
-    .bar-hr-140-144 {
-      background-color: var(--hr-140-144);
-    }
-
-    .bar-hr-145-149 {
-      background-color: var(--hr-145-149);
-    }
-
-    .bar-hr-150-154 {
-      background-color: var(--hr-150-154);
-    }
-
-    .bar-hr-155-159 {
-      background-color: var(--hr-155-159);
-    }
-
-    .bar-hr-160-164 {
-      background-color: var(--hr-160-164);
-    }
-
-    .bar-hr-165-plus {
-      background-color: var(--hr-165-plus);
+    .day-cell {
+      background: var(--day-cell-bg);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.2s ease;
+      &.today {
+        background: rgba(139, 92, 246, 0.06);
+        border-color: var(--glass-border-focus);
+        box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.1);
+      }
+      .run-weather-tooltip {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%) translateY(5px);
+        background: rgba(20, 20, 20, 0.95);
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        white-space: nowrap;
+        z-index: 10;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.15s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+      }
+      &:hover {
+        background: var(--day-cell-bg-hover);
+        border-color: rgba(255, 255, 255, 0.15);
+        .run-weather-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+      .day-header {
+        text-align: center;
+        position: relative;
+        padding: 2px 0;
+        .day-number {
+          font-size: @fontSizeSmall;
+          font-weight: 600;
+          color: var(--text-secondary);
+        }
+        .add-run-btn-cell {
+          position: absolute;
+          background-color: transparent;
+          right: 4px;
+          border: none;
+          cursor: pointer;
+          font-size: @fontSizeNormal;
+          opacity: 0;
+          transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
+          &:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+        }
+      }
+      .day-run-container {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        &.double {
+          flex-direction: row-reverse;
+          .run-single-data-container {
+            width: 50%;
+          }
+        }
+        .run-bar {
+          font-size: @fontSizeSmall;
+          font-weight: 600;
+          padding: 4px;
+          color: var(--text-dark);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          &.bar-details,
+          &.bar-duration {
+            color: var(--text-secondary);
+            font-weight: 400;
+          }
+        }
+      }
     }
   }
-}
-
-.day-cell {
-  position: relative; // Kluczowe, aby tooltip pozycjonował się względem kafelka
-
-  &:hover .run-weather-tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.run-weather-tooltip {
-  position: absolute;
-  bottom: 15px; // Wyświetli się tuż nad kafelkiem
-  left: 50%;
-  transform: translateX(-50%) translateY(5px);
-  background: rgba(20, 20, 20, 0.95);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  white-space: nowrap;
-  z-index: 10;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.15s ease-in-out;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  pointer-events: none; // Myszka ignoruje tooltip, nie psuje klikania w bieg
 }

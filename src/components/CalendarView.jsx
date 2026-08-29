@@ -352,8 +352,6 @@ function CalendarView({
                         : parseFloat(run.distance || 0).toFixed(1);
                     const mountainEmoji = run.mountainRun ? " ⛰️" : "";
                     const notesEmoji = run.notes ? " 📝" : "";
-
-                    // Odczyt surowych danych pogodowych dla konkretnego biegu
                     const weather = run.weather_data;
 
                     return (
@@ -393,7 +391,6 @@ function CalendarView({
                           {notesEmoji}
                         </div>
 
-                        {/* NOWY TOOLTIP: Pokazuje się po najechaniu myszką na .run-single-data-container */}
                         {weather && (
                           <span className="run-weather-tooltip">
                             {weatherEmojis[weather.type] || "☀️"} •{" "}

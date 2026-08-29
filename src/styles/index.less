@@ -132,85 +132,8 @@
   text-transform: uppercase;
 }
 
-.day-cell {
-  background: var(--day-cell-bg);
-  border: 1px solid var(--glass-border);
-  padding: 0.6rem 0 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  transition: all 0.2s ease;
-  min-width: 0;
-  &.today {
-    background: rgba(139, 92, 246, 0.06);
-    border-color: rgba(139, 92, 246, 0.4);
-    box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.1);
-  }
-  &:hover {
-    background: var(--day-cell-bg-hover);
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.day-header {
-  text-align: center;
-  position: relative;
-  margin-bottom: 0.2rem;
-  .day-number {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-  .add-run-btn-cell {
-    position: absolute;
-    background-color: transparent;
-    right: 4px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
-    opacity: 0;
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
-    &:hover {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-  }
-}
-
 .day-cell:hover .add-run-btn-cell {
   opacity: 0.7;
-}
-
-.day-run-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  cursor: pointer;
-  &.double {
-    flex-direction: row-reverse;
-    .run-single-data-container {
-      width: 50%;
-    }
-  }
-}
-
-.run-bar {
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.25rem 0.4rem;
-  color: var(--text-dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-wrap: auto;
-}
-
-.bar-details,
-.bar-duration {
-  color: var(--text-secondary);
-  font-weight: 400;
 }
 
 .modal-overlay {
@@ -383,18 +306,6 @@ textarea:focus {
 .unit-label {
   color: var(--text-secondary);
   font-weight: 600;
-}
-
-.week-summary-title {
-  font-weight: 700;
-  font-size: 0.85rem;
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
-}
-
-.week-summary-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
 }
 
 .day-run-container.goal-failed {
