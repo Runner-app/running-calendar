@@ -43,12 +43,12 @@ export function getWeekKey(mondayDate, runs) {
 export function getPaceZoneIndex(min, sec) {
   const totalSec = (parseInt(min) || 0) * 60 + (parseInt(sec) || 0);
   if (totalSec > 429) return 0;
-  if (totalSec < 240) return 18;
+  if (totalSec < 230) return 19;
   return Math.floor((429 - totalSec) / 10);
 }
 
 export function getPaceZoneColor(zoneIndex) {
-  if (zoneIndex < 0 || zoneIndex > 18) return "#cccccc";
+  if (zoneIndex < 0 || zoneIndex > 19) return "#cccccc";
 
   return `var(--pace-${zoneIndex})`;
 }

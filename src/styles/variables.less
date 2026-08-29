@@ -1,4 +1,5 @@
 // Font sizes
+@fontSizeH1: 42px;
 @fontSizeH2: 32px;
 @fontSizeLarge: 22px;
 @fontSizeMedium: 18px;
@@ -13,6 +14,7 @@
 // Media query breakpoints
 @mobileScreen: 768px;
 
+// Dark mode colors
 :root {
   --glass-bg: rgba(17, 25, 40, 0.75);
   --glass-bg-hover: rgba(28, 37, 56, 0.85);
@@ -37,40 +39,41 @@
   --color-primary-glow: rgba(139, 92, 246, 0.25);
   --color-primary-hover: #6d50c5;
 
-  --hr-under-130: rgb(26, 236, 170);
-  --hr-130-134: rgba(46, 164, 127);
-  --hr-135-139: rgb(79, 182, 54);
-  --hr-140-144: rgb(167, 206, 60);
-  --hr-145-149: rgb(219, 172, 103);
-  --hr-150-154: rgb(219, 160, 132);
-  --hr-155-159: rgb(204, 139, 137);
-  --hr-160-164: rgb(194, 102, 120);
-  --hr-165-plus: rgb(168, 62, 76);
+  // Heart rate colors
+  --hr-under-130: rgb(0, 230, 118);
+  --hr-130-134: rgb(76, 175, 80);
+  --hr-135-139: rgb(139, 195, 74);
+  --hr-140-144: rgb(205, 220, 57);
+  --hr-145-149: rgb(255, 214, 0);
+  --hr-150-154: rgb(255, 143, 51);
+  --hr-155-159: rgba(255, 86, 34, 0.8);
+  --hr-160-164: rgba(244, 67, 54, 0.8);
+  --hr-165-plus: rgb(204, 25, 25, 0.8);
 
-  --pace-0: #8b1e1eff;
-  --pace-1: #a63a3aff;
-  --pace-2: #b8301bff;
-  --pace-3: #bd4e16ff;
-  --pace-4: #bd7142ff;
-  --pace-5: #bc7d3bff;
-  --pace-6: #b69259ff;
-  --pace-7: #baa143ff;
-  --pace-8: #b9b244ff;
-  --pace-9: #a9b542ff;
-  --pace-10: rgb(154, 192, 4);
-  --pace-11: #78af29ff;
-  --pace-12: #5ca12cff;
-  --pace-13: #4a9117ff;
-  --pace-14: #289e60ff;
-  --pace-15: #238e8aff;
-  --pace-16: #3da29fff;
-  --pace-17: #71b1aeff;
-  --pace-18: #8ebbc2ff;
-
-  --duration-bar-background: rgba(94, 94, 94, 0.5);
-  --details-bar-background: rgba(134, 123, 123, 0.08);
+  // Pace colors
+  --pace-0: #8b0000; // 7:00+ min/km
+  --pace-1: #b22222; // 6:50 - 6:59 min/km
+  --pace-2: #d32f2f; // 6:40 - 6:49 min/km
+  --pace-3: #e65100; // 6:30 - 6:39 min/km
+  --pace-4: #f57c00; // 6:20 - 6:29 min/km
+  --pace-5: #ff9800; // 6:10 - 6:19 min/km
+  --pace-6: #ffb74d; // 6:00 - 6:09 min/km
+  --pace-7: #ffc107; // 5:50 - 5:59 min/km
+  --pace-8: #ffeb3b; // 5:40 - 5:49 min/km
+  --pace-9: #cddc39; // 5:30 - 5:39 min/km
+  --pace-10: #9acd32; // 5:20 - 5:29 min/km
+  --pace-11: #7cb342; // 5:10 - 5:19 min/km
+  --pace-12: #4caf50; // 5:00 - 5:09 min/km
+  --pace-13: #2e7d32; // 4:50 - 4:59 min/km
+  --pace-14: #107c41; // 4:40 - 4:49 min/km
+  --pace-15: #00796b; // 4:30 - 4:39 min/km
+  --pace-16: #009688; // 4:20 - 4:29 min/km
+  --pace-17: #00bcd4; // 4:10 - 4:19 min/km
+  --pace-18: #0288d1; // 4:00 - 4:09 min/km
+  --pace-19: #1565c0; // 3:50 - 3:59 min/km
 }
 
+// Light mode colors
 body.light-mode {
   --glass-bg: rgba(255, 255, 255, 0.95);
   --glass-bg-hover: rgba(243, 244, 246, 0.85);
@@ -91,36 +94,36 @@ body.light-mode {
   --day-cell-bg-hover: rgba(0, 0, 0, 0.035);
   --input-bg: rgba(0, 0, 0, 0.03);
 
-  --hr-under-130: rgb(33, 190, 135);
-  --hr-130-134: rgb(33, 190, 135);
-  --hr-135-139: rgb(156, 224, 79);
-  --hr-140-144: rgb(161, 189, 85);
-  --hr-145-149: rgb(255, 197, 109);
-  --hr-150-154: rgb(255, 185, 150);
-  --hr-155-159: rgb(240, 161, 157);
-  --hr-160-164: rgb(228, 111, 134);
-  --hr-165-plus: rgb(194, 58, 76);
+  // Heart rate colors
+  --hr-under-130: rgb(0, 180, 110);
+  --hr-130-134: rgb(41, 172, 48);
+  --hr-135-139: rgb(118, 199, 31);
+  --hr-140-144: rgb(192, 202, 51);
+  --hr-145-149: rgb(255, 179, 0);
+  --hr-150-154: rgb(250, 121, 35);
+  --hr-155-159: rgb(230, 74, 25);
+  --hr-160-164: rgb(211, 47, 47);
+  --hr-165-plus: rgb(163, 26, 26);
 
-  --pace-0: #b10000ff;
-  --pace-1: #d43838ff;
-  --pace-2: #f72302ff;
-  --pace-3: #ff5500ff;
-  --pace-4: #ff863fff;
-  --pace-5: #ff9625ff;
-  --pace-6: #fcbb52ff;
-  --pace-7: #ffd326ff;
-  --pace-8: #fff336ff;
-  --pace-9: #e2f536ff;
-  --pace-10: #b9e50cff;
-  --pace-11: #8ce510ff;
-  --pace-12: #64cf1dff;
-  --pace-13: #49b800ff;
-  --pace-14: #13d16dff;
-  --pace-15: #0fb7b1ff;
-  --pace-16: #2fd4cfff;
-  --pace-17: #82ebe7ff;
-  --pace-18: #b4f4ffff;
-
-  --duration-bar-background: rgb(224, 224, 224, 0.5);
-  --details-bar-background: rgba(255, 255, 255, 0.08);
+  // Pace colors
+  --pace-0: #a70000; // 7:00+ min/km
+  --pace-1: #c62828; // 6:50 - 6:59 min/km
+  --pace-2: #e53935; // 6:40 - 6:49 min/km
+  --pace-3: #e65100; // 6:30 - 6:39 min/km
+  --pace-4: #f57c00; // 6:20 - 6:29 min/km
+  --pace-5: #ff9800; // 6:10 - 6:19 min/km
+  --pace-6: #ffb74d; // 6:00 - 6:09 min/km
+  --pace-7: #ffb300; // 5:50 - 5:59 min/km
+  --pace-8: #fbc02d; // 5:40 - 5:49 min/km
+  --pace-9: #afb42b; // 5:30 - 5:39 min/km
+  --pace-10: #7cb342; // 5:20 - 5:29 min/km
+  --pace-11: #558b2f; // 5:10 - 5:19 min/km
+  --pace-12: #2e7d32; // 5:00 - 5:09 min/km
+  --pace-13: #1b5e20; // 4:50 - 4:59 min/km
+  --pace-14: #00796b; // 4:40 - 4:49 min/km
+  --pace-15: #009688; // 4:30 - 4:39 min/km
+  --pace-16: #00bcd4; // 4:20 - 4:29 min/km
+  --pace-17: #0288d1; // 4:10 - 4:19 min/km
+  --pace-18: #1565c0; // 4:00 - 4:09 min/km
+  --pace-19: #3354e4; // 3:50 - 3:59 min/km
 }

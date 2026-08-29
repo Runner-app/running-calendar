@@ -22,7 +22,7 @@ function SidePanel({ onAddRunClick, onStatsClick, runs }) {
     <aside className="sidebar">
       <div className="brand-section">
         <span className="brand-icon">🏃</span>
-        <h1 className="brand-logo">RunUp</h1>
+        <h1 className="brandLogo">RunUp</h1>
       </div>
       <button className="btn btn-full" onClick={onAddRunClick}>
         Add Run
