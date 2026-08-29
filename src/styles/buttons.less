@@ -1,14 +1,12 @@
 .btn {
+  .centerFlex();
   background: var(--color-primary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
-  border-radius: var(--radius-md);
+  border-radius: @borderRadiusMedium;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px 0 var(--color-primary-glow);
@@ -16,6 +14,29 @@
     background: var(--color-primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 6px 20px 0 var(--color-primary-glow);
+  }
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.nav-btn {
+  .centerFlex();
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: @fontSizeMedium;
+  span {
+    position: relative;
+    top: -1px;
+  }
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 }
 

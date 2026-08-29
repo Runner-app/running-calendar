@@ -80,7 +80,7 @@
 .stat-card {
   background: var(--stat-card-bg);
   border: 1px solid var(--stat-card-border);
-  border-radius: var(--radius-md);
+  border-radius: @borderRadiusMedium;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
 .stat-icon {
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-sm);
+  border-radius: @borderRadiusSmall;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +112,7 @@
 }
 
 .stat-label {
-  font-size: @font-size-base;
+  font-size: @fontSizeNormal;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -123,32 +123,6 @@
   font-weight: 700;
   color: var(--text-primary);
   margin-top: 0.1rem;
-}
-
-.btn-full {
-  width: 100%;
-}
-
-.nav-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: var(--text-primary);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  font-size: @font-size-lg;
-  span {
-    position: relative;
-    top: -1px;
-  }
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
 }
 
 .year-nav {
@@ -290,7 +264,7 @@
   max-width: 550px;
   background: var(--modal-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: @borderRadiusLarge;
   transform: scale(0.9) translateY(20px);
   transition: transform 0.3s ease;
 }
@@ -391,7 +365,7 @@ textarea {
   width: 100%;
   background: var(--input-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: @borderRadiusSmall;
   color: var(--text-primary);
   padding: 0.75rem;
   font-size: 0.95rem;
@@ -470,7 +444,7 @@ input[type="number"] {
   position: fixed;
   background: var(--modal-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  border-radius: @borderRadiusMedium;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
   color: var(--text-primary);
