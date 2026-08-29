@@ -226,3 +226,29 @@
     }
   }
 }
+
+.weekday {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.day-cell:hover .add-run-btn-cell {
+  opacity: 0.7;
+}
+
+.day-run-container.goal-failed {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.day-run-container.goal-failed:hover {
+  opacity: 1;
+}
+
+.input-weekly-goal .input-weekly-goal::-webkit-outer-spin-button,
+.input-weekly-goal::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

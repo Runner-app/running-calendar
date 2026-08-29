@@ -271,6 +271,7 @@ function App() {
     }
   };
 
+  // TODO: Change the loading screen to a popup while creatnig a new run
   const renderLoadingScreen = () => (
     <div className="loading-screen">
       <h2>Running 🏃</h2>
