@@ -162,9 +162,8 @@ function RunEditModal({
     updateDurationFromPace(distance, pm, ps);
   };
 
-  // Kalkulator dystansu (Haversine)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Promień Ziemi w km
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -238,7 +237,6 @@ function RunEditModal({
         const finalDistance = parseFloat(dist).toFixed(2);
         setDistance(finalDistance);
 
-        // Używamy czasu ze stoperka (total_timer_time = czas bez autopauzy/pauzy)
         const totalSeconds = Math.round(
           session.total_timer_time || session.total_elapsed_time || 0,
         );
@@ -307,7 +305,6 @@ function RunEditModal({
             timeDiffSec = (ptTime - prevTime) / 1000;
           }
 
-          // Filtrowanie postoju (np. średnia prędkość w segmencie > 1.2 km/h)
           if (timeDiffSec > 0 && timeDiffSec < 60) {
             const speedKmH = (segmentDist / (timeDiffSec / 3600));
             if (speedKmH > 1.2) {
@@ -420,7 +417,6 @@ function RunEditModal({
           }
         }
 
-        // Kalkulacja Moving Time (Czasu Ruchu)
         if (i > 0) {
           const prevPt = trackpoints[i - 1];
           const prevTimeNode = prevPt.getElementsByTagName("Time")[0];
@@ -433,7 +429,6 @@ function RunEditModal({
             timeDiffSec = (ptTime - prevTime) / 1000;
           }
 
-          // Odliczamy pauzy: jeśli w trakcie segmentu poruszaliśmy się szybciej niż ~1.2 km/h
           if (timeDiffSec > 0 && timeDiffSec < 60) {
             const speedKmH = distDeltaKm / (timeDiffSec / 3600);
             if (speedKmH > 1.2 || distDeltaKm > 0.002) {
@@ -444,7 +439,6 @@ function RunEditModal({
 
         totalDistanceKm = currentDistKm;
 
-        // Tętno
         const hrNode = pt.getElementsByTagName("Value")[0];
         let pointHr = null;
         if (hrNode) {
@@ -478,7 +472,6 @@ function RunEditModal({
       const finalDistance = totalDistanceKm.toFixed(2);
       setDistance(finalDistance);
 
-      // Jeżeli nie udało się policzyć stoperem ruchowym (np. skoki GPS), dajemy całkowity czas
       if (movingSeconds === 0 && startTime && trackpoints.length > 1) {
         const lastTimeNode = trackpoints[trackpoints.length - 1].getElementsByTagName("Time")[0];
         const endTime = lastTimeNode ? new Date(lastTimeNode.textContent) : null;

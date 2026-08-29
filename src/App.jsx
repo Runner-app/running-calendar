@@ -12,8 +12,6 @@ import "./styles/index.less";
 function App() {
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  // Keep a ref so fetchRuns/fetchGoals always see the latest session
-  // without needing session as a dependency (which would re-trigger on token refresh).
   const sessionRef = useRef(null);
 
   const [theme, setTheme] = useState(() => {
@@ -30,7 +28,6 @@ function App() {
   const [selectedRun, setSelectedRun] = useState(null);
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
-  // fetchRuns without background toggle of global isLoading
   const fetchRuns = useCallback(async () => {
     if (!sessionRef.current?.user) return;
     try {
@@ -121,17 +118,12 @@ function App() {
       } else {
         setIsLoading(false);
       }
-      // Switch from Supabase's default visibility-based auto-refresh to a
-      // continuous ticker. `startAutoRefresh()` removes the built-in
-      // `visibilitychange` listener (which was causing reloads on tab switch)
-      // and starts a background interval that refreshes the token proactively.
       supabase.auth.startAutoRefresh();
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, s) => {
-      // Always keep the ref up-to-date (for API calls that need a fresh token)
       sessionRef.current = s;
 
       if (event === "SIGNED_OUT") {
@@ -145,8 +137,6 @@ function App() {
           if (isMounted) setIsLoading(false);
         });
       }
-      // TOKEN_REFRESHED: only update the ref (done above), skip setSession
-      // to avoid re-renders and loading screens on tab switch.
     });
 
     return () => {
