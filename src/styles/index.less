@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "./variables.less";
 @import "./mixins.less";
 @import "./calendar.less";
@@ -14,7 +14,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "DM Sans", sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .center {
@@ -23,10 +23,9 @@
 
 body {
   color: var(--text-primary);
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
   background-color: var(--text-dark);
+
   .app-container {
     max-width: 100%;
     width: 100%;
@@ -35,23 +34,24 @@ body {
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     min-height: 100vh;
+
     @media (max-width: @mobileScreen) {
-      flex-direction: column;
       height: auto;
       margin-bottom: 85px;
     }
   }
+
   .loading-screen {
     .centerFlex();
     height: 100vh;
     color: var(--text-primary);
-    background-color: var(--text-dark);
   }
 }
 
 .glass-panel {
   background: var(--glass-bg);
   padding: 25px 15px;
+
   @media (max-width: @mobileScreen) {
     padding: 0;
   }
@@ -66,12 +66,7 @@ label {
   text-transform: uppercase;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-select,
-textarea {
+input[type='text'], input[type='number'], input[type='date'], input[type='time'], select, textarea {
   width: 100%;
   background: var(--input-bg);
   border: 1px solid var(--glass-border);
@@ -81,15 +76,13 @@ textarea {
   font-size: 0.95rem;
 }
 
-input[type="number"] {
+input[type='number'] {
   appearance: textfield;
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 8px var(--color-primary-glow);

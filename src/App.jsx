@@ -278,14 +278,14 @@ function App() {
     </div>
   );
 
-  if (!session) {
-    if (authLoading) {
+  if(!session) {
+    if(authLoading) {
       return renderLoadingScreen();
     }
     return <LoginScreen />;
   }
 
-  if (isLoading) {
+  if(isLoading) {
     return renderLoadingScreen();
   }
 

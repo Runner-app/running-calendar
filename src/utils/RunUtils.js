@@ -31,7 +31,13 @@ export function getRunningWeekNumber(mondayDate, runs) {
 
   const diffTime = utcMondayDate - utcEarliestMonday;
   const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
-  return diffWeeks + 1;
+  const rawWeekNum = diffWeeks + 1;
+
+  if (rawWeekNum > 366) {
+    return rawWeekNum - 366;
+  }
+
+  return rawWeekNum;
 }
 
 export function getWeekKey(mondayDate, runs) {
