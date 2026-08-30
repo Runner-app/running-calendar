@@ -586,23 +586,11 @@ function RunEditModal({
         <div className="modal-body">
           {!runId && (
             <div
-              className={`fit-dropzone ${isDragging ? "dragging" : ""}`}
+              className={`fit-dropzone center`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current.click()}
-              style={{
-                border: "2px dashed #00c853",
-                borderRadius: "8px",
-                padding: "20px",
-                textAlign: "center",
-                marginBottom: "20px",
-                background: isDragging
-                  ? "rgba(0, 200, 83, 0.1)"
-                  : "rgba(255,255,255,0.03)",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
             >
               <span style={{ fontSize: "24px" }}>⌚</span>
               <p style={{ margin: "10px 0 5px 0", fontWeight: "bold" }}>

@@ -25,7 +25,6 @@ body {
   color: var(--text-primary);
   overflow-x: hidden;
   background-color: var(--text-dark);
-
   .app-container {
     max-width: 100%;
     width: 100%;
@@ -34,13 +33,11 @@ body {
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     min-height: 100vh;
-
     @media (max-width: @mobileScreen) {
       height: auto;
       margin-bottom: 85px;
     }
   }
-
   .loading-screen {
     .centerFlex();
     height: 100vh;
@@ -51,7 +48,6 @@ body {
 .glass-panel {
   background: var(--glass-bg);
   padding: 25px 15px;
-
   @media (max-width: @mobileScreen) {
     padding: 0;
   }

@@ -247,17 +247,17 @@ function CalendarView({
     <>
       <header className="calendar-header">
         <div className="calendar-navigation">
-          <button className="nav-btn" onClick={handlePrevYear}>
+          <button className="btn btn-secondary nav-btn" onClick={handlePrevYear}>
             <span>&lt;&lt;</span>
           </button>
-          <button className="nav-btn" onClick={handlePrevMonth}>
+          <button className="btn btn-secondary  nav-btn" onClick={handlePrevMonth}>
             <span>&lt;</span>
           </button>
           <h2 className="month-title">{headerTitle}</h2>
-          <button className="nav-btn" onClick={handleNextMonth}>
+          <button className="btn btn-secondary nav-btn" onClick={handleNextMonth}>
             <span>&gt;</span>
           </button>
-          <button className="nav-btn" onClick={handleNextYear}>
+          <button className="btn btn-secondary nav-btn" onClick={handleNextYear}>
             <span>&gt;&gt;</span>
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>

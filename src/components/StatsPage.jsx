@@ -86,7 +86,7 @@ function StatsPage({ runs, onBackClick }) {
     <div className="stats-page glass-panel" id="stats-page">
       <header className="stats-header">
         <button
-          className="nav-btn"
+          className="btn btn-secondary nav-btn"
           id="btn-back-stats"
           aria-label="Back to calendar"
           onClick={onBackClick}

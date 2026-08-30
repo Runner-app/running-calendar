@@ -14,12 +14,20 @@
 // Media query breakpoints
 @mobileScreen: 768px;
 
+// Color variables
+@colorRed: #b42222;
+
 // Dark mode colors
 :root {
+  --color-primary: #06b6d4;
+  --color-primary-glow: rgba(9, 195, 228, 0.295);
+  --color-primary-hover: #07abd4;
+  --color-primary-shadow: #0890b24d;
+  --color-primary-dark: #044c5e31;
+
   --glass-bg: rgba(17, 25, 40, 0.75);
   --glass-bg-hover: rgba(28, 37, 56, 0.85);
   --glass-border: rgba(255, 255, 255, 0.22);
-  --glass-border-focus: rgba(139, 92, 246, 0.4);
   --background-grey-light: #1f2937;
 
   --text-primary: #f3f7ff;
@@ -35,15 +43,11 @@
   --day-cell-bg-hover: rgba(255, 255, 255, 0.04);
   --input-bg: rgba(255, 255, 255, 0.04);
 
-  --color-primary: #8b5cf6;
-  --color-primary-glow: rgba(139, 92, 246, 0.25);
-  --color-primary-hover: #6d50c5;
-
   // Heart rate colors
   --hr-under-130: rgba(5, 223, 117, 0.85);
-  --hr-130-134: rgba(61, 172, 65, 0.85);
-  --hr-135-139: rgba(141, 204, 70, 0.85);
-  --hr-140-144: rgba(204, 220, 57, 0.85);
+  --hr-130-134: rgba(50, 179, 54, 0.85);
+  --hr-135-139: rgba(127, 233, 7, 0.85);
+  --hr-140-144: rgba(217, 241, 0, 0.85);
   --hr-145-149: rgba(255, 213, 0, 0.85);
   --hr-150-154: rgba(255, 143, 51, 0.85);
   --hr-155-159: rgba(255, 86, 34, 0.85);
@@ -60,7 +64,7 @@
   --pace-6: #ffb74d; // 6:00 - 6:09 min/km
   --pace-7: #ffc107; // 5:50 - 5:59 min/km
   --pace-8: #ffeb3b; // 5:40 - 5:49 min/km
-  --pace-9: #cddc39; // 5:30 - 5:39 min/km
+  --pace-9: #c6da19; // 5:30 - 5:39 min/km
   --pace-10: #9acd32; // 5:20 - 5:29 min/km
   --pace-11: #7cb342; // 5:10 - 5:19 min/km
   --pace-12: #4caf50; // 5:00 - 5:09 min/km
@@ -78,7 +82,6 @@ body.light-mode {
   --glass-bg: rgba(255, 255, 255, 0.95);
   --glass-bg-hover: rgba(243, 244, 246, 0.85);
   --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-border-focus: rgba(139, 92, 246, 0.5);
   --background-grey-light: #e5e7eb;
 
   --text-primary: #1f2937;
@@ -93,37 +96,4 @@ body.light-mode {
   --day-cell-bg: rgba(0, 0, 0, 0.015);
   --day-cell-bg-hover: rgba(0, 0, 0, 0.035);
   --input-bg: rgba(0, 0, 0, 0.03);
-
-  // Heart rate colors
-  --hr-under-130: rgb(0, 180, 110);
-  --hr-130-134: rgb(41, 172, 48);
-  --hr-135-139: rgb(118, 199, 31);
-  --hr-140-144: rgb(192, 202, 51);
-  --hr-145-149: rgb(255, 179, 0);
-  --hr-150-154: rgb(250, 121, 35);
-  --hr-155-159: rgb(230, 74, 25);
-  --hr-160-164: rgb(211, 47, 47);
-  --hr-165-plus: rgb(163, 26, 26);
-
-  // Pace colors
-  --pace-0: #a70000; // 7:00+ min/km
-  --pace-1: #c62828; // 6:50 - 6:59 min/km
-  --pace-2: #e53935; // 6:40 - 6:49 min/km
-  --pace-3: #e65100; // 6:30 - 6:39 min/km
-  --pace-4: #f57c00; // 6:20 - 6:29 min/km
-  --pace-5: #ff9800; // 6:10 - 6:19 min/km
-  --pace-6: #ffb74d; // 6:00 - 6:09 min/km
-  --pace-7: #ffb300; // 5:50 - 5:59 min/km
-  --pace-8: #fbc02d; // 5:40 - 5:49 min/km
-  --pace-9: #afb42b; // 5:30 - 5:39 min/km
-  --pace-10: #7cb342; // 5:20 - 5:29 min/km
-  --pace-11: #558b2f; // 5:10 - 5:19 min/km
-  --pace-12: #2e7d32; // 5:00 - 5:09 min/km
-  --pace-13: #1b5e20; // 4:50 - 4:59 min/km
-  --pace-14: #00796b; // 4:40 - 4:49 min/km
-  --pace-15: #009688; // 4:30 - 4:39 min/km
-  --pace-16: #00bcd4; // 4:20 - 4:29 min/km
-  --pace-17: #0288d1; // 4:10 - 4:19 min/km
-  --pace-18: #1565c0; // 4:00 - 4:09 min/km
-  --pace-19: #3354e4; // 3:50 - 3:59 min/km
 }

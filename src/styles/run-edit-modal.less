@@ -45,10 +45,20 @@
 .modal-title {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #a78bfa, #3b82f6);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-glow));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.fit-dropzone {
+  background-color: var(--color-primary-dark);
+  border: 2px dashed var(--color-primary-glow);
+  border-radius: @borderRadiusMedium;
+  padding: 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;  
 }
 
 .modal-close {
