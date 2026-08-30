@@ -96,11 +96,8 @@ function CalendarView({
 
   const runsWithMetrics = computeRunMetrics(runs || []);
   const calendarStartDate = getMonday(currentDate);
-  const gridElements = [];
-  const dayGoalsMap = {};
   const weeklyGoals = settings?.weeklyGoals || {};
 
-  // Mapa emotek dla tooltipa pogodowego
   const weatherEmojis = {
     sunny: "☀️ Sunny",
     cloudy: "☁️ Cloudy",
@@ -109,52 +106,55 @@ function CalendarView({
     windy: "💨 Windy",
   };
 
-  for (let w = 0; w < 3; w++) {
-    const weekMonday = new Date(calendarStartDate.getTime());
-    weekMonday.setDate(weekMonday.getDate() + w * 7);
-    const weekKey = getWeekKey(weekMonday, runs || []);
-    const weekDailyGoal =
-      weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 0;
+  // Przygotowanie danych pogrupowanych w 3 tygodnie
+  const weeksData = useMemo(() => {
+    const result = [];
 
-    for (let d = 0; d < 7; d++) {
-      const dayDate = new Date(weekMonday.getTime());
-      dayDate.setDate(dayDate.getDate() + d);
-      dayGoalsMap[formatDate(dayDate)] = weekDailyGoal;
-    }
-  }
-
-  for (let i = 0; i < 21; i++) {
-    const currentGridDate = new Date(calendarStartDate.getTime());
-    currentGridDate.setDate(calendarStartDate.getDate() + i);
-    const dateStr = formatDate(currentGridDate);
-
-    if (i % 7 === 0) {
-      const weekMonday = new Date(currentGridDate.getTime());
+    for (let w = 0; w < 3; w++) {
+      const weekMonday = new Date(calendarStartDate.getTime());
+      weekMonday.setDate(weekMonday.getDate() + w * 7);
       const weekKey = getWeekKey(weekMonday, runs || []);
       const weekDailyGoal =
-        weeklyGoals[weekKey] !== undefined
-          ? parseFloat(weeklyGoals[weekKey])
-          : 0;
+        weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 0;
+
       const weekDates = [];
+      const daysInWeek = [];
 
       for (let d = 0; d < 7; d++) {
         const dDate = new Date(weekMonday.getTime());
         dDate.setDate(dDate.getDate() + d);
-        weekDates.push(formatDate(dDate));
+        const dateStr = formatDate(dDate);
+        weekDates.push(dateStr);
+
+        const runsOnThisDay = runsWithMetrics.filter((r) => r.date === dateStr);
+        const dayTotalDist = runsOnThisDay.reduce(
+          (sum, run) => sum + (parseFloat(run.distance) || 0),
+          0
+        );
+        const isToday = dateStr === formatDate(new Date());
+        const isGoalFailed =
+          weekDailyGoal > 0 &&
+          (runsOnThisDay.length === 0 || dayTotalDist < weekDailyGoal);
+
+        daysInWeek.push({
+          dateStr,
+          dayNumber: dDate.getDate(),
+          isToday,
+          isGoalFailed,
+          runs: runsOnThisDay,
+        });
       }
 
-      const runsInWeek = runsWithMetrics.filter((r) =>
-        weekDates.includes(r.date),
-      );
+      const runsInWeek = runsWithMetrics.filter((r) => weekDates.includes(r.date));
       const totalDist = runsInWeek.reduce(
         (sum, run) => sum + (parseFloat(run.distance) || 0),
-        0,
+        0
       );
       const runsWithHr = runsInWeek.filter((r) => (parseInt(r.hr) || 0) > 0);
       const avgHr =
         runsWithHr.length > 0
           ? Math.round(
-              runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length,
+              runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length
             )
           : null;
 
@@ -173,62 +173,39 @@ function CalendarView({
         }
       });
 
-      let avgPaceStr = "--:--";
       let paceText = `--:-- min/km`;
       if (totalDist > 0 && totalSeconds > 0) {
         const avgSecondsPerKm = totalSeconds / totalDist;
         const avgMin = Math.floor(avgSecondsPerKm / 60);
         const avgSec = Math.round(avgSecondsPerKm % 60);
         const avgSecStr = String(avgSec === 60 ? 59 : avgSec).padStart(2, "0");
-        avgPaceStr = `${avgMin}:${avgSecStr}`;
-        paceText = `${avgPaceStr} min/km`;
+        paceText = `${avgMin}:${avgSecStr} min/km`;
       }
 
       const weekNum = getRunningWeekNumber(weekMonday, runs || []);
       const weekNumText = weekNum && weekNum > 0 ? `${weekNum}` : `Week --`;
       const hrText = avgHr ? `${avgHr} bpm` : `-- bpm`;
-
       const weeklyGoal = weekDailyGoal * 7;
-      let distText =
+      const distText =
         weekDailyGoal > 0
           ? `${Math.floor(totalDist)}.0 / ${Math.floor(weeklyGoal)}.0 km`
           : `${Math.floor(totalDist)}.0 km`;
 
-      gridElements.push({
-        type: "summary",
-        id: `summary-${weekKey}`,
-        weekKey: weekKey,
-        weekNumText: weekNumText,
-        distText: distText,
-        hrText: hrText,
-        paceText: paceText,
-        weekDailyGoal: weekDailyGoal,
+      result.push({
+        weekKey,
+        summary: {
+          weekNumText,
+          distText,
+          hrText,
+          paceText,
+          weekDailyGoal,
+        },
+        days: daysInWeek,
       });
     }
 
-    const runsOnThisDay = runsWithMetrics.filter((r) => r.date === dateStr);
-    const currentDailyGoal =
-      dayGoalsMap[dateStr] !== undefined ? dayGoalsMap[dateStr] : 14;
-    const dayTotalDist = runsOnThisDay.reduce(
-      (sum, run) => sum + (parseFloat(run.distance) || 0),
-      0,
-    );
-    const isToday = dateStr === formatDate(new Date());
-    const isGoalFailed =
-      currentDailyGoal > 0 &&
-      (runsOnThisDay.length === 0 || dayTotalDist < currentDailyGoal);
-
-    gridElements.push({
-      type: "day",
-      id: `day-${dateStr}`,
-      dateStr: dateStr,
-      dayNumber: currentGridDate.getDate(),
-      isToday: isToday,
-      isGoalFailed: isGoalFailed,
-      runs: runsOnThisDay,
-      currentDailyGoal: currentDailyGoal,
-    });
-  }
+    return result;
+  }, [calendarStartDate, runsWithMetrics, weeklyGoals, runs]);
 
   const handleGoalChange = (weekKey, value) => {
     const val = parseFloat(value);
@@ -244,38 +221,54 @@ function CalendarView({
   };
 
   const roundToNearestQuarter = (timeStr) => {
-  if (!timeStr) return "--:--";
-  const [hStr, mStr] = timeStr.split(":");
-  const hours = parseInt(hStr, 10);
-  const minutes = parseInt(mStr, 10);
-  if (isNaN(hours) || isNaN(minutes)) return timeStr;
-  const totalMinutes = hours * 60 + minutes;
-  const roundedMinutes = Math.round(totalMinutes / 15) * 15;
-  const finalHours = Math.floor(roundedMinutes / 60) % 24;
-  const finalMinutes = roundedMinutes % 60;
+    if (!timeStr) return "--:--";
+    const [hStr, mStr] = timeStr.split(":");
+    const hours = parseInt(hStr, 10);
+    const minutes = parseInt(mStr, 10);
+    if (isNaN(hours) || isNaN(minutes)) return timeStr;
+    const totalMinutes = hours * 60 + minutes;
+    const roundedMinutes = Math.round(totalMinutes / 15) * 15;
+    const finalHours = Math.floor(roundedMinutes / 60) % 24;
+    const finalMinutes = roundedMinutes % 60;
 
-  const formattedH = String(finalHours).padStart(2, "0");
-  const formattedM = String(finalMinutes).padStart(2, "0");
+    const formattedH = String(finalHours).padStart(2, "0");
+    const formattedM = String(finalMinutes).padStart(2, "0");
 
-  return `${formattedH}:${formattedM}`;
-};
+    return `${formattedH}:${formattedM}`;
+  };
 
   return (
     <>
       <header className="calendar-header">
         <div className="calendar-navigation">
           <button className="btn btn-secondary nav-btn" onClick={handlePrevYear}>
-            <span><img src="/images/fast-backward.svg" alt="Previous Year" className="yearImage previous" /></span>
+            <span>
+              <img
+                src="/images/icons/fast-backward.svg"
+                alt="Previous Year"
+                className="yearImage previous"
+              />
+            </span>
           </button>
-          <button className="btn btn-secondary  nav-btn" onClick={handlePrevMonth}>
-            <span><img src="/images/arrow-back.svg" alt="Previous Month" /></span>
+          <button className="btn btn-secondary nav-btn" onClick={handlePrevMonth}>
+            <span>
+              <img src="/images/icons/arrow-back.svg" alt="Previous Month" />
+            </span>
           </button>
           <h2 className="month-title">{headerTitle}</h2>
           <button className="btn btn-secondary nav-btn" onClick={handleNextMonth}>
-            <span><img src="/images/arrow-forward.svg" alt="Next Month" /></span>
+            <span>
+              <img src="/images/icons/arrow-forward.svg" alt="Next Month" />
+            </span>
           </button>
           <button className="btn btn-secondary nav-btn" onClick={handleNextYear}>
-            <span><img src="/images/fast-forward.svg" alt="Next Year" className="yearImage" /></span>
+            <span>
+              <img
+                src="/images/icons/fast-forward.svg"
+                alt="Next Year"
+                className="yearImage"
+              />
+            </span>
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today
@@ -287,141 +280,193 @@ function CalendarView({
       </header>
 
       <div className="calendar-weekdays">
-        <div className="weekday">Mon</div>
-        <div className="weekday">Tue</div>
-        <div className="weekday">Wed</div>
-        <div className="weekday">Thu</div>
-        <div className="weekday">Fri</div>
-        <div className="weekday">Sat</div>
-        <div className="weekday">Sun</div>
+        <div className="weekday">MON</div>
+        <div className="weekday">TUE</div>
+        <div className="weekday">WED</div>
+        <div className="weekday">THU</div>
+        <div className="weekday">FRI</div>
+        <div className="weekday">SAT</div>
+        <div className="weekday">SUN</div>
       </div>
 
       <div className="calendar-grid" ref={gridRef}>
-        {gridElements.map((el, idx) => {
-          if (el.type === "summary") {
-            return (
-              <div
-                className="week-summary-bar"
-                key={`summary-${el.weekKey}-${idx}`}
-              >
-                <span className="week-summary-title">{el.weekNumText}</span>
-                <span className="week-summary-item">
-                  <img src="/images/graph.svg" alt="Graph" style={{ width: "17px", height: "auto" }} />
-                  {el.distText}
-                </span>
-                <span className="week-summary-item">
-                  <img src="/images/heart-rate-light.svg" alt="Heart Rate" style={{ width: "17px", height: "auto" }} />
-                  {el.hrText}
-                </span>
-                <span className="week-summary-item">
-                  <img src="/images/pace-light.svg" alt="Pace" style={{ width: "19px", height: "auto" }} />
-                  {el.paceText}
-                </span>
-                <span className="week-summary-item week-goal-wrapper">
-                  <img src="/images/goal.svg" alt="Goal" style={{ width: "17px", height: "auto" }} /> Goal:
-                  <input
-                    type="number"
-                    className="input-weekly-goal"
-                    value={
-                      settings?.weeklyGoals?.[el.weekKey] !== undefined
-                        ? settings.weeklyGoals[el.weekKey]
-                        : el.weekDailyGoal
-                    }
-                    min="0"
-                    step="0.5"
-                    onChange={(e) =>
-                      handleGoalChange(el.weekKey, e.target.value)
-                    }
-                  />{" "}
-                  km/day
-                </span>
-              </div>
-            );
-          }
-
-          return (
-            <div
-              className={`day-cell${el.isGoalFailed ? " goal-failed" : ""}${el.isToday ? " today" : ""}`}
-              key={`day-${el.dateStr}-${idx}`}
-              onClick={() =>el.runs.length === 0 && onAddRunClick(null, el.dateStr)}
-              style={{ cursor: el.runs.length === 0 ? "pointer" : "default" }}
-            >
-              <div className="day-header">
-                <span className="day-number">{el.dayNumber}</span>
-              </div>
-
-              {el.runs.length > 0 && (
-                <div
-                  className={`day-run-container ${el.runs.length == 2 ? "double" : ""}`}
-                >
-                  {el.runs.map((run) => {
-                    const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
-                    const zoneColor = getPaceZoneColor(zoneIndex);
-                    const paceSecStr = String(run.paceS || 0).padStart(2, "0");
-
-                    const hStr = run.durationH > 0 ? `${run.durationH}:` : "";
-                    const mStr = String(run.durationM || 0).padStart(2, "0");
-                    const sStr = String(run.durationS || 0).padStart(2, "0");
-
-                    const distFormatted =
-                      typeof run.distance === "number"
-                        ? run.distance.toFixed(1)
-                        : parseFloat(run.distance || 0).toFixed(1);
-                    const mountainEmoji = run.mountainRun ? " ⛰️" : "";
-                    const notesEmoji = run.notes ? " 📝" : "";
-                    const weather = run.weather_data;
-
-                    return (
-                      <div
-                        key={run.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddRunClick(run.id);
-                        }}
-                        className="run-single-data-container"
-                      >
-                        <div className="run-bar bar-pace" style={{ background: zoneColor }}>
-                        <img src="/images/pace.svg" alt="Pace" style={{ width: "17px", height: "auto" }} />
-                          {run.paceM || 0}:{paceSecStr} min/km
-                        </div>
-
-                        {run.hr && parseInt(run.hr) > 0 && (
-                          <div className={`run-bar bar-hr ${getHrClass(run.hr)}`}>
-                            <img src="/images/heart-rate.svg" alt="Heart rate" style={{ width: "17px", height: "auto" }} />
-                            {run.hr || 0} bpm
-                          </div>
-                        )}
-
-                        <div className="run-bar bar-duration">
-                          <img src="/images/stopwatch.svg" alt="Stopwatch" style={{ width: "17px", height: "auto" }} />
-                          {hStr}{mStr}:{sStr}
-                        </div>
-
-                        <div
-                          className="run-bar bar-details"
-                          title={run.notes || ""}
-                        >
-                          <img src="/images/date.svg" alt="Date" style={{ width: "17px", height: "auto" }} />
-                          <span>{ roundToNearestQuarter(run.time) || "--:--"} • </span>
-                          {run.computedNumber || 0} || {distFormatted} km [
-                          {run.computedStreak || 1}]{mountainEmoji}
-                          {notesEmoji}
-                        </div>
-
-                        {weather && (
-                          <span className="run-weather-tooltip">
-                            {weatherEmojis[weather.type] || "☀️"} •{" "}
-                            {weather.temp}°C • 💧{weather.humidity || 60}%
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+        {weeksData.map((week) => (
+          <div className="runWeek" key={`week-${week.weekKey}`}>
+            <div className="week-summary-bar">
+              <span className="week-summary-title">{week.summary.weekNumText}</span>
+              <span className="week-summary-item">
+                <img
+                  src="/images/icons/graph.svg"
+                  alt="Graph"
+                  style={{ width: "17px", height: "auto" }}
+                />
+                {week.summary.distText}
+              </span>
+              <span className="week-summary-item">
+                <img
+                  src="/images/icons/heart-rate-light.svg"
+                  alt="Heart Rate"
+                  style={{ width: "17px", height: "auto" }}
+                />
+                {week.summary.hrText}
+              </span>
+              <span className="week-summary-item">
+                <img
+                  src="/images/icons/pace-light.svg"
+                  alt="Pace"
+                  style={{ width: "19px", height: "auto" }}
+                />
+                {week.summary.paceText}
+              </span>
+              <span className="week-summary-item week-goal-wrapper">
+                <img
+                  src="/images/icons/goal.svg"
+                  alt="Goal"
+                  style={{ width: "17px", height: "auto" }}
+                />{" "}
+                Goal:
+                <input
+                  type="number"
+                  className="input-weekly-goal"
+                  value={
+                    settings?.weeklyGoals?.[week.weekKey] !== undefined
+                      ? settings.weeklyGoals[week.weekKey]
+                      : week.summary.weekDailyGoal
+                  }
+                  min="0"
+                  step="0.5"
+                  onChange={(e) => handleGoalChange(week.weekKey, e.target.value)}
+                />{" "}
+                km/day
+              </span>
             </div>
-          );
-        })}
+
+            <div className="week-days-grid">
+              {week.days.map((day) => (
+                <div
+                  className={`day-cell${day.isGoalFailed ? " goal-failed" : ""}${
+                    day.isToday ? " today" : ""
+                  }`}
+                  key={`day-${day.dateStr}`}
+                  onClick={() =>
+                    day.runs.length === 0 && onAddRunClick(null, day.dateStr)
+                  }
+                  style={{
+                    cursor: day.runs.length === 0 ? "pointer" : "default",
+                  }}
+                >
+                  <div className="day-header">
+                    <span className="day-number">{day.dayNumber}</span>
+                  </div>
+
+                  {day.runs.length > 0 && (
+                    <div
+                      className={`day-run-container ${
+                        day.runs.length === 2 ? "double" : ""
+                      }`}
+                    >
+                      {day.runs.map((run) => {
+                        const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
+                        const zoneColor = getPaceZoneColor(zoneIndex);
+                        const paceSecStr = String(run.paceS || 0).padStart(
+                          2,
+                          "0"
+                        );
+
+                        const hStr =
+                          run.durationH > 0 ? `${run.durationH}:` : "";
+                        const mStr = String(run.durationM || 0).padStart(2, "0");
+                        const sStr = String(run.durationS || 0).padStart(2, "0");
+
+                        const distFormatted =
+                          typeof run.distance === "number"
+                            ? run.distance.toFixed(1)
+                            : parseFloat(run.distance || 0).toFixed(1);
+                        const mountainEmoji = run.mountainRun ? " ⛰️" : "";
+                        const notesEmoji = run.notes ? " 📝" : "";
+                        const weather = run.weather_data;
+
+                        return (
+                          <div
+                            key={run.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAddRunClick(run.id);
+                            }}
+                            className="run-single-data-container"
+                          >
+                            <div
+                              className="run-bar bar-pace"
+                              style={{ background: zoneColor }}
+                            >
+                              <img
+                                src="/images/icons/pace.svg"
+                                alt="Pace"
+                                style={{ width: "17px", height: "auto" }}
+                              />
+                              {run.paceM || 0}:{paceSecStr} min/km
+                            </div>
+
+                            {run.hr && parseInt(run.hr) > 0 && (
+                              <div
+                                className={`run-bar bar-hr ${getHrClass(
+                                  run.hr
+                                )}`}
+                              >
+                                <img
+                                  src="/images/icons/heart-rate.svg"
+                                  alt="Heart rate"
+                                  style={{ width: "17px", height: "auto" }}
+                                />
+                                {run.hr || 0} bpm
+                              </div>
+                            )}
+
+                            <div className="run-bar bar-duration">
+                              <img
+                                src="/images/icons/stopwatch.svg"
+                                alt="Stopwatch"
+                                style={{ width: "17px", height: "auto" }}
+                              />
+                              {hStr}
+                              {mStr}:{sStr}
+                            </div>
+
+                            <div
+                              className="run-bar bar-details"
+                              title={run.notes || ""}
+                            >
+                              <img
+                                src="/images/icons/date.svg"
+                                alt="Date"
+                                style={{ width: "17px", height: "auto" }}
+                              />
+                              <span>
+                                {roundToNearestQuarter(run.time) || "--:--"} •{" "}
+                              </span>
+                              {run.computedNumber || 0} || {distFormatted} km [
+                              {run.computedStreak || 1}]
+                              {mountainEmoji}
+                              {notesEmoji}
+                            </div>
+
+                            {weather && (
+                              <span className="run-weather-tooltip">
+                                {weatherEmojis[weather.type] || "☀️"} •{" "}
+                                {weather.temp}°C • 💧
+                                {weather.humidity || 60}%
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

@@ -8,7 +8,6 @@
 @import "./buttons.less";
 @import "./side-panel.less";
 @import "./run-edit-modal.less";
-@import "./top-menu.less";
 
 * {
   margin: 0;
@@ -33,7 +32,7 @@ body {
     display: flex;
     transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    min-height: 100vh;
+    height: 100vh;
     @media (max-width: @mobileScreen) {
       height: auto;
       margin-bottom: 85px;
@@ -43,15 +42,22 @@ body {
     .centerFlex();
     height: 100vh;
     color: var(--text-primary);
+    h2 {
+      .centerFlex();
+      .runnerGif {
+        filter: invert(1);
+        width: 90px;
+      }
+    }
   }
 
   .main-content {
-  width: 100%;
+    width: 100%;
   }
 
   .glass-panel {
     background: var(--glass-bg);
-    padding: 25px 15px;
+    padding: 25px 0;
     @media (max-width: @mobileScreen) {
       padding: 0;
     }

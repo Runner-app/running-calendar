@@ -1,8 +1,11 @@
 .calendar-panel {
   flex-grow: 1;
 
+  // Mixin do gradientów tętna
   .make-hr-gradient(@varName) {
-    background: linear-gradient(90deg, var(@varName) 0%, 
+    background: linear-gradient(
+      90deg, 
+      var(@varName) 0%, 
       color-mix(in srgb, var(@varName) 60%, transparent) 40%, 
       transparent 100%
     );
@@ -18,29 +21,36 @@
   .bar-hr-160-164   { .make-hr-gradient(--hr-160-164); }
   .bar-hr-165-plus  { .make-hr-gradient(--hr-165-plus); }
 
+  // NAGŁÓWEK KALENDARZA
   .calendar-header {
     .centerFlex();
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.5rem;
+
     @media (max-width: @mobileScreen) {
       position: fixed;
       top: 0;
+      left: 0;
       background-color: var(--modal-bg);
       padding: 15px 5px;
       justify-content: center;
       width: 100%;
       z-index: 2;
     }
+
     .calendar-navigation {
       .centerFlex();
-      gap: 1rem;
+      gap: 15px;
+      padding-left: 15px;
+
       .month-title {
         font-size: calc(@fontSizeH2 - 6px);
         font-weight: 700;
         width: 450px;
         text-align: center;
+
         @media (max-width: @mobileScreen) {
           width: auto;
           font-size: @fontSizeSmall;
@@ -49,15 +59,18 @@
     }
   }
 
+  // DNI TYGODNIA (MON, TUE...)
   .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
     padding-bottom: 0.75rem;
     margin-top: 1rem;
+
     @media (max-width: @mobileScreen) {
       display: none;
     }
+
     .weekday {
       font-size: @fontSizeSmall;
       font-weight: 600;
@@ -66,145 +79,216 @@
     }
   }
 
+  // GŁÓWNA SIATKA TYGODNI
   .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: 35px 220px 35px 220px 35px 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; // Odstęp między blokami tygodni
+
     @media (max-width: @mobileScreen) {
-      display: flex;
-      flex-direction: column;
       gap: 15px;
       padding: 10px;
       margin-top: 75px;
     }
-    .week-summary-bar {
-      background-color: var(--background-grey-light);
-      grid-column: span 7;
-      border: 1px solid rgba(139, 92, 246, 0.15);
-      border-bottom: none;
-      padding: 0 15px;
+
+    // WRAPPER JEDNEGO TYGODNIA
+    .runWeek {
       display: flex;
-      gap: 25px;
-      align-items: center;
-      font-size: @fontSizeSmall;
-      font-weight: 500;
-      color: var(--text-secondary);
-      @media (max-width: @mobileScreen) {
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      .week-summary-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .week-goal-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        input.input-weekly-goal {
-          width: 36px;
-          background: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          color: inherit;
-          font-family: inherit;
-          font-weight: bold;
-          text-align: center;
-          padding: 0 2px;
-          border-radius: 4px;
-          &:focus {
-            outline: none;
-            border-color: var(--color-primary-glow);
-          }
-        }
-      }
-    }
-    .day-cell {
-      .flexColumn();
-      background: var(--day-cell-bg);
+      flex-direction: column;
       border: 1px solid var(--glass-border);
-      position: relative;
-      transition: all 0.2s ease;
-      &.goal-failed {
-        .day-header {
-          background-color: @colorRedDark;
-        }
-      }
-      &.today {
-        background: var(--color-primary-dark);
-        border-color: var(--color-primary-glow);
-        box-shadow: inset 0 0 10px var(--color-primary-shadow);
-      }
-      .run-weather-tooltip {
-        position: absolute;
-        bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%) translateY(5px);
-        background: rgba(20, 20, 20, 0.95);
-        color: #fff;
-        padding: 6px 10px;
-        border-radius: 6px;
-        font-size: @fontSizeSmaller;
-        white-space: nowrap;
-        z-index: 10;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.15s ease-in-out;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        pointer-events: none;
-      }
-      .day-header {
-        text-align: center;
-        position: relative;
-        padding: 2px 0;
-        .day-number {
-          font-size: @fontSizeSmall;
-          font-weight: 600;
-          color: var(--text-secondary);
-        }
-      }
-      &:hover {
-        background: var(--day-cell-bg-hover);
-        border-color: rgba(255, 255, 255, 0.15);
-        .run-weather-tooltip {
-          opacity: 1;
-          visibility: visible;
-          transform: translateX(-50%) translateY(0);
-        }
-      }
-      .day-run-container {
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--glass-bg);
+      height: 27vh;
+
+      // PAS PODSUMOWANIA TYGODNIA
+      .week-summary-bar {
+        background-color: var(--background-grey-light);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        padding: 8px 15px;
         display: flex;
-        flex-direction: column;
-        cursor: pointer;
-        &.double {
-          flex-direction: row-reverse;
-          .run-single-data-container {
-            width: 50%;
+        gap: 25px;
+        align-items: center;
+        font-size: @fontSizeSmall;
+        font-weight: 500;
+        color: var(--text-secondary);
+
+        @media (max-width: @mobileScreen) {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .week-summary-title {
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+
+        .week-summary-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .week-goal-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          input.input-weekly-goal {
+            width: 42px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: inherit;
+            font-family: inherit;
+            font-weight: bold;
+            text-align: center;
+            padding: 2px 4px;
+            border-radius: 4px;
+
+            &:focus {
+              outline: none;
+              border-color: var(--color-primary-glow);
+            }
+
+            // Ukrywanie strzałek typu number
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+            -moz-appearance: textfield;
           }
         }
-        .run-bar {
-          .centerFlex();
-          justify-content:left;
-          gap: 5px;
-          font-size: @fontSizeSmall;
-          font-weight: 600;
-          padding: 5px 10px;
-          color: var(--text-dark);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          &.bar-details, &.bar-duration {
+      }
+
+      // SIATKA 7 DNI
+      .week-days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        min-height: 200px;
+
+        @media (max-width: @mobileScreen) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      // POJEDYNCZY DZIEŃ
+      .day-cell {
+        .flexColumn();
+        background: var(--day-cell-bg);
+        border-right: 1px solid var(--glass-border);
+        position: relative;
+        transition: all 0.2s ease;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        @media (max-width: @mobileScreen) {
+          border-right: none;
+          border-bottom: 1px solid var(--glass-border);
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+
+        &.goal-failed {
+          .day-header {
+            background-color: @colorRedDark;
+          }
+        }
+
+        &.today {
+          background: var(--color-primary-dark);
+          border-color: var(--color-primary-glow);
+          box-shadow: inset 0 0 10px var(--color-primary-shadow);
+        }
+
+        &:hover {
+          background: var(--day-cell-bg-hover);
+          border-color: rgba(255, 255, 255, 0.15);
+
+          .run-weather-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+
+        .day-header {
+          text-align: center;
+          position: relative;
+          padding: 4px 0;
+
+          .day-number {
+            font-size: @fontSizeSmall;
+            font-weight: 600;
             color: var(--text-secondary);
-            font-weight: 400;
+          }
+        }
+
+        .run-weather-tooltip {
+          position: absolute;
+          bottom: 15px;
+          left: 50%;
+          transform: translateX(-50%) translateY(5px);
+          background: rgba(20, 20, 20, 0.95);
+          color: #fff;
+          padding: 6px 10px;
+          border-radius: 6px;
+          font-size: @fontSizeSmaller;
+          white-space: nowrap;
+          z-index: 10;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.15s ease-in-out;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          pointer-events: none;
+        }
+
+        .day-run-container {
+          display: flex;
+          flex-direction: column;
+          cursor: pointer;
+          gap: 4px;
+          padding: 2px;
+
+          &.double {
+            flex-direction: row-reverse;
+
+            .run-single-data-container {
+              width: 50%;
+            }
+          }
+
+          .run-single-data-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          }
+
+          .run-bar {
+            .centerFlex();
+            justify-content: flex-start;
+            gap: 5px;
+            font-size: @fontSizeSmall;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-dark);
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &.bar-details,
+            &.bar-duration {
+              color: var(--text-secondary);
+              font-weight: 400;
+            }
           }
         }
       }
     }
   }
-}
-
-.input-weekly-goal .input-weekly-goal::-webkit-outer-spin-button,
-.input-weekly-goal::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }

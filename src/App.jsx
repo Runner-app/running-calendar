@@ -269,7 +269,7 @@ function App() {
 
   const renderLoadingScreen = () => (
     <div className="loading-screen">
-      <h2>Running 🏃</h2>
+      <h2>Running <img src="/images/loading-gif.gif" alt="Loading" className="runnerGif" /></h2>
     </div>
   );
 

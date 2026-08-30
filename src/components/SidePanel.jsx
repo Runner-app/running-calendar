@@ -8,7 +8,7 @@ function SidePanel({
   return (
     <aside className="sidebar-rail">
       <div className="sidebar-brand" title="RunUp">
-        <span className="brand-icon">🏃</span>
+        <img src="/images/runup-logo.svg" alt="RunUp" className="brandLogo" />
       </div>
 
       <nav className="sidebar-nav">
@@ -17,7 +17,7 @@ function SidePanel({
           onClick={() => setActiveView("calendar")}
           title="Calendar"
         >
-          <img src="/images/date.svg" alt="Calendar" className="icon" />
+          <img src="/images/icons/date.svg" alt="Calendar" className="icon" />
         </button>
 
         <button
@@ -25,7 +25,7 @@ function SidePanel({
           onClick={() => setActiveView("stats")}
           title="Statistics"
         >
-          <img src="/images/graph.svg" alt="Statistics" className="icon" />
+          <img src="/images/icons/graph.svg" alt="Statistics" className="icon" />
         </button>
       </nav>
 
