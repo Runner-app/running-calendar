@@ -118,8 +118,7 @@ function StatsPage({ runs, onBackClick }) {
         )}
         <h2 className="stats-title">Statistics</h2>
       </header>
-
-      {/* Przeniesione karty podsumowujące z SidePanelu */}
+      
       <div className="stats-summary-grid">
         <div className="stat-card">
           <div className="stat-icon">🏁</div>

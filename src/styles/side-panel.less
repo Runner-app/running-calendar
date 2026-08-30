@@ -8,6 +8,7 @@
   justify-content: space-between;
   padding: 16px 5px 16px 0;
   background: var(--modal-bg);
+  position: fixed;
   .sidebar-brand {
     .brandLogo {
       margin-top: 9px;
@@ -23,68 +24,4 @@
     align-items: center;
     width: 100%;
   }
-}
-
-.brand-icon {
-  font-size: 2rem;
-}
-
-.side-panel-header {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
-}
-
-.stats-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.stat-card {
-  background: var(--stat-card-bg);
-  border: 1px solid var(--stat-card-border);
-  border-radius: @borderRadiusMedium;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  background: var(--stat-card-bg-hover);
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: @borderRadiusSmall;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: var(--color-primary);
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-label {
-  font-size: @fontSizeNormal;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-top: 0.1rem;
 }

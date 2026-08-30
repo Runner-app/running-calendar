@@ -79,19 +79,15 @@
     }
   }
 
-  // GŁÓWNA SIATKA TYGODNI
   .calendar-grid {
     display: flex;
     flex-direction: column;
-    gap: 16px; // Odstęp między blokami tygodni
-
+    gap: 16px;
     @media (max-width: @mobileScreen) {
       gap: 15px;
       padding: 10px;
       margin-top: 75px;
     }
-
-    // WRAPPER JEDNEGO TYGODNIA
     .runWeek {
       display: flex;
       flex-direction: column;
@@ -100,10 +96,8 @@
       overflow: hidden;
       background: var(--glass-bg);
       height: 27vh;
-
-      // PAS PODSUMOWANIA TYGODNIA
       .week-summary-bar {
-        background-color: var(--background-grey-light);
+        background-color: var(--glass-bg-hover);
         border-bottom: 1px solid rgba(139, 92, 246, 0.15);
         padding: 8px 15px;
         display: flex;
@@ -117,23 +111,19 @@
           flex-wrap: wrap;
           gap: 12px;
         }
-
         .week-summary-title {
           font-weight: 700;
           color: var(--text-primary);
         }
-
         .week-summary-item {
           display: flex;
           align-items: center;
           gap: 6px;
         }
-
         .week-goal-wrapper {
           display: flex;
           align-items: center;
           gap: 4px;
-
           input.input-weekly-goal {
             width: 42px;
             background: rgba(255, 255, 255, 0.15);
@@ -144,90 +134,74 @@
             text-align: center;
             padding: 2px 4px;
             border-radius: 4px;
-
             &:focus {
               outline: none;
               border-color: var(--color-primary-glow);
             }
-
-            // Ukrywanie strzałek typu number
             &::-webkit-outer-spin-button,
             &::-webkit-inner-spin-button {
               -webkit-appearance: none;
               margin: 0;
             }
+            appearance: textfield;
             -moz-appearance: textfield;
           }
         }
       }
-
-      // SIATKA 7 DNI
       .week-days-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        min-height: 200px;
+        min-height: 85%;
 
         @media (max-width: @mobileScreen) {
           grid-template-columns: 1fr;
         }
       }
-
-      // POJEDYNCZY DZIEŃ
       .day-cell {
         .flexColumn();
         background: var(--day-cell-bg);
         border-right: 1px solid var(--glass-border);
         position: relative;
         transition: all 0.2s ease;
-
         &:last-child {
           border-right: none;
         }
-
         @media (max-width: @mobileScreen) {
           border-right: none;
           border-bottom: 1px solid var(--glass-border);
-
           &:last-child {
             border-bottom: none;
           }
         }
-
         &.goal-failed {
           .day-header {
             background-color: @colorRedDark;
           }
         }
-
         &.today {
           background: var(--color-primary-dark);
           border-color: var(--color-primary-glow);
           box-shadow: inset 0 0 10px var(--color-primary-shadow);
         }
-
         &:hover {
           background: var(--day-cell-bg-hover);
           border-color: rgba(255, 255, 255, 0.15);
-
           .run-weather-tooltip {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(0);
           }
         }
-
         .day-header {
           text-align: center;
           position: relative;
           padding: 4px 0;
-
           .day-number {
             font-size: @fontSizeSmall;
             font-weight: 600;
             color: var(--text-secondary);
           }
         }
-
         .run-weather-tooltip {
           position: absolute;
           bottom: 15px;
