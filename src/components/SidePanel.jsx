@@ -17,7 +17,7 @@ function SidePanel({
           onClick={() => setActiveView("calendar")}
           title="Calendar"
         >
-          <img src="src/resources/images/date.svg" alt="Calendar" className="icon" />
+          <img src="/images/date.svg" alt="Calendar" className="icon" />
         </button>
 
         <button
@@ -25,7 +25,7 @@ function SidePanel({
           onClick={() => setActiveView("stats")}
           title="Statistics"
         >
-          <img src="src/resources/images/graph.svg" alt="Statistics" className="icon" />
+          <img src="/images/graph.svg" alt="Statistics" className="icon" />
         </button>
       </nav>
 
@@ -36,9 +36,9 @@ function SidePanel({
           title={theme === "dark" ? "Switch to Light Theme" : "Switch to Dark Theme"}
         >
           {theme === "dark" ? (
-            <img src="src/resources/images/icons/sun.svg" alt="Light Mode" className="icon" />
+            <img src="/images/icons/sun.svg" alt="Light Mode" className="icon" />
           ) : (
-            <img src="src/resources/images/icons/moon.svg" alt="Dark Mode" className="icon" />
+            <img src="/images/icons/moon.svg" alt="Dark Mode" className="icon" />
           )}
         </button>
 
@@ -47,7 +47,7 @@ function SidePanel({
           onClick={handleLogout}
           title="Sign out"
         >
-          <img src="src/resources/images/icons/sign-out.svg" alt="Sign out" className="icon" />
+          <img src="/images/icons/sign-out.svg" alt="Sign out" className="icon" />
         </button>
       </div>
     </aside>

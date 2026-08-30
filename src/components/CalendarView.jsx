@@ -265,17 +265,17 @@ function CalendarView({
       <header className="calendar-header">
         <div className="calendar-navigation">
           <button className="btn btn-secondary nav-btn" onClick={handlePrevYear}>
-            <span><img src="src/resources/images/fast-backward.svg" alt="Previous Year" className="yearImage previous" /></span>
+            <span><img src="/images/fast-backward.svg" alt="Previous Year" className="yearImage previous" /></span>
           </button>
           <button className="btn btn-secondary  nav-btn" onClick={handlePrevMonth}>
-            <span><img src="src/resources/images/arrow-back.svg" alt="Previous Month" /></span>
+            <span><img src="/images/arrow-back.svg" alt="Previous Month" /></span>
           </button>
           <h2 className="month-title">{headerTitle}</h2>
           <button className="btn btn-secondary nav-btn" onClick={handleNextMonth}>
-            <span><img src="src/resources/images/arrow-forward.svg" alt="Next Month" /></span>
+            <span><img src="/images/arrow-forward.svg" alt="Next Month" /></span>
           </button>
           <button className="btn btn-secondary nav-btn" onClick={handleNextYear}>
-            <span><img src="src/resources/images/fast-forward.svg" alt="Next Year" className="yearImage" /></span>
+            <span><img src="/images/fast-forward.svg" alt="Next Year" className="yearImage" /></span>
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today
@@ -306,19 +306,19 @@ function CalendarView({
               >
                 <span className="week-summary-title">{el.weekNumText}</span>
                 <span className="week-summary-item">
-                  <img src="src/resources/images/graph.svg" alt="Graph" style={{ width: "17px", height: "auto" }} />
+                  <img src="/images/graph.svg" alt="Graph" style={{ width: "17px", height: "auto" }} />
                   {el.distText}
                 </span>
                 <span className="week-summary-item">
-                  <img src="src/resources/images/heart-rate-light.svg" alt="Heart Rate" style={{ width: "17px", height: "auto" }} />
+                  <img src="/images/heart-rate-light.svg" alt="Heart Rate" style={{ width: "17px", height: "auto" }} />
                   {el.hrText}
                 </span>
                 <span className="week-summary-item">
-                  <img src="src/resources/images/pace-light.svg" alt="Pace" style={{ width: "19px", height: "auto" }} />
+                  <img src="/images/pace-light.svg" alt="Pace" style={{ width: "19px", height: "auto" }} />
                   {el.paceText}
                 </span>
                 <span className="week-summary-item week-goal-wrapper">
-                  <img src="src/resources/images/goal.svg" alt="Goal" style={{ width: "17px", height: "auto" }} /> Goal:
+                  <img src="/images/goal.svg" alt="Goal" style={{ width: "17px", height: "auto" }} /> Goal:
                   <input
                     type="number"
                     className="input-weekly-goal"
@@ -381,19 +381,19 @@ function CalendarView({
                         className="run-single-data-container"
                       >
                         <div className="run-bar bar-pace" style={{ background: zoneColor }}>
-                        <img src="src/resources/images/pace.svg" alt="Pace" style={{ width: "17px", height: "auto" }} />
+                        <img src="/images/pace.svg" alt="Pace" style={{ width: "17px", height: "auto" }} />
                           {run.paceM || 0}:{paceSecStr} min/km
                         </div>
 
                         {run.hr && parseInt(run.hr) > 0 && (
                           <div className={`run-bar bar-hr ${getHrClass(run.hr)}`}>
-                            <img src="src/resources/images/heart-rate.svg" alt="Heart rate" style={{ width: "17px", height: "auto" }} />
+                            <img src="/images/heart-rate.svg" alt="Heart rate" style={{ width: "17px", height: "auto" }} />
                             {run.hr || 0} bpm
                           </div>
                         )}
 
                         <div className="run-bar bar-duration">
-                          <img src="src/resources/images/stopwatch.svg" alt="Stopwatch" style={{ width: "17px", height: "auto" }} />
+                          <img src="/images/stopwatch.svg" alt="Stopwatch" style={{ width: "17px", height: "auto" }} />
                           {hStr}{mStr}:{sStr}
                         </div>
 
@@ -401,7 +401,7 @@ function CalendarView({
                           className="run-bar bar-details"
                           title={run.notes || ""}
                         >
-                          <img src="src/resources/images/date.svg" alt="Date" style={{ width: "17px", height: "auto" }} />
+                          <img src="/images/date.svg" alt="Date" style={{ width: "17px", height: "auto" }} />
                           <span>{ roundToNearestQuarter(run.time) || "--:--"} • </span>
                           {run.computedNumber || 0} || {distFormatted} km [
                           {run.computedStreak || 1}]{mountainEmoji}
