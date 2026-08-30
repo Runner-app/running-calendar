@@ -243,6 +243,31 @@ function CalendarView({
     onSaveSettings(updatedSettings);
   };
 
+  const roundToNearestQuarter = (timeStr) => {
+  if (!timeStr) return "--:--";
+
+  const [hStr, mStr] = timeStr.split(":");
+  const hours = parseInt(hStr, 10);
+  const minutes = parseInt(mStr, 10);
+
+  if (isNaN(hours) || isNaN(minutes)) return timeStr;
+
+  // 1. Zamiana całego czasu na łączną liczbę minut
+  const totalMinutes = hours * 60 + minutes;
+
+  // 2. Zaokrąglenie do najbliższej wielokrotności 15 minut
+  const roundedMinutes = Math.round(totalMinutes / 15) * 15;
+
+  // 3. Przeliczenie z powrotem na godziny i minuty (uwzględnia przejście doby, np. 23:53 -> 24:00/00:00)
+  const finalHours = Math.floor(roundedMinutes / 60) % 24;
+  const finalMinutes = roundedMinutes % 60;
+
+  const formattedH = String(finalHours).padStart(2, "0");
+  const formattedM = String(finalMinutes).padStart(2, "0");
+
+  return `${formattedH}:${formattedM}`;
+};
+
   return (
     <>
       <header className="calendar-header">
@@ -312,11 +337,9 @@ function CalendarView({
 
           return (
             <div
-              className={`day-cell ${el.isToday ? "today" : ""}`}
+              className={`day-cell${el.isGoalFailed ? " goal-failed" : ""}${el.isToday ? " today" : ""}`}
               key={`day-${el.dateStr}-${idx}`}
-              onClick={() =>
-                el.runs.length === 0 && onAddRunClick(null, el.dateStr)
-              }
+              onClick={() =>el.runs.length === 0 && onAddRunClick(null, el.dateStr)}
               style={{ cursor: el.runs.length === 0 ? "pointer" : "default" }}
             >
               <div className="day-header">
@@ -335,7 +358,7 @@ function CalendarView({
 
               {el.runs.length > 0 && (
                 <div
-                  className={`day-run-container ${el.isGoalFailed ? "goal-failed" : ""} ${el.runs.length == 2 ? "double" : ""}`}
+                  className={`day-run-container ${el.runs.length == 2 ? "double" : ""}`}
                 >
                   {el.runs.map((run) => {
                     const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
@@ -363,29 +386,29 @@ function CalendarView({
                         }}
                         className="run-single-data-container"
                       >
-                        <div
-                          className="run-bar"
-                          style={{ background: zoneColor }}
-                        >
-                          🏃 {run.paceM || 0}:{paceSecStr} min/km
+                        <div className="run-bar bar-pace" style={{ background: zoneColor }}>
+                        <img src="src/resources/images/pace.svg" alt="Pace" style={{ width: "17px", height: "auto" }} />
+                          {run.paceM || 0}:{paceSecStr} min/km
                         </div>
 
                         {run.hr && parseInt(run.hr) > 0 && (
-                          <div className={`run-bar ${getHrClass(run.hr)}`}>
-                            ❤️ {run.hr || 0} bpm
+                          <div className={`run-bar bar-hr ${getHrClass(run.hr)}`}>
+                            <img src="src/resources/images/heart-rate.svg" alt="Heart rate" style={{ width: "17px", height: "auto" }} />
+                            {run.hr || 0} bpm
                           </div>
                         )}
 
                         <div className="run-bar bar-duration">
-                          ⏱️ {hStr}
-                          {mStr}:{sStr}
+                          <img src="src/resources/images/stopwatch.svg" alt="Stopwatch" style={{ width: "17px", height: "auto" }} />
+                          {hStr}{mStr}:{sStr}
                         </div>
 
                         <div
                           className="run-bar bar-details"
                           title={run.notes || ""}
                         >
-                          <span>🕖 {run.time || "--:--"} • </span>
+                          <img src="src/resources/images/date.svg" alt="Date" style={{ width: "17px", height: "auto" }} />
+                          <span>{ roundToNearestQuarter(run.time) || "--:--"} • </span>
                           {run.computedNumber || 0} || {distFormatted} km [
                           {run.computedStreak || 1}]{mountainEmoji}
                           {notesEmoji}

@@ -5,6 +5,7 @@
 @fontSizeMedium: 18px;
 @fontSizeNormal: 16px;
 @fontSizeSmall: 14px;
+@fontSizeSmaller: 13px;
 
 // Border radius
 @borderRadiusSmall: 8px;
@@ -16,6 +17,7 @@
 
 // Color variables
 @colorRed: #b42222;
+@colorRedDark: darken(@colorRed, 30%);
 
 // Dark mode colors
 :root {
@@ -31,7 +33,7 @@
   --background-grey-light: #1f2937;
 
   --text-primary: #f3f7ff;
-  --text-secondary: #9ca3af;
+  --text-secondary: rgba(208, 209, 210, 0.9);
   --text-dark: #0e1118;
 
   --modal-bg: #0f1420;
@@ -44,20 +46,20 @@
   --input-bg: rgba(255, 255, 255, 0.04);
 
   // Heart rate colors
-  --hr-under-130: rgba(5, 223, 117, 0.85);
-  --hr-130-134: rgba(50, 179, 54, 0.85);
-  --hr-135-139: rgba(127, 233, 7, 0.85);
-  --hr-140-144: rgba(217, 241, 0, 0.85);
-  --hr-145-149: rgba(255, 213, 0, 0.85);
-  --hr-150-154: rgba(255, 143, 51, 0.85);
-  --hr-155-159: rgba(255, 86, 34, 0.85);
-  --hr-160-164: rgba(244, 67, 54, 0.85);
-  --hr-165-plus: rgb(204, 25, 25, 0.85);
+  --hr-under-130: rgba(5, 223, 117, 0.75);
+  --hr-130-134: rgba(50, 179, 54, 0.75);
+  --hr-135-139: rgba(127, 233, 7, 0.75);
+  --hr-140-144: rgba(217, 241, 0, 0.75);
+  --hr-145-149: rgba(255, 213, 0, 0.75);
+  --hr-150-154: rgba(255, 143, 51, 0.75);
+  --hr-155-159: rgba(255, 86, 34, 0.75);
+  --hr-160-164: rgba(244, 67, 54, 0.75);
+  --hr-165-plus: rgb(204, 25, 25, 0.75);
 
   // Pace colors
-  --pace-0: #8b0000; // 7:00+ min/km
-  --pace-1: #b22222; // 6:50 - 6:59 min/km
-  --pace-2: #d32f2f; // 6:40 - 6:49 min/km
+  --pace-0: #802d4c; // 7:00+ min/km
+  --pace-1: #bd3434; // 6:50 - 6:59 min/km
+  --pace-2: #eb6c6c; // 6:40 - 6:49 min/km
   --pace-3: #e65100; // 6:30 - 6:39 min/km
   --pace-4: #f57c00; // 6:20 - 6:29 min/km
   --pace-5: #ffa41b; // 6:10 - 6:19 min/km
