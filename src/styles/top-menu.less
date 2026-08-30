@@ -1,17 +1,26 @@
-.menu-actions {
-  .centerFlex();
-  gap: 15px;
-  position: absolute;
-  top: 25px;
-  right: 25px;
-  @media (max-width: 768px) {
-    position: fixed;
-    z-index: 5;
-    top: unset;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    background: var(--modal-bg);
-    padding: 15px 5px;
+.sidebar-rail {
+  width: 60px;
+  min-width: 60px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  background: var(--panel-bg); // Twój kolor tła
+  border-right: 1px solid var(--border-color);
+
+  .sidebar-brand {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar-nav,
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
   }
 }

@@ -174,25 +174,25 @@ function CalendarView({
       });
 
       let avgPaceStr = "--:--";
-      let paceText = `🏃 Avg pace: --:-- /km`;
+      let paceText = `--:-- min/km`;
       if (totalDist > 0 && totalSeconds > 0) {
         const avgSecondsPerKm = totalSeconds / totalDist;
         const avgMin = Math.floor(avgSecondsPerKm / 60);
         const avgSec = Math.round(avgSecondsPerKm % 60);
         const avgSecStr = String(avgSec === 60 ? 59 : avgSec).padStart(2, "0");
         avgPaceStr = `${avgMin}:${avgSecStr}`;
-        paceText = `🏃 ${avgPaceStr} min/km`;
+        paceText = `${avgPaceStr} min/km`;
       }
 
       const weekNum = getRunningWeekNumber(weekMonday, runs || []);
       const weekNumText = weekNum && weekNum > 0 ? `${weekNum}` : `Week --`;
-      const hrText = avgHr ? `❤️ ${avgHr} bpm` : `❤️ -- bpm`;
+      const hrText = avgHr ? `${avgHr} bpm` : `-- bpm`;
 
       const weeklyGoal = weekDailyGoal * 7;
       let distText =
         weekDailyGoal > 0
-          ? `📈 ${Math.floor(totalDist)}.0 / ${Math.floor(weeklyGoal)}.0 km`
-          : `📈 ${Math.floor(totalDist)}.0 km`;
+          ? `${Math.floor(totalDist)}.0 / ${Math.floor(weeklyGoal)}.0 km`
+          : `${Math.floor(totalDist)}.0 km`;
 
       gridElements.push({
         type: "summary",
@@ -245,20 +245,12 @@ function CalendarView({
 
   const roundToNearestQuarter = (timeStr) => {
   if (!timeStr) return "--:--";
-
   const [hStr, mStr] = timeStr.split(":");
   const hours = parseInt(hStr, 10);
   const minutes = parseInt(mStr, 10);
-
   if (isNaN(hours) || isNaN(minutes)) return timeStr;
-
-  // 1. Zamiana całego czasu na łączną liczbę minut
   const totalMinutes = hours * 60 + minutes;
-
-  // 2. Zaokrąglenie do najbliższej wielokrotności 15 minut
   const roundedMinutes = Math.round(totalMinutes / 15) * 15;
-
-  // 3. Przeliczenie z powrotem na godziny i minuty (uwzględnia przejście doby, np. 23:53 -> 24:00/00:00)
   const finalHours = Math.floor(roundedMinutes / 60) % 24;
   const finalMinutes = roundedMinutes % 60;
 
@@ -273,20 +265,23 @@ function CalendarView({
       <header className="calendar-header">
         <div className="calendar-navigation">
           <button className="btn btn-secondary nav-btn" onClick={handlePrevYear}>
-            <span>&lt;&lt;</span>
+            <span><img src="src/resources/images/fast-backward.svg" alt="Previous Year" className="yearImage previous" /></span>
           </button>
           <button className="btn btn-secondary  nav-btn" onClick={handlePrevMonth}>
-            <span>&lt;</span>
+            <span><img src="src/resources/images/arrow-back.svg" alt="Previous Month" /></span>
           </button>
           <h2 className="month-title">{headerTitle}</h2>
           <button className="btn btn-secondary nav-btn" onClick={handleNextMonth}>
-            <span>&gt;</span>
+            <span><img src="src/resources/images/arrow-forward.svg" alt="Next Month" /></span>
           </button>
           <button className="btn btn-secondary nav-btn" onClick={handleNextYear}>
-            <span>&gt;&gt;</span>
+            <span><img src="src/resources/images/fast-forward.svg" alt="Next Year" className="yearImage" /></span>
           </button>
           <button className="btn btn-secondary btn-today" onClick={handleToday}>
             Today
+          </button>
+          <button className="btn" onClick={() => onAddRunClick(null, null)}>
+            + Add Run
           </button>
         </div>
       </header>
@@ -310,11 +305,20 @@ function CalendarView({
                 key={`summary-${el.weekKey}-${idx}`}
               >
                 <span className="week-summary-title">{el.weekNumText}</span>
-                <span className="week-summary-item">{el.distText}</span>
-                <span className="week-summary-item">{el.hrText}</span>
-                <span className="week-summary-item">{el.paceText}</span>
+                <span className="week-summary-item">
+                  <img src="src/resources/images/graph.svg" alt="Graph" style={{ width: "17px", height: "auto" }} />
+                  {el.distText}
+                </span>
+                <span className="week-summary-item">
+                  <img src="src/resources/images/heart-rate-light.svg" alt="Heart Rate" style={{ width: "17px", height: "auto" }} />
+                  {el.hrText}
+                </span>
+                <span className="week-summary-item">
+                  <img src="src/resources/images/pace-light.svg" alt="Pace" style={{ width: "19px", height: "auto" }} />
+                  {el.paceText}
+                </span>
                 <span className="week-summary-item week-goal-wrapper">
-                  🎯 Goal:
+                  <img src="src/resources/images/goal.svg" alt="Goal" style={{ width: "17px", height: "auto" }} /> Goal:
                   <input
                     type="number"
                     className="input-weekly-goal"
@@ -344,16 +348,6 @@ function CalendarView({
             >
               <div className="day-header">
                 <span className="day-number">{el.dayNumber}</span>
-                <button
-                  className="add-run-btn-cell"
-                  title="Add run"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddRunClick(null, el.dateStr);
-                  }}
-                >
-                  ➕
-                </button>
               </div>
 
               {el.runs.length > 0 && (

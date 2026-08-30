@@ -44,14 +44,17 @@ body {
     height: 100vh;
     color: var(--text-primary);
   }
-}
 
-.glass-panel {
-  background: var(--glass-bg);
-  padding: 25px 15px;
+  .main-content {
+  width: 100%;
+  }
 
-  @media (max-width: @mobileScreen) {
-    padding: 0;
+  .glass-panel {
+    background: var(--glass-bg);
+    padding: 25px 15px;
+    @media (max-width: @mobileScreen) {
+      padding: 0;
+    }
   }
 }
 

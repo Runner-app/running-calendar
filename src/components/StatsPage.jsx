@@ -25,6 +25,27 @@ function StatsPage({ runs, onBackClick }) {
     return computeRunMetrics(runs || []);
   }, [runs]);
 
+  // Obliczanie ogólnych statystyk (wcześniej w SidePanel)
+  const summaryStats = useMemo(() => {
+    const totalRuns = runsWithMetrics.length;
+    const totalDistance = runsWithMetrics.reduce(
+      (sum, run) => sum + (parseFloat(run.distance) || 0),
+      0
+    );
+
+    let currentStreak = 0;
+    if (runsWithMetrics.length > 0) {
+      const sortedRuns = [...runsWithMetrics].sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time || "00:00"}`);
+        const dateB = new Date(`${b.date}T${b.time || "00:00"}`);
+        return dateB - dateA;
+      });
+      currentStreak = sortedRuns[0].computedStreak || 0;
+    }
+
+    return { totalRuns, totalDistance, currentStreak };
+  }, [runsWithMetrics]);
+
   const yearlyStats = useMemo(() => {
     const yearlyMap = {};
 
@@ -40,7 +61,7 @@ function StatsPage({ runs, onBackClick }) {
     });
 
     return Object.values(yearlyMap).sort(
-      (a, b) => b.totalDistance - a.totalDistance,
+      (a, b) => b.totalDistance - a.totalDistance
     );
   }, [runsWithMetrics]);
 
@@ -78,23 +99,55 @@ function StatsPage({ runs, onBackClick }) {
       }
     });
     return Object.values(monthlyMap).sort(
-      (a, b) => b.totalDistance - a.totalDistance,
+      (a, b) => b.totalDistance - a.totalDistance
     );
   }, [runsWithMetrics]);
 
   return (
     <div className="stats-page glass-panel" id="stats-page">
       <header className="stats-header">
-        <button
-          className="btn btn-secondary nav-btn"
-          id="btn-back-stats"
-          aria-label="Back to calendar"
-          onClick={onBackClick}
-        >
-          <span>&lt;</span>
-        </button>
+        {onBackClick && (
+          <button
+            className="btn btn-secondary nav-btn"
+            id="btn-back-stats"
+            aria-label="Back to calendar"
+            onClick={onBackClick}
+          >
+            <span>&lt;</span>
+          </button>
+        )}
         <h2 className="stats-title">Statistics</h2>
       </header>
+
+      {/* Przeniesione karty podsumowujące z SidePanelu */}
+      <div className="stats-summary-grid">
+        <div className="stat-card">
+          <div className="stat-icon">🏁</div>
+          <div className="stat-info">
+            <span className="stat-label">Total Runs</span>
+            <span className="stat-value">{summaryStats.totalRuns}</span>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">🗺️</div>
+          <div className="stat-info">
+            <span className="stat-label">Total Distance</span>
+            <span className="stat-value">
+              {Math.floor(summaryStats.totalDistance).toLocaleString("pl-PL")} km
+            </span>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">🔥</div>
+          <div className="stat-info">
+            <span className="stat-label">Day streak</span>
+            <span className="stat-value">
+              {summaryStats.currentStreak}{" "}
+              {summaryStats.currentStreak === 1 ? "day" : "days"}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div className="stats-content">
         <div className="stats-section">
@@ -107,7 +160,9 @@ function StatsPage({ runs, onBackClick }) {
                 const isCurrentYear = stat.year === currentYear;
                 return (
                   <div
-                    className={`stats-item ${isCurrentYear ? "is-current-year" : ""}`}
+                    className={`stats-item ${
+                      isCurrentYear ? "is-current-year" : ""
+                    }`}
                     key={stat.year}
                   >
                     <span className="stats-label">{stat.year}</span>
@@ -134,7 +189,9 @@ function StatsPage({ runs, onBackClick }) {
 
                 return (
                   <div
-                    className={`stats-item ${isCurrentMonth ? "is-current-month" : ""}`}
+                    className={`stats-item ${
+                      isCurrentMonth ? "is-current-month" : ""
+                    }`}
                     key={stat.key}
                   >
                     <span className="stats-label">
@@ -142,7 +199,7 @@ function StatsPage({ runs, onBackClick }) {
                     </span>
                     <span className="stats-values">
                       {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
-                      {`${stat.runCount == 1 ? "run" : "runs"}`}
+                      {`${stat.runCount === 1 ? "run" : "runs"}`}
                     </span>
                   </div>
                 );

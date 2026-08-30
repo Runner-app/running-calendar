@@ -3,13 +3,14 @@
   background: var(--color-primary);
   color: var(--text-dark);
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 11px 25px;
   font-weight: 600;
   border-radius: @borderRadiusMedium;
   cursor: pointer;
   gap: 0.5rem;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px 0 var(--color-primary-glow);
+  border: 1px solid var(--color-primary-glow);
   &:hover {
     background: var(--color-primary-hover);
     transform: translateY(-1px);
@@ -37,10 +38,42 @@
   border-radius: 50%;
   padding: 0;
   font-size: @fontSizeNormal;
-  span {
-    position: relative;
-    top: -1px;
+  img {
+    max-width: 20px;
+    margin-top: 4px;
+    &.yearImage {
+      margin-left: 3px;
+      &.previous {
+        margin-left: 0px;
+        margin-right: 3px;
+      }
+    }
   }
+}
+
+.sidebar-btn {
+  .centerFlex();
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  &.active {
+    background: var(--color-primary);
+  }
+}
+
+.iconButton {
+  padding: 10px 15px
 }
 
 .btn-danger {

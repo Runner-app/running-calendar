@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "./config/supabaseClient";
 import SidePanel from "./components/SidePanel";
-import TopMenu from "./components/TopMenu";
 import CalendarView from "./components/CalendarView";
 import StatsPage from "./components/StatsPage";
 import RunEditModal from "./components/RunEditModal";
@@ -22,7 +21,6 @@ function App() {
   const [runs, setRuns] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState("calendar");
   const [isRunModalOpen, setIsRunModalOpen] = useState(false);
   const [selectedRun, setSelectedRun] = useState(null);
@@ -164,8 +162,6 @@ function App() {
     setRuns([]);
   };
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
   const handleSaveSettings = async (newSettings) => {
     setSettings(newSettings);
     if (!sessionRef.current?.user) return;
@@ -271,73 +267,59 @@ function App() {
     }
   };
 
-  // TODO: Change the loading screen to a popup while creatnig a new run
   const renderLoadingScreen = () => (
     <div className="loading-screen">
       <h2>Running 🏃</h2>
     </div>
   );
 
-  if(!session) {
-    if(authLoading) {
+  if (!session) {
+    if (authLoading) {
       return renderLoadingScreen();
     }
     return <LoginScreen />;
   }
 
-  if(isLoading) {
+  if (isLoading) {
     return renderLoadingScreen();
   }
 
   return (
     <>
-      <div className={`app-container ${isSidebarOpen ? "" : "sidebar-hidden"}`}>
-        <TopMenu
-          onToggleSidebar={toggleSidebar}
+      <div className="app-container">
+        <SidePanel
+          activeView={activeView}
+          setActiveView={setActiveView}
+          theme={theme}
           onToggleTheme={onToggleTheme}
           handleLogout={handleLogout}
-          isSidebarOpen={isSidebarOpen}
         />
 
-        <SidePanel
-          onAddRunClick={() => handleAddRunClick(null, null)}
-          onStatsClick={() => setActiveView("stats")}
-          onCalendarClick={() => setActiveView("calendar")}
-          runs={runs}
-        />
+        <main className="main-content">
+          {activeView === "calendar" && (
+            <div className="calendar-panel glass-panel">
+              <CalendarView
+                currentDate={currentDate}
+                setCurrentDate={setCurrentDate}
+                runs={runs}
+                theme={theme}
+                settings={settings}
+                onSaveSettings={handleSaveSettings}
+                onAddRunClick={handleAddRunClick}
+              />
+            </div>
+          )}
 
-        {activeView === "details" && (
-          <RunDetailsView
-            run={runs.find((r) => r.id === selectedRun)}
-            onBackClick={() => setActiveView("calendar")}
-            onEditClick={() => setIsRunModalOpen(true)}
-          />
-        )}
+          {activeView === "stats" && <StatsPage runs={runs} />}
 
-        <main
-          className="calendar-panel glass-panel"
-          style={{ display: activeView === "calendar" ? "block" : "none" }}
-        >
-          <CalendarView
-            currentDate={currentDate}
-            setCurrentDate={setCurrentDate}
-            isSidebarOpen={isSidebarOpen}
-            runs={runs}
-            theme={theme}
-            settings={settings}
-            onSaveSettings={handleSaveSettings}
-            onAddRunClick={handleAddRunClick}
-          />
+          {activeView === "details" && (
+            <RunDetailsView
+              run={runs.find((r) => r.id === selectedRun)}
+              onBackClick={() => setActiveView("calendar")}
+              onEditClick={() => setIsRunModalOpen(true)}
+            />
+          )}
         </main>
-
-        {activeView === "stats" && (
-          <StatsPage
-            runs={runs}
-            onBackClick={() => setActiveView("calendar")}
-            onToggleSidebar={toggleSidebar}
-            isSidebarOpen={isSidebarOpen}
-          />
-        )}
       </div>
 
       <RunEditModal
