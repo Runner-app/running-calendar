@@ -1,4 +1,4 @@
-import { getMonday, getWeekKey } from "./RunUtils.js";
+import { getMonday, getWeekKey, parseRunDate } from "./RunUtils.js";
 
 const MONTH_NAMES = [
     "January", "February", "March", "April", "May", "June",
@@ -8,26 +8,9 @@ const MONTH_NAMES = [
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MIN_STREAK_LENGTH = 10;
 
-function parseRunDate(date, time = "00:00") {
-    if (!date) return null;
-
-    const [year, month, day] = date.split("-").map(Number);
-    const [hours, minutes] = time.split(":").map(Number);
-
-    return new Date(
-        year,
-        month - 1,
-        day,
-        hours || 0,
-        minutes || 0
-    );
-}
-
-
 function getDistance(run) {
     return parseFloat(run.distance) || 0;
 }
-
 
 function formatDayMonth(date) {
     return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -104,9 +87,7 @@ export function getMonthlyStats(runsWithMetrics = []) {
         if (!run.date) return oldest;
         if (!oldest) return run;
 
-        return parseRunDate(run.date) < parseRunDate(oldest.date)
-            ? run
-            : oldest;
+        return run.date < oldest.date ? run : oldest;
     }, null);
 
     if (!oldestRun) return [];
@@ -208,9 +189,7 @@ export function getStreakStats(runsWithMetrics = []) {
                 .map((run) => run.date)
                 .filter(Boolean)
         )
-    ).sort((a, b) => {
-        return parseRunDate(a) - parseRunDate(b);
-    });
+    ).sort();
 
     if (!uniqueDates.length) return [];
 

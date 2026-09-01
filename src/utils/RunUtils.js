@@ -1,9 +1,11 @@
-export function getMonday(d) {
-  const date = new Date(d);
-  const day = date.getDay();
-  const diffToMonday = date.getDate() - day + (day === 0 ? -6 : 1);
+export function getMonday(date) {
+    const result = new Date(date);
+    const day = result.getDay();
+    const daysFromMonday = day === 0 ? 6 : day - 1;
 
-  return new Date(date.getFullYear(), date.getMonth(), diffToMonday);
+    result.setDate(result.getDate() - daysFromMonday);
+
+    return result;
 }
 
 export function formatDate(date) {
@@ -13,9 +15,24 @@ export function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
+export function parseRunDate(date, time = "00:00") {
+    if (!date) return null;
+
+    const [year, month, day] = date.split("-").map(Number);
+    const [hours, minutes] = time.split(":").map(Number);
+
+    return new Date(
+        year,
+        month - 1,
+        day,
+        hours || 0,
+        minutes || 0
+    );
+}
+
 export function getRunningWeekNumber(mondayDate, runs) {
   if (!runs || runs.length === 0) return null;
-  const runDates = runs.map((r) => new Date(r.date));
+  const runDates = runs.map((r) => parseRunDate(r.date));
   const earliestDate = new Date(Math.min(...runDates));
   const earliestMonday = getMonday(earliestDate);
 
@@ -77,14 +94,14 @@ export function computeRunMetrics(runsAsInput) {
   if (!runsAsInput || runsAsInput.length === 0) return [];
 
   const sortedRuns = [...runsAsInput].sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
+    (a, b) => parseRunDate(a.date) - parseRunDate(b.date),
   );
   let autoRunNumCounter = 1;
   const runDates = new Set(sortedRuns.map((r) => r.date));
 
   sortedRuns.forEach((run) => {
     let streak = 1;
-    let currentDate = new Date(run.date);
+    let currentDate = parseRunDate(run.date);
 
     while (true) {
       currentDate.setDate(currentDate.getDate() - 1);

@@ -66,7 +66,7 @@ function StatsPage({ runs }) {
       </div>
 
       <div className="stats-content chart">
-        <div className="stats-section">
+        <div className="statsSection">
           <h3 className="stats-section-title">📅 Yearly Distance</h3>
           <YearlyDistanceChart data={yearlyStats} />
         </div>
@@ -74,7 +74,7 @@ function StatsPage({ runs }) {
 
       <div className="stats-content">
         {/* MONTHLY RANKING */}
-        <div className="stats-section">
+        <div className="statsSection">
           <h3 className="stats-section-title">🏆 Monthly Distance Ranking</h3>
           <div id="monthly-stats-container">
             {monthlyStats.map((stat) => (
@@ -97,7 +97,7 @@ function StatsPage({ runs }) {
         </div>
 
         {/* TOP 20 WEEKS */}
-        <div className="stats-section">
+        <div className="statsSection">
           <h3 className="stats-section-title">⚡ Top 20 Weekly Distance</h3>
           <div id="weekly-top-stats-container">
             {topWeeklyStats.map((stat, index) => (
@@ -115,7 +115,7 @@ function StatsPage({ runs }) {
         </div>
 
         {/* TOP STREAKS */}
-        <div className="stats-section">
+        <div className="statsSection">
           <h3 className="stats-section-title">🔥 Running Streaks (&gt; 9 days)</h3>
           <div id="streaks-stats-container">
             {streakStats.map((stat, index) => (
@@ -136,7 +136,7 @@ function StatsPage({ runs }) {
         </div>
 
         {/* MONTHLY COMPARISON ACCORDION */}
-        <div className="stats-section full-width-section">
+        <div className="statsSection full-width-section">
           <h3 className="stats-section-title">📊 Monthly Performance by Year</h3>
           <div className="monthly-comparison-grid">
             {monthlyComparisonStats.map((m) => (
