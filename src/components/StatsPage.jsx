@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { computeRunMetrics } from "../utils/RunUtils.js";
 import WeeklyPaceHistoryChart from "./WeeklyPaceHistoryChart";
 
-function StatsPage({ runs, onBackClick }) {
+function StatsPage({ runs }) {
   const monthNames = [
     "January",
     "February",
@@ -106,19 +106,9 @@ function StatsPage({ runs, onBackClick }) {
   return (
     <div className="stats-page glass-panel" id="stats-page">
       <header className="stats-header">
-        {onBackClick && (
-          <button
-            className="btn btn-secondary nav-btn"
-            id="btn-back-stats"
-            aria-label="Back to calendar"
-            onClick={onBackClick}
-          >
-            <span>&lt;</span>
-          </button>
-        )}
         <h2 className="stats-title">Statistics</h2>
       </header>
-      
+
       <div className="stats-summary-grid">
         <div className="stat-card">
           <div className="stat-icon">🏁</div>

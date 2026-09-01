@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -11,11 +11,13 @@ import {
 import { computeRunMetrics, getWeekKey } from "../utils/RunUtils.js";
 
 function WeeklyPaceHistoryChart({ runs = [] }) {
-  const chartData = useMemo(() => {
+  const [range, setRange] = useState("3M"); // Domyślnie ostatnie 3 miesiące
+
+  const rawChartData = useMemo(() => {
     if (!runs || runs.length === 0) return [];
 
     const runsWithMetrics = computeRunMetrics([...runs]).sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
+      (a, b) => new Date(a.date) - new Date(b.date)
     );
     const weeksMap = {};
 
@@ -54,42 +56,50 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       }
     });
 
-    return Object.values(weeksMap)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map((group) => {
-        let paceDecimal = 0;
-        let paceStr = "--:--";
+   return Object.values(weeksMap)
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .map((group) => {
+      let paceDecimal = 0;
+      let paceStr = "--:--";
 
-        if (group.totalDist > 0 && group.totalSeconds > 0) {
-          const avgSecondsPerKm = group.totalSeconds / group.totalDist;
-          const avgMin = Math.floor(avgSecondsPerKm / 60);
-          const avgSec = Math.round(avgSecondsPerKm % 60);
+      if (group.totalDist > 0 && group.totalSeconds > 0) {
+        const avgSecondsPerKm = group.totalSeconds / group.totalDist;
+        const avgMin = Math.floor(avgSecondsPerKm / 60);
+        const avgSec = Math.round(avgSecondsPerKm % 60);
 
-          const finalMin = avgSec === 60 ? avgMin + 1 : avgMin;
-          const finalSec = avgSec === 60 ? 0 : avgSec;
+        const finalMin = avgSec === 60 ? avgMin + 1 : avgMin;
+        const finalSec = avgSec === 60 ? 0 : avgSec;
 
-          const avgSecStr = String(finalSec).padStart(2, "0");
-          paceStr = `${finalMin}:${avgSecStr}`;
+        const avgSecStr = String(finalSec).padStart(2, "0");
+        paceStr = `${finalMin}:${avgSecStr}`;
+        paceDecimal = finalMin + finalSec / 60;
+      }
 
-          paceDecimal = finalMin + finalSec / 60;
-        }
+      const dateObj = new Date(group.timestamp);
+      const shortDate = dateObj.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "2-digit",
+      });
 
-        return {
-          weekKey: group.displayLabel,
-          distance: parseFloat(group.totalDist.toFixed(1)),
-          paceDecimal:
-            paceDecimal > 0 ? parseFloat(paceDecimal.toFixed(2)) : null,
-          paceStr: paceStr,
-        };
-      })
-      .filter((item) => item.paceDecimal !== null);
+      return {
+        weekKey: group.displayLabel,
+        shortDate: shortDate,
+        distance: parseFloat(group.totalDist.toFixed(1)),
+        paceDecimal:
+          paceDecimal > 0 ? parseFloat(paceDecimal.toFixed(2)) : null,
+        paceStr: paceStr,
+      };
+    })
+    .filter((item) => item.paceDecimal !== null);
   }, [runs]);
 
-  const dynamicWidth = useMemo(() => {
-    const minWidth = window.innerWidth - 60;
-    const calculatedWidth = chartData.length * 65;
-    return Math.max(minWidth, calculatedWidth);
-  }, [chartData]);
+  const filteredData = useMemo(() => {
+    if (range === "3M") return rawChartData.slice(-12);
+    if (range === "6M") return rawChartData.slice(-24);
+    if (range === "1Y") return rawChartData.slice(-52);
+    return rawChartData; // "ALL"
+  }, [rawChartData, range]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -113,50 +123,61 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     return `${mins}:${String(secs).padStart(2, "0")}`;
   };
 
-  if (chartData.length === 0) {
+  if(rawChartData.length === 0) {
     return <div>No data available for the pace history chart.</div>;
   }
 
   return (
     <div className="glass-panel pace-history-panel">
-      <h3 className="center">📈 Weekly Pace History</h3>
-
-      <div className="weekly-history-scroll-container">
-        <div style={{ width: `${dynamicWidth}px`, height: "350px" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+      <div className="chart-header">
+        <h3>📈 Weekly Pace History</h3>
+        <div className="chart-range-selector">
+          {["3M", "6M", "1Y", "ALL"].map((r) => (
+            <button
+              key={r}
+              className={`btn-range ${range === r ? "active" : ""}`}
+              onClick={() => setRange(r)}
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
-              />
-              <XAxis
-                dataKey="weekKey"
-                stroke="#727272"
-                tick={{ fontSize: 11 }}
-                dy={10}
-              />
-              <YAxis
-                domain={["dataMin - 0.2", "dataMax + 0.2"]}
-                reversed={true}
-                stroke="#6d6b6b"
-                tickFormatter={formatYAxis}
-                tick={{ fontSize: 11 }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="paceDecimal"
-                stroke="#00c853"
-                strokeWidth={3}
-                activeDot={{ r: 6, stroke: "#fff", strokeWidth: 1 }}
-                dot={{ r: 3, stroke: "#00c853", strokeWidth: 2, fill: "#111" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+              {r}
+            </button>
+          ))}
         </div>
+      </div>
+
+      <div style={{ width: "100%", height: "300px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={filteredData}
+            margin={{ top: 20, right: 20, left: 0, bottom: 10 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.05)"
+            />
+            <XAxis
+              dataKey="shortDate"
+              stroke="#727272"
+              tick={{ fontSize: 11 }}
+              dy={9}
+            />
+            <YAxis
+              domain={["dataMin - 0.1", "dataMax + 0.1"]}
+              reversed={true}
+              stroke="#6d6b6b"
+              tickFormatter={formatYAxis}
+              tick={{ fontSize: 11 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line
+              type="monotone"
+              dataKey="paceDecimal"
+              stroke="var(--color-primary)"
+              strokeWidth={3}
+              activeDot={{ r: 6, stroke: "#fff", strokeWidth: 1 }}
+              dot={{ r: 3, stroke: "var(--color-primary)", strokeWidth: 2, fill: "#111" }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
