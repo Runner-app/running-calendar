@@ -1,8 +1,9 @@
 export function getMonday(d) {
-  d = new Date(d);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  return new Date(d.setDate(diff));
+  const date = new Date(d);
+  const day = date.getDay();
+  const diffToMonday = date.getDate() - day + (day === 0 ? -6 : 1);
+
+  return new Date(date.getFullYear(), date.getMonth(), diffToMonday);
 }
 
 export function formatDate(date) {
