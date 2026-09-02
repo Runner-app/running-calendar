@@ -51,11 +51,11 @@
   }
 }
 
-.sidebar-btn {
+.sidebarButton {
   .centerFlex();
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: @borderRadiusSmall;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -65,7 +65,7 @@
     height: 20px;
   }
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--stat-card-border-hover);
   }
   &.active {
     background: var(--color-primary);
@@ -82,7 +82,7 @@
   padding: 10px 15px
 }
 
-.btn-danger {
+.buttonRed {
   background-color: @colorRed;
   color: #fff;
   &:hover {

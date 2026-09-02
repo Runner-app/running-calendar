@@ -1,27 +1,21 @@
-function SidePanel({
-  activeView,
-  setActiveView,
-  theme,
-  onToggleTheme,
-  handleLogout,
-}) {
+function SidePanel({activeView, setActiveView, theme, onToggleTheme, handleLogout}) {
   return (
-    <aside className="sidebar-rail">
-      <div className="sidebar-brand" title="RunUp">
+    <aside className="sidebarRail">
+      <div className="sidebarBrand" title="RunUp">
         <img src="/images/runup-logo.svg" alt="RunUp" className="brandLogo" />
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className="sidebarNav">
         <button
-          className={`sidebar-btn ${activeView === "calendar" ? "active" : ""}`}
+          className={`sidebarButton ${activeView === "calendar" ? "active" : ""}`}
           onClick={() => setActiveView("calendar")}
           title="Calendar"
         >
-          <img src="/images/icons/date.svg" alt="Calendar" className="icon" />
+          <img src="/images/icons/calendar.svg" alt="Calendar" className="icon" />
         </button>
 
         <button
-          className={`sidebar-btn ${activeView === "stats" ? "active" : ""}`}
+          className={`sidebarButton ${activeView === "stats" ? "active" : ""}`}
           onClick={() => setActiveView("stats")}
           title="Statistics"
         >
@@ -29,9 +23,9 @@ function SidePanel({
         </button>
       </nav>
 
-      <div className="sidebar-footer">
+      <div className="sidebarFooter">
         <button
-          className="sidebar-btn"
+          className="sidebarButton"
           onClick={onToggleTheme}
           title={theme === "dark" ? "Switch to Light Theme" : "Switch to Dark Theme"}
         >
@@ -42,11 +36,7 @@ function SidePanel({
           )}
         </button>
 
-        <button
-          className="sidebar-btn btn-danger"
-          onClick={handleLogout}
-          title="Sign out"
-        >
+        <button className="sidebarButton buttonRed" onClick={handleLogout} title="Sign out">
           <img src="/images/icons/sign-out.svg" alt="Sign out" className="icon" />
         </button>
       </div>

@@ -289,7 +289,7 @@ function CalendarView({
         <div className="weekday">SUN</div>
       </div>
 
-      <div className="calendar-grid" ref={gridRef}>
+      <div className="calendarGrid" ref={gridRef}>
         {weeksData.map((week) => (
           <div className="runWeek" key={`week-${week.weekKey}`}>
             <div className="week-summary-bar">
@@ -437,7 +437,7 @@ function CalendarView({
                               title={run.notes || ""}
                             >
                               <img
-                                src="/images/icons/date.svg"
+                                src="/images/icons/calendar.svg"
                                 alt="Date"
                                 style={{ width: "17px", height: "auto" }}
                               />

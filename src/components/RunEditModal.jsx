@@ -583,7 +583,7 @@ function RunEditModal({
           </button>
         </header>
 
-        <div className="modal-body">
+        <div className="modalBody">
           {!runId && (
             <div
               className={`fit-dropzone center`}
@@ -791,9 +791,9 @@ function RunEditModal({
           </form>
         </div>
 
-        <div className="modal-footer">
+        <div className="modalFooter">
           {runId && (
-            <button className="btn btn-danger" onClick={() => onDelete(runId)}>
+            <button className="btn buttonRed" onClick={() => onDelete(runId)}>
               Delete
             </button>
           )}
