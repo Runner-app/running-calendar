@@ -383,7 +383,7 @@ function CalendarView({
                             ? run.distance.toFixed(1)
                             : parseFloat(run.distance || 0).toFixed(1);
                         const mountainEmoji = run.mountainRun ? " ⛰️" : "";
-                        const notesEmoji = run.notes ? " 📝" : "";
+                        const notesEmoji = run.notes ? <img src="/images/icons/note.svg" alt="Note" className="icon notesIcon" /> : "";
                         const weather = run.weather_data;
 
                         return (
@@ -428,12 +428,11 @@ function CalendarView({
                                 alt="Stopwatch"
                                 style={{ width: "17px", height: "auto" }}
                               />
-                              {hStr}
-                              {mStr}:{sStr}
+                              {hStr}{mStr}:{sStr}
                             </div>
 
                             <div
-                              className="run-bar bar-details"
+                              className="run-bar barDetails"
                               title={run.notes || ""}
                             >
                               <img
@@ -447,7 +446,7 @@ function CalendarView({
                               {run.computedNumber || 0} || {distFormatted} km [
                               {run.computedStreak || 1}]
                               {mountainEmoji}
-                              {notesEmoji}
+                              <span className="notes">{notesEmoji}</span>
                             </div>
 
                             {weather && (
