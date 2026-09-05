@@ -1,23 +1,23 @@
-.calendar-panel {
+.calendarPanel {
   flex-grow: 1;
 
-  .make-hr-gradient(@varName) {
+  .makeHrGradient(@varName) {
     background: linear-gradient(
       90deg, var(@varName) 0%, color-mix(in srgb, var(@varName) 60%, transparent) 40%, transparent 100%
     );
   }
 
-  .bar-hr-under-130 { .make-hr-gradient(--hr-under-130); }
-  .bar-hr-130-134   { .make-hr-gradient(--hr-130-134); }
-  .bar-hr-135-139   { .make-hr-gradient(--hr-135-139); }
-  .bar-hr-140-144   { .make-hr-gradient(--hr-140-144); }
-  .bar-hr-145-149   { .make-hr-gradient(--hr-145-149); }
-  .bar-hr-150-154   { .make-hr-gradient(--hr-150-154); }
-  .bar-hr-155-159   { .make-hr-gradient(--hr-155-159); }
-  .bar-hr-160-164   { .make-hr-gradient(--hr-160-164); }
-  .bar-hr-165-plus  { .make-hr-gradient(--hr-165-plus); }
+  .barHrUnder130 { .makeHrGradient(--hr-under-130); }
+  .barHr130-134   { .makeHrGradient(--hr-130-134); }
+  .barHr135-139   { .makeHrGradient(--hr-135-139); }
+  .barHr140-144   { .makeHrGradient(--hr-140-144); }
+  .barHr145-149   { .makeHrGradient(--hr-145-149); }
+  .barHr150-154   { .makeHrGradient(--hr-150-154); }
+  .barHr155-159   { .makeHrGradient(--hr-155-159); }
+  .barHr160-164   { .makeHrGradient(--hr-160-164); }
+  .barHr165-plus  { .makeHrGradient(--hr-165-plus); }
 
-  .calendar-header {
+  .calendarHeader {
     .centerFlex();
     justify-content: space-between;
     flex-wrap: wrap;
@@ -33,12 +33,13 @@
       width: 100%;
       z-index: 2;
     }
-    .calendar-navigation {
+    .calendarNavigation {
       .centerFlex();
       gap: 15px;
       padding-left: 15px;
-      .month-title {
+      .monthTitle {
         font-size: calc(@fontSizeH2 - 6px);
+        color: var(--color-primary);
         font-weight: 700;
         width: 450px;
         text-align: center;
@@ -50,7 +51,7 @@
     }
   }
 
-  .calendar-weekdays {
+  .calendarWeekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
@@ -99,10 +100,10 @@
       padding: 10px;
       margin-top: 75px;
     }
-    &.animate-next {
+    &.animateNext {
       animation: calendarFadeInNext 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    &.animate-prev {
+    &.animatePrev {
       animation: calendarFadeInPrev 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .runWeek {
@@ -112,7 +113,7 @@
       overflow: hidden;
       background: var(--glass-bg);
       height: 27vh;
-      .week-summary-bar {
+      .weekSummaryBar {
         background-color: var(--glass-bg-hover);
         border-bottom: 1px solid rgba(139, 92, 246, 0.15);
         padding: 8px 15px;
@@ -126,20 +127,20 @@
           flex-wrap: wrap;
           gap: 12px;
         }
-        .week-summary-title {
+        .weekSummaryTitle {
           font-weight: 700;
           color: var(--text-primary);
         }
-        .week-summary-item {
+        .weekSummaryItem {
           display: flex;
           align-items: center;
           gap: 6px;
         }
-        .week-goal-wrapper {
+        .weekGoalWrapper {
           display: flex;
           align-items: center;
           gap: 4px;
-          input.input-weekly-goal {
+          input.inputWeeklyGoal {
             width: 42px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -163,7 +164,7 @@
           }
         }
       }
-      .week-days-grid {
+      .weekDaysGrid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         min-height: 85%;
@@ -171,7 +172,7 @@
           grid-template-columns: 1fr;
         }
       }
-      .day-cell {
+      .dayCell {
         .flexColumn();
         background: var(--day-cell-bg);
         border-right: 1px solid var(--glass-border);
@@ -187,8 +188,8 @@
             border-bottom: none;
           }
         }
-        &.goal-failed {
-          .day-header {
+        &.goalFailed {
+          .dayHeader {
             background-color: var(--color-red-dark);
           }
         }
@@ -200,23 +201,23 @@
         &:hover {
           background: var(--stat-card-border);
           border-color: rgba(255, 255, 255, 0.15);
-          .run-weather-tooltip {
+          .runWeatherTooltip {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(0);
           }
         }
-        .day-header {
+        .dayHeader {
           text-align: center;
           position: relative;
           padding: 4px 0;
-          .day-number {
+          .dayNumber {
             font-size: @fontSizeSmall;
             font-weight: 600;
             color: var(--text-secondary);
           }
         }
-        .run-weather-tooltip {
+        .runWeatherTooltip {
           position: absolute;
           bottom: 15px;
           left: 50%;
@@ -235,7 +236,7 @@
           border: 1px solid rgba(255, 255, 255, 0.1);
           pointer-events: none;
         }
-        .day-run-container {
+        .dayRunContainer {
           .flexColumn();
           height: 100%;
           cursor: pointer;
@@ -243,15 +244,15 @@
           padding: 2px;
           &.double {
             flex-direction: row-reverse;
-            .run-single-data-container {
+            .runSingleDataContainer {
               width: 50%;
             }
           }
-          .run-single-data-container {
+          .runSingleDataContainer {
             .flexColumn();
             gap: 2px;
           }
-          .run-bar {
+          .runBar {
             .centerFlex();
             justify-content: flex-start;
             gap: 5px;
@@ -263,7 +264,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             &.barDetails,
-            &.bar-duration {
+            &.barDuration {
               color: var(--text-secondary);
               font-weight: 400;
             }

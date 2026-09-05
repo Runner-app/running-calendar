@@ -19,7 +19,7 @@ function CalendarView({
   onAddRunClick,
 }) {
 
-  const [scrollDirection, setScrollDirection] = useState("next");
+  const [scrollDirection, setScrollDirection] = useState("Next");
   const isScrolling = useRef(false);
   const gridRef = useRef(null);
 
@@ -44,14 +44,14 @@ function CalendarView({
   }, [currentDate]);
 
   const handlePrevMonth = () => {
-    setScrollDirection("prev");
+    setScrollDirection("Prev");
     const n = new Date(currentDate);
     n.setDate(n.getDate() - 21);
     setCurrentDate(n);
   };
 
   const handleNextMonth = () => {
-    setScrollDirection("next");
+    setScrollDirection("Next");
     const n = new Date(currentDate);
     n.setDate(n.getDate() + 21);
     setCurrentDate(n);
@@ -246,9 +246,9 @@ function CalendarView({
 
   return (
     <>
-      <header className="calendar-header">
-        <div className="calendar-navigation">
-          <button className="btn btn-secondary nav-btn" onClick={handlePrevYear}>
+      <header className="calendarHeader">
+        <div className="calendarNavigation">
+          <button className="btn btnSecondary navButton" onClick={handlePrevYear}>
             <span>
               <img
                 src="/images/icons/fast-backward.svg"
@@ -257,18 +257,18 @@ function CalendarView({
               />
             </span>
           </button>
-          <button className="btn btn-secondary nav-btn" onClick={handlePrevMonth}>
+          <button className="btn btnSecondary navButton" onClick={handlePrevMonth}>
             <span>
               <img src="/images/icons/arrow-back.svg" alt="Previous Month" />
             </span>
           </button>
-          <h2 className="month-title">{headerTitle}</h2>
-          <button className="btn btn-secondary nav-btn" onClick={handleNextMonth}>
+          <h2 className="monthTitle">{headerTitle}</h2>
+          <button className="btn btnSecondary navButton" onClick={handleNextMonth}>
             <span>
               <img src="/images/icons/arrow-forward.svg" alt="Next Month" />
             </span>
           </button>
-          <button className="btn btn-secondary nav-btn" onClick={handleNextYear}>
+          <button className="btn btnSecondary navButton" onClick={handleNextYear}>
             <span>
               <img
                 src="/images/icons/fast-forward.svg"
@@ -277,7 +277,7 @@ function CalendarView({
               />
             </span>
           </button>
-          <button className="btn btn-secondary btn-today" onClick={handleToday}>
+          <button className="btn btnSecondary" onClick={handleToday}>
             Today
           </button>
           <button className="btn" onClick={() => onAddRunClick(null, null)}>
@@ -286,7 +286,7 @@ function CalendarView({
         </div>
       </header>
 
-      <div className="calendar-weekdays">
+      <div className="calendarWeekdays">
         <div className="weekday">MON</div>
         <div className="weekday">TUE</div>
         <div className="weekday">WED</div>
@@ -296,12 +296,12 @@ function CalendarView({
         <div className="weekday">SUN</div>
       </div>
 
-      <div className={`calendarGrid animate-${scrollDirection}`} ref={gridRef} key={gridAnimationKey}>
+      <div className={`calendarGrid animate${scrollDirection}`} ref={gridRef} key={gridAnimationKey}>
         {weeksData.map((week) => (
           <div className="runWeek" key={`week-${week.weekKey}`}>
-            <div className="week-summary-bar">
-              <span className="week-summary-title">{week.summary.weekNumText}</span>
-              <span className="week-summary-item">
+            <div className="weekSummaryBar">
+              <span className="weekSummaryTitle">{week.summary.weekNumText}</span>
+              <span className="weekSummaryItem">
                 <img
                   src="/images/icons/graph.svg"
                   alt="Graph"
@@ -309,7 +309,7 @@ function CalendarView({
                 />
                 {week.summary.distText}
               </span>
-              <span className="week-summary-item">
+              <span className="weekSummaryItem">
                 <img
                   src="/images/icons/heart-rate-light.svg"
                   alt="Heart Rate"
@@ -317,7 +317,7 @@ function CalendarView({
                 />
                 {week.summary.hrText}
               </span>
-              <span className="week-summary-item">
+              <span className="weekSummaryItem">
                 <img
                   src="/images/icons/pace-light.svg"
                   alt="Pace"
@@ -325,7 +325,7 @@ function CalendarView({
                 />
                 {week.summary.paceText}
               </span>
-              <span className="week-summary-item week-goal-wrapper">
+              <span className="weekSummaryItem weekGoalWrapper">
                 <img
                   src="/images/icons/goal.svg"
                   alt="Goal"
@@ -334,7 +334,7 @@ function CalendarView({
                 Goal:
                 <input
                   type="number"
-                  className="input-weekly-goal"
+                  className="inputWeeklyGoal"
                   value={
                     settings?.weeklyGoals?.[week.weekKey] !== undefined
                       ? settings.weeklyGoals[week.weekKey]
@@ -348,10 +348,10 @@ function CalendarView({
               </span>
             </div>
 
-            <div className="week-days-grid">
+            <div className="weekDaysGrid">
               {week.days.map((day) => (
                 <div
-                  className={`day-cell${day.isGoalFailed ? " goal-failed" : ""}${
+                  className={`dayCell ${day.isGoalFailed ? "goalFailed" : ""}${
                     day.isToday ? " today" : ""
                   }`}
                   key={`day-${day.dateStr}`}
@@ -362,13 +362,13 @@ function CalendarView({
                     cursor: day.runs.length === 0 ? "pointer" : "default",
                   }}
                 >
-                  <div className="day-header">
-                    <span className="day-number">{day.dayNumber}</span>
+                  <div className="dayHeader">
+                    <span className="dayNumber">{day.dayNumber}</span>
                   </div>
 
                   {day.runs.length > 0 && (
                     <div
-                      className={`day-run-container ${
+                      className={`dayRunContainer ${
                         day.runs.length === 2 ? "double" : ""
                       }`}
                     >
@@ -400,10 +400,10 @@ function CalendarView({
                               e.stopPropagation();
                               onAddRunClick(run.id);
                             }}
-                            className="run-single-data-container"
+                            className="runSingleDataContainer"
                           >
                             <div
-                              className="run-bar bar-pace"
+                              className="runBar"
                               style={{ background: zoneColor }}
                             >
                               <img
@@ -416,7 +416,7 @@ function CalendarView({
 
                             {run.hr && parseInt(run.hr) > 0 && (
                               <div
-                                className={`run-bar bar-hr ${getHrClass(
+                                className={`runBar ${getHrClass(
                                   run.hr
                                 )}`}
                               >
@@ -429,7 +429,7 @@ function CalendarView({
                               </div>
                             )}
 
-                            <div className="run-bar bar-duration">
+                            <div className="runBar barDuration">
                               <img
                                 src="/images/icons/stopwatch.svg"
                                 alt="Stopwatch"
@@ -439,7 +439,7 @@ function CalendarView({
                             </div>
 
                             <div
-                              className="run-bar barDetails"
+                              className="runBar barDetails"
                               title={run.notes || ""}
                             >
                               <img
@@ -457,7 +457,7 @@ function CalendarView({
                             </div>
 
                             {weather && (
-                              <span className="run-weather-tooltip">
+                              <span className="runWeatherTooltip">
                                 {weatherEmojis[weather.type] || "☀️"} •{" "}
                                 {weather.temp}°C • 💧
                                 {weather.humidity || 60}%

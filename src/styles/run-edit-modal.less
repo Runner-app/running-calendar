@@ -1,4 +1,4 @@
-.modal-overlay {
+.modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -15,12 +15,12 @@
   transition: opacity 0.3s ease;
 }
 
-.modal-overlay.active {
+.modalOverlay.active {
   opacity: 1;
   pointer-events: all;
 }
 
-.modal-content {
+.modalContent {
   width: 100%;
   max-width: 550px;
   background: var(--dark-background);
@@ -30,11 +30,11 @@
   transition: transform 0.3s ease;
 }
 
-.modal-overlay.active .modal-content {
+.modalOverlay.active .modalContent {
   transform: scale(1) translateY(0);
 }
 
-.modal-header {
+.modalHeader {
   padding: 1.5rem;
   border-bottom: 1px solid var(--glass-border);
   display: flex;
@@ -42,7 +42,7 @@
   align-items: center;
 }
 
-.modal-title {
+.modalTitle {
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-glow));
@@ -51,7 +51,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-.fit-dropzone {
+.fileDropzone {
   background-color: var(--color-primary-dark);
   border: 2px dashed var(--color-primary-glow);
   border-radius: @borderRadiusMedium;
@@ -61,7 +61,7 @@
   transition: all 0.2s ease;  
 }
 
-.modal-close {
+.modalClose {
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -83,42 +83,42 @@
   gap: 0.75rem;
 }
 
-.form-group {
+.formGroup {
   margin-bottom: 1.25rem;
 }
 
-.form-row {
+.formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.checkbox-group {
+.checkboxGroup {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.checkbox-group input[type="checkbox"] {
+.checkboxGroup input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: var(--color-primary);
   cursor: pointer;
 }
 
-.inline-input-group {
+.inlineInputGroup {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-.inline-input-group input {
+.inlineInputGroup input {
   text-align: center;
   padding: 0.5rem;
 }
 
-.unit-label {
+.unitLabel {
   color: var(--text-secondary);
   font-weight: 600;
 }

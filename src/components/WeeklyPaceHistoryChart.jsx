@@ -105,7 +105,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="chart-custom-tooltip">
+        <div className="chartCustomTooltip">
           <p className="week">{data.weekKey}</p>
           <p className="pace">
             Pace: <strong>{data.paceStr} min/km</strong>
@@ -128,14 +128,14 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
   }
 
   return (
-    <div className="glass-panel pace-history-panel">
-      <div className="chart-header">
+    <div className="glassPanel paceHistoryPanel">
+      <div className="chartHeader">
         <h3>📈 Weekly Pace History</h3>
-        <div className="chart-range-selector">
+        <div className="chartRangeSelector">
           {["3M", "6M", "1Y", "ALL"].map((r) => (
             <button
               key={r}
-              className={`btn-range ${range === r ? "active" : ""}`}
+              className={`btnRange ${range === r ? "active" : ""}`}
               onClick={() => setRange(r)}
             >
               {r}

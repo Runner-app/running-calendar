@@ -567,15 +567,14 @@ function RunEditModal({
 
   return (
     <div
-      className="modal-overlay active"
-      id="modal-run-overlay"
+      className="modalOverlay active"
       onClick={onClose}
     >
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <header className="modal-header">
-          <h3 className="modal-title">{runId ? "Edit Run" : "Add Run"}</h3>
+      <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+        <header className="modalHeader">
+          <h3 className="modalTitle">{runId ? "Edit Run" : "Add Run"}</h3>
           <button
-            className="modal-close"
+            className="modalClose"
             aria-label="Close modal"
             onClick={onClose}
           >
@@ -586,7 +585,7 @@ function RunEditModal({
         <div className="modalBody">
           {!runId && (
             <div
-              className={`fit-dropzone center`}
+              className={`fileDropzone center`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -609,23 +608,23 @@ function RunEditModal({
             </div>
           )}
 
-          <form id="form-run" onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="input-run-date">Run Date</label>
+          <form id="formRun" onSubmit={handleSubmit}>
+            <div className="formRow">
+              <div className="formGroup">
+                <label htmlFor="inputRunDate">Run Date</label>
                 <input
                   type="date"
-                  id="input-run-date"
+                  id="inputRunDate"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="input-run-time">Run Time</label>
+              <div className="formGroup">
+                <label htmlFor="inputRunTime">Run Time</label>
                 <input
                   type="time"
-                  id="input-run-time"
+                  id="inputRunTime"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
@@ -633,12 +632,12 @@ function RunEditModal({
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="input-run-distance">Distance (km)</label>
+            <div className="formRow">
+              <div className="formGroup">
+                <label htmlFor="inputRunDistance">Distance (km)</label>
                 <input
                   type="number"
-                  id="input-run-distance"
+                  id="inputRunDistance"
                   step="0.01"
                   min="0.01"
                   placeholder="e.g., 10.50"
@@ -647,11 +646,11 @@ function RunEditModal({
                   required
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="input-run-hr">Average HR (bpm)</label>
+              <div className="formGroup">
+                <label htmlFor="inputRunHr">Average HR (bpm)</label>
                 <input
                   type="number"
-                  id="input-run-hr"
+                  id="inputRunHr"
                   min="40"
                   max="240"
                   placeholder="e.g., 150"
@@ -661,10 +660,10 @@ function RunEditModal({
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="formRow">
+              <div className="formGroup">
                 <label>Duration (hrs : mins : secs)</label>
-                <div className="inline-input-group">
+                <div className="inlineInputGroup">
                   <input
                     type="number"
                     min="0"
@@ -675,7 +674,7 @@ function RunEditModal({
                       handleDurationFieldChange("h", e.target.value)
                     }
                   />
-                  <span className="unit-label">:</span>
+                  <span className="unitLabel">:</span>
                   <input
                     type="number"
                     min="0"
@@ -686,7 +685,7 @@ function RunEditModal({
                       handleDurationFieldChange("m", e.target.value)
                     }
                   />
-                  <span className="unit-label">:</span>
+                  <span className="unitLabel">:</span>
                   <input
                     type="number"
                     min="0"
@@ -699,9 +698,9 @@ function RunEditModal({
                   />
                 </div>
               </div>
-              <div className="form-group">
+              <div className="formGroup">
                 <label>Average Pace (min : sec /km)</label>
-                <div className="inline-input-group">
+                <div className="inlineInputGroup">
                   <input
                     type="number"
                     min="1"
@@ -711,7 +710,7 @@ function RunEditModal({
                     onChange={(e) => handlePaceFieldChange("m", e.target.value)}
                     required
                   />
-                  <span className="unit-label">:</span>
+                  <span className="unitLabel">:</span>
                   <input
                     type="number"
                     min="0"
@@ -725,11 +724,11 @@ function RunEditModal({
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="select-weather-type">Weather</label>
+            <div className="formRow">
+              <div className="formGroup">
+                <label htmlFor="selectWeatherType">Weather</label>
                 <select
-                  id="select-weather-type"
+                  id="selectWeatherType"
                   value={weatherType}
                   onChange={(e) => setWeatherType(e.target.value)}
                   required
@@ -741,22 +740,22 @@ function RunEditModal({
                   <option value="windy">💨 Windy</option>
                 </select>
               </div>
-              <div className="form-group">
-                <label htmlFor="input-weather-temp">Temperature (°C)</label>
+              <div className="formGroup">
+                <label htmlFor="inputWeatherTemp">Temperature (°C)</label>
                 <input
                   type="number"
-                  id="input-weather-temp"
+                  id="inputWeatherTemp"
                   step="1"
                   placeholder="e.g., 18"
                   value={weatherTemp}
                   onChange={(e) => setWeatherTemp(e.target.value)}
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="input-weather-humidity">Humidity (%)</label>
+              <div className="formGroup">
+                <label htmlFor="inputWeatherHumidity">Humidity (%)</label>
                 <input
                   type="number"
-                  id="input-weather-humidity"
+                  id="inputWeatherHumidity"
                   min="0"
                   max="100"
                   placeholder="e.g., 60"
@@ -766,22 +765,22 @@ function RunEditModal({
               </div>
             </div>
 
-            <div className="form-group">
-              <div className="checkbox-group">
+            <div className="formGroup">
+              <div className="checkboxGroup">
                 <input
                   type="checkbox"
-                  id="checkbox-mountain-run"
+                  id="checkboxMountainRun"
                   checked={mountainRun}
                   onChange={(e) => setMountainRun(e.target.checked)}
                 />
-                <label htmlFor="checkbox-mountain-run">⛰️ Mountain Run</label>
+                <label htmlFor="checkboxMountainRun">⛰️ Mountain Run</label>
               </div>
             </div>
 
-            <div className="form-group">
-              <div className="input-run-notes">Notes (optional)</div>
+            <div className="formGroup">
+              <div className="inputRunNotes">Notes (optional)</div>
               <textarea
-                id="input-run-notes"
+                id="inputRunNotes"
                 rows="2"
                 placeholder="How did today's run go?"
                 value={notes}
@@ -797,10 +796,10 @@ function RunEditModal({
               Delete
             </button>
           )}
-          <button className="btn btn-secondary" onClick={onClose}>
+          <button className="btn btnSecondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="btn" type="submit" form="form-run">
+          <button className="btn" type="submit" form="formRun">
             Save
           </button>
         </div>

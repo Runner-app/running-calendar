@@ -79,15 +79,15 @@ export function getPaceZoneColor(zoneIndex) {
 
 export function getHrClass(hr) {
   const heartRate = parseInt(hr) || 0;
-  if (heartRate < 130) return "bar-hr-under-130";
-  if (heartRate <= 134) return "bar-hr-130-134";
-  if (heartRate <= 139) return "bar-hr-135-139";
-  if (heartRate <= 144) return "bar-hr-140-144";
-  if (heartRate <= 149) return "bar-hr-145-149";
-  if (heartRate <= 154) return "bar-hr-150-154";
-  if (heartRate <= 159) return "bar-hr-155-159";
-  if (heartRate <= 164) return "bar-hr-160-164";
-  return "bar-hr-165-plus";
+  if (heartRate < 130) return "barHrUnder130";
+  if (heartRate <= 134) return "barHr130-134";
+  if (heartRate <= 139) return "barHr135-139";
+  if (heartRate <= 144) return "barHr140-144";
+  if (heartRate <= 149) return "barHr145-149";
+  if (heartRate <= 154) return "barHr150-154";
+  if (heartRate <= 159) return "barHr155-159";
+  if (heartRate <= 164) return "barHr160-164";
+  return "barHr165-plus";
 }
 
 export function computeRunMetrics(runsAsInput) {

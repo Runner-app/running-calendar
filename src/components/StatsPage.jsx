@@ -30,34 +30,34 @@ function StatsPage({ runs }) {
   );
 
   return (
-    <div className="stats-page glass-panel" id="stats-page">
-      <header className="stats-header">
-        <h1 className="stats-title">Statistics</h1>
+    <div className="statsPage glassPanel" id="statsPage">
+      <header className="statsHeader">
+        <h1 className="statsTitle">Statistics</h1>
       </header>
 
       {/* SUMMARY STATS */}
-      <div className="stats-summary-grid">
-        <div className="stat-card">
-          <div className="stat-icon">🏁</div>
-          <div className="stat-info">
-            <span className="stat-label">Total Runs</span>
-            <span className="stat-value">{summaryStats.totalRuns}</span>
+      <div className="statsSummaryGrid">
+        <div className="statCard">
+          <div className="statIcon">🏁</div>
+          <div className="statInfo">
+            <span className="statLabel">Total Runs</span>
+            <span className="statValue">{summaryStats.totalRuns}</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">🗺️</div>
-          <div className="stat-info">
-            <span className="stat-label">Total Distance</span>
-            <span className="stat-value">
+        <div className="statCard">
+          <div className="statIcon">🗺️</div>
+          <div className="statInfo">
+            <span className="statLabel">Total Distance</span>
+            <span className="statValue">
               {Math.floor(summaryStats.totalDistance).toLocaleString("pl-PL")} km
             </span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">🔥</div>
-          <div className="stat-info">
-            <span className="stat-label">Day streak</span>
-            <span className="stat-value">
+        <div className="statCard">
+          <div className="statIcon">🔥</div>
+          <div className="statInfo">
+            <span className="statLabel">Day streak</span>
+            <span className="statValue">
               {summaryStats.currentStreak}{" "}
               {summaryStats.currentStreak === 1 ? "day" : "days"}
             </span>
@@ -65,29 +65,29 @@ function StatsPage({ runs }) {
         </div>
       </div>
 
-      <div className="stats-content chart">
+      <div className="statsContent chart">
         <div className="statsSection">
-          <h3 className="stats-section-title">📅 Yearly Distance</h3>
+          <h3 className="statsSectionTitle">📅 Yearly Distance</h3>
           <YearlyDistanceChart data={yearlyStats} />
         </div>
       </div>
 
-      <div className="stats-content">
+      <div className="statsContent">
         {/* MONTHLY RANKING */}
         <div className="statsSection">
-          <h3 className="stats-section-title">🏆 Monthly Distance Ranking</h3>
-          <div id="monthly-stats-container">
+          <h3 className="statsSectionTitle">🏆 Monthly Distance Ranking</h3>
+          <div id="monthlyStatsContainer">
             {monthlyStats.map((stat) => (
               <div
                 key={stat.key}
-                className={`stats-item ${
+                className={`statsItem ${
                   stat.year === currentYear && stat.month === currentMonth
-                    ? "is-current-month"
+                    ? "isCurrentMonth"
                     : ""
                 }`}
               >
-                <span className="stats-label">{stat.monthName} {stat.year}</span>
-                <span className="stats-values">
+                <span className="statsLabel">{stat.monthName} {stat.year}</span>
+                <span className="statsValues">
                   {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
                   {stat.runCount === 1 ? "run" : "runs"}
                 </span>
@@ -98,14 +98,14 @@ function StatsPage({ runs }) {
 
         {/* TOP 20 WEEKS */}
         <div className="statsSection">
-          <h3 className="stats-section-title">⚡ Top 20 Weekly Distance</h3>
-          <div id="weekly-top-stats-container">
+          <h3 className="statsSectionTitle">⚡ Top 20 Weekly Distance</h3>
+          <div id="weeklyTopStatsContainer">
             {topWeeklyStats.map((stat, index) => (
-              <div className="stats-item" key={stat.weekKey}>
-                <span className="stats-label">
-                  <span className="rank-number">#{index + 1}</span> {stat.dateRangeLabel}
+              <div className="statsItem" key={stat.weekKey}>
+                <span className="statsLabel">
+                  <span className="rankNumber">#{index + 1}</span> {stat.dateRangeLabel}
                 </span>
-                <span className="stats-values">
+                <span className="statsValues">
                   {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
                   {stat.runCount === 1 ? "run" : "runs"}
                 </span>
@@ -116,17 +116,17 @@ function StatsPage({ runs }) {
 
         {/* TOP STREAKS */}
         <div className="statsSection">
-          <h3 className="stats-section-title">🔥 Running Streaks (&gt; 9 days)</h3>
-          <div id="streaks-stats-container">
+          <h3 className="statsSectionTitle">🔥 Running Streaks (&gt; 9 days)</h3>
+          <div id="streaksTopStatsContainer">
             {streakStats.map((stat, index) => (
               <div
                 key={`${stat.startDate}-${index}`}
-                className={`stats-item ${stat.isCurrent ? "is-current-streak" : ""}`}
+                className={`statsItem ${stat.isCurrent ? "isCurrentStreak" : ""}`}
               >
-                <span className="stats-label">
-                  <span className="rank-number">#{index + 1}</span> {stat.count} days
+                <span className="statsLabel">
+                  <span className="rankNumber">#{index + 1}</span> {stat.count} days
                 </span>
-                <span className="stats-values">
+                <span className="statsValues">
                   {stat.startDate.split("-").reverse().join(".")} -{" "}
                   {stat.isCurrent ? "present 🔥" : stat.endDate.split("-").reverse().join(".")}
                 </span>
@@ -136,9 +136,9 @@ function StatsPage({ runs }) {
         </div>
 
         {/* MONTHLY COMPARISON ACCORDION */}
-        <div className="statsSection full-width-section">
-          <h3 className="stats-section-title">📊 Monthly Performance by Year</h3>
-          <div className="monthly-comparison-grid">
+        <div className="statsSection fullWidthSection">
+          <h3 className="statsSectionTitle">📊 Monthly Performance by Year</h3>
+          <div className="monthlyComparisonGrid">
             {monthlyComparisonStats.map((m) => (
               <MonthComparisonAccordion key={m.monthName} monthData={m} />
             ))}

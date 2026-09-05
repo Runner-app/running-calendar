@@ -268,7 +268,7 @@ function App() {
   };
 
   const renderLoadingScreen = () => (
-    <div className="loading-screen">
+    <div className="loadingScreen">
       <h2>Running <img src="/images/loading-gif.gif" alt="Loading" className="runnerGif" /></h2>
     </div>
   );
@@ -286,7 +286,7 @@ function App() {
 
   return (
     <>
-      <div className="app-container">
+      <div className="appContainer">
         <SidePanel
           activeView={activeView}
           setActiveView={setActiveView}
@@ -295,9 +295,9 @@ function App() {
           handleLogout={handleLogout}
         />
 
-        <main className="main-content">
+        <main className="mainContent">
           {activeView === "calendar" && (
-            <div className="calendar-panel glass-panel">
+            <div className="calendarPanel glassPanel">
               <CalendarView
                 currentDate={currentDate}
                 setCurrentDate={setCurrentDate}

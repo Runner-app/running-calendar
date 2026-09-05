@@ -167,7 +167,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
   return (
     <div
-      className="run-details-container"
+      className="runDetailsContainer"
       style={{
         padding: "20px",
         color: "#fff",
@@ -185,7 +185,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
           marginBottom: "20px",
         }}
       >
-        <button onClick={onBackClick} className="btn btn-secondary">
+        <button onClick={onBackClick} className="btn btnSecondary">
           ⬅️ Back
         </button>
         <button onClick={onEditClick} className="btn">
@@ -421,7 +421,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
       {weather && (
         <div
-          className="weather-summary-box"
+          className="weatherSummaryBox"
           style={{
             display: "flex",
             gap: "20px",

@@ -5,25 +5,25 @@ function MonthComparisonAccordion({ monthData }) {
   const bestYear = monthData.years[0];
 
   return (
-    <div className="month-accordion-item">
-      <div className="month-accordion-header" onClick={() => setIsOpen(!isOpen)}>
-        <div className="month-info">
-          <span className="month-name">{monthData.monthName}</span>
-          <span className="month-best-badge">
+    <div className="monthAccordionItem">
+      <div className="monthAccordionHeader" onClick={() => setIsOpen(!isOpen)}>
+        <div className="monthInfo">
+          <span className="monthName">{monthData.monthName}</span>
+          <span className="monthBestBadge">
             👑 Record: {bestYear ? `${bestYear.distance} km (${bestYear.year})` : "No data"}
           </span>
         </div>
-        <span className={`accordion-arrow ${isOpen ? "open" : ""}`}>▼</span>
+        <span className={`accordionArrow ${isOpen ? "open" : ""}`}>▼</span>
       </div>
 
       {isOpen && (
-        <div className="month-accordion-content">
+        <div className="monthAccordionContent">
           {monthData.years.map((y, idx) => (
-            <div key={y.year} className={`stats-item ${y.isCurrent ? "is-current-year" : ""}`}>
-              <span className="stats-label">
-                <span className="rank-number">#{idx + 1}</span> {y.year}
+            <div key={y.year} className={`statsItem ${y.isCurrent ? "isCurrentYear" : ""}`}>
+              <span className="statsLabel">
+                <span className="rankNumber">#{idx + 1}</span> {y.year}
               </span>
-              <span className="stats-values">
+              <span className="statsValues">
                 <strong>{y.distance} km</strong> • {y.runs} {y.runs === 1 ? "run" : "runs"}
               </span>
             </div>
