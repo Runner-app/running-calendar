@@ -67,14 +67,43 @@
     }
   }
 
+  @keyframes calendarFadeInNext {
+    from {
+      opacity: 0;
+      transform: translateY(25px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes calendarFadeInPrev {
+    from {
+      opacity: 0;
+      transform: translateY(-25px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
   .calendarGrid {
     .flexColumn();
     gap: 16px;
     padding: 0 15px;
+    will-change: transform, opacity;
     @media (max-width: @mobileScreen) {
       gap: 15px;
       padding: 10px;
       margin-top: 75px;
+    }
+    &.animate-next {
+      animation: calendarFadeInNext 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    &.animate-prev {
+      animation: calendarFadeInPrev 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .runWeek {
       .flexColumn();

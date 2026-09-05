@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import {
   formatDate,
   getWeekKey,
@@ -18,6 +18,11 @@ function CalendarView({
   onSaveSettings,
   onAddRunClick,
 }) {
+
+  const [scrollDirection, setScrollDirection] = useState("next");
+  const isScrolling = useRef(false);
+  const gridRef = useRef(null);
+
   const headerTitle = useMemo(() => {
     const startDate = new Date(currentDate);
     const endDate = new Date(currentDate);
@@ -39,31 +44,34 @@ function CalendarView({
   }, [currentDate]);
 
   const handlePrevMonth = () => {
+    setScrollDirection("prev");
     const n = new Date(currentDate);
     n.setDate(n.getDate() - 21);
     setCurrentDate(n);
   };
+
   const handleNextMonth = () => {
+    setScrollDirection("next");
     const n = new Date(currentDate);
     n.setDate(n.getDate() + 21);
     setCurrentDate(n);
   };
+  
   const handlePrevYear = () => {
     const n = new Date(currentDate);
     n.setFullYear(n.getFullYear() - 1);
     setCurrentDate(n);
   };
+
   const handleNextYear = () => {
     const n = new Date(currentDate);
     n.setFullYear(n.getFullYear() + 1);
     setCurrentDate(n);
   };
+
   const handleToday = () => {
     setCurrentDate(new Date());
   };
-
-  const isScrolling = useRef(false);
-  const gridRef = useRef(null);
 
   useEffect(() => {
     const gridElement = gridRef.current;
@@ -83,7 +91,7 @@ function CalendarView({
 
         setTimeout(() => {
           isScrolling.current = false;
-        }, 400);
+        }, 350);
       }
     };
 
@@ -94,6 +102,7 @@ function CalendarView({
     };
   }, [currentDate]);
 
+  const gridAnimationKey = currentDate.getTime();
   const runsWithMetrics = computeRunMetrics(runs || []);
   const calendarStartDate = getMonday(currentDate);
   const weeklyGoals = settings?.weeklyGoals || {};
@@ -106,10 +115,8 @@ function CalendarView({
     windy: "💨 Windy",
   };
 
-  // Przygotowanie danych pogrupowanych w 3 tygodnie
   const weeksData = useMemo(() => {
     const result = [];
-
     for (let w = 0; w < 3; w++) {
       const weekMonday = new Date(calendarStartDate.getTime());
       weekMonday.setDate(weekMonday.getDate() + w * 7);
@@ -289,7 +296,7 @@ function CalendarView({
         <div className="weekday">SUN</div>
       </div>
 
-      <div className="calendarGrid" ref={gridRef}>
+      <div className={`calendarGrid animate-${scrollDirection}`} ref={gridRef} key={gridAnimationKey}>
         {weeksData.map((week) => (
           <div className="runWeek" key={`week-${week.weekKey}`}>
             <div className="week-summary-bar">
