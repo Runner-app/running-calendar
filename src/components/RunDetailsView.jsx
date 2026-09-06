@@ -27,6 +27,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
 
   const weatherIcons = {
     sunny: "☀️ Sunny",
+    lightCloud: "🌤️ Light Cloud",
     cloudy: "☁️ Cloudy",
     rainy: "🌧️ Rainy",
     snowy: "❄️ Snowy",

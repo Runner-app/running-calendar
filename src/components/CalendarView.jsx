@@ -109,6 +109,7 @@ function CalendarView({
 
   const weatherEmojis = {
     sunny: "☀️ Sunny",
+    lightCloud: "🌤️ Light Cloud",
     cloudy: "☁️ Cloudy",
     rainy: "🌧️ Rainy",
     snowy: "❄️ Snowy",

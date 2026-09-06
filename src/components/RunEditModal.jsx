@@ -734,6 +734,7 @@ function RunEditModal({
                   required
                 >
                   <option value="sunny">☀️ Sunny</option>
+                  <option value="lightCloud">🌤️ Light Cloud</option>
                   <option value="cloudy">☁️ Cloudy</option>
                   <option value="rainy">🌧️ Rainy</option>
                   <option value="snowy">❄️ Snowy</option>
