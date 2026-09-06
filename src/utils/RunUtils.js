@@ -51,8 +51,8 @@ export function getRunningWeekNumber(mondayDate, runs) {
   const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
   const rawWeekNum = diffWeeks + 1;
 
-  if (rawWeekNum > 366) {
-    return rawWeekNum - 366;
+  if (rawWeekNum > 367) {
+    return rawWeekNum - 367;
   }
 
   return rawWeekNum;

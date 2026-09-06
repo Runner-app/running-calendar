@@ -302,3 +302,12 @@ export function getMonthlyComparisonStats(
         };
     });
 }
+
+export function formatWeightChartData(weightRecords = []) {
+  return weightRecords
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map((record) => ({
+      date: record.date,
+      weight: Number(record.weight),
+    }));
+}

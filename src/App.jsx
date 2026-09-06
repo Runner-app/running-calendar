@@ -19,6 +19,7 @@ function App() {
   const [settings, setSettings] = useState({ weeklyGoals: {} });
   const [currentDate, setCurrentDate] = useState(new Date());
   const [runs, setRuns] = useState([]);
+  const [weights, setWeights] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [activeView, setActiveView] = useState("calendar");
@@ -143,6 +144,23 @@ function App() {
       supabase.auth.stopAutoRefresh();
     };
   }, [fetchRuns, fetchGoals]);
+
+useEffect(() => {
+    const fetchWeights = async () => {
+      const { data, error } = await supabase
+        .from("body_weight")
+        .select("*")
+        .order("date", { ascending: true });
+
+      if (error) {
+        console.error("Błąd pobierania wag:", error);
+      } else {
+        setWeights(data || []);
+      }
+    };
+
+    fetchWeights();
+  }, []);
 
   useEffect(() => {
     if (theme === "light") {
@@ -284,6 +302,22 @@ function App() {
     return renderLoadingScreen();
   }
 
+  const handleAddWeight = async (newWeightRecord) => {
+  // 1. Zapis do Supabase
+  const { data, error } = await supabase
+    .from('body_weight')
+    .insert([newWeightRecord])
+    .select();
+
+  if (error) {
+    console.error("Błąd zapisu wagi:", error);
+    return;
+  }
+
+  // 2. Aktualizacja stanu w React
+  setWeights((prev) => [...prev, data[0]]);
+};
+
   return (
     <>
       <div className="appContainer">
@@ -310,7 +344,8 @@ function App() {
             </div>
           )}
 
-          {activeView === "stats" && <StatsPage runs={runs} />}
+
+          {activeView === "stats" && <StatsPage runs={runs} weights={weights} onAddWeight={handleAddWeight}  />}
 
           {activeView === "details" && (
             <RunDetailsView

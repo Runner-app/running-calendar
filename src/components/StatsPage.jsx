@@ -12,8 +12,10 @@ import {
 import MonthComparisonAccordion from "./stats/MonthComparisonAccordion";
 import WeeklyPaceHistoryChart from "./WeeklyPaceHistoryChart";
 import YearlyDistanceChart from "./stats/YearlyDistanceChart";
+import WeightChartSection from "./stats/WeightChartSection";
+import { formatWeightChartData } from "../utils/statsCalculators.js";
 
-function StatsPage({ runs }) {
+function StatsPage({ runs, weights = [], onAddWeight }) {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
 
@@ -28,6 +30,10 @@ function StatsPage({ runs }) {
     () => getMonthlyComparisonStats(runsWithMetrics, currentYear, currentMonth),
     [runsWithMetrics, currentYear, currentMonth]
   );
+  const formattedWeightData = useMemo(
+      () => formatWeightChartData(weights),
+      [weights]
+    );
 
   return (
     <div className="statsPage glassPanel" id="statsPage">
@@ -147,6 +153,13 @@ function StatsPage({ runs }) {
       </div>
 
       <WeeklyPaceHistoryChart runs={runs} />
+
+      <div className="statsContent chart">
+        <WeightChartSection
+          weightData={formattedWeightData}
+          onAddWeight={onAddWeight}
+        />
+      </div>
     </div>
   );
 }
