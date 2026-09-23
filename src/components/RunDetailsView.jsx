@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { supabase } from "../config/supabaseClient";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -23,6 +25,41 @@ L.Icon.Default.mergeOptions({
 });
 
 function RunDetailsView({ run, onBackClick, onEditClick }) {
+  const [telemetry, setTelemetry] = useState(null);
+  const [isTelemetryLoading, setIsTelemetryLoading] = useState(false);
+
+  // Pobieramy ciężkie dane (chart_records) tylko dla tego jednego biegu
+  useEffect(() => {
+    if (!run?.id) return;
+
+    // Jeśli bieg ma już załadowane chart_records (np. z edytora)
+    if (run.chart_records) {
+      setTelemetry(run.chart_records);
+      return;
+    }
+
+    const fetchRunTelemetry = async () => {
+      setIsTelemetryLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("runs")
+          .select("chart_records")
+          .eq("id", run.id)
+          .single();
+
+        if (error) throw error;
+        setTelemetry(data?.chart_records || []);
+      } catch (err) {
+        console.error("Error fetching telemetry:", err.message);
+        setTelemetry([]);
+      } finally {
+        setIsTelemetryLoading(false);
+      }
+    };
+
+    fetchRunTelemetry();
+  }, [run?.id, run?.chart_records]);
+
   if (!run) return null;
 
   const weatherIcons = {
@@ -37,13 +74,14 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
   const weather = run?.weather_data;
 
   const formatChartData = () => {
-    if (!run.chart_records || !Array.isArray(run.chart_records)) {
+    const records = telemetry || run.chart_records;
+    if (!records || !Array.isArray(records)) {
       return { chartData: [], gpsCoords: [] };
     }
 
     const gpsCoords = [];
 
-    const chartData = run.chart_records.map((record, index) => {
+    const chartData = records.map((record, index) => {
       let paceStr = "-";
       const speedKmH = record.speed || 0;
       let speedForChart = 0;
@@ -181,7 +219,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifySpace: "space-between",
           alignItems: "center",
           marginBottom: "20px",
         }}
@@ -262,163 +300,179 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
         ))}
       </div>
 
-      <div
-        className="mapAndChartPanel"
-        style={{
-          gridTemplateColumns: gpsCoords.length > 0 ? "1fr 1fr" : "1fr",
-        }}
-      >
-        {gpsCoords.length > 0 && (
-          <div
-            style={{
-              background: "#222",
-              padding: "20px",
-              borderRadius: "12px",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-              height: "400px",
-            }}
-          >
-            <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
-              Run Route 🗺️
-            </h4>
+      {isTelemetryLoading ? (
+        <div
+          style={{
+            background: "#222",
+            padding: "40px",
+            borderRadius: "12px",
+            textAlign: "center",
+            color: "#00e5ff",
+          }}
+        >
+          Loading route and telemetry data... ⌛
+        </div>
+      ) : (
+        <div
+          className="mapAndChartPanel"
+          style={{
+            display: "grid",
+            gap: "20px",
+            gridTemplateColumns: gpsCoords.length > 0 ? "1fr 1fr" : "1fr",
+          }}
+        >
+          {gpsCoords.length > 0 && (
             <div
               style={{
-                width: "100%",
-                height: "calc(100% - 35px)",
-                borderRadius: "8px",
-                overflow: "hidden",
+                background: "#222",
+                padding: "20px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+                height: "400px",
               }}
             >
-              <MapContainer
-                center={mapCenter}
-                zoom={14}
-                style={{ width: "100%", height: "100%" }}
+              <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
+                Run Route 🗺️
+              </h4>
+              <div
+                style={{
+                  width: "100%",
+                  height: "calc(100% - 35px)",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                }}
               >
-                <TileLayer
-                  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                />
-                <Polyline
-                  positions={gpsCoords}
-                  color="#00e5ff"
-                  weight={4}
-                  opacity={0.8}
-                />
-              </MapContainer>
-            </div>
-          </div>
-        )}
-
-        {chartData.length > 0 ? (
-          <div
-            style={{
-              background: "#222",
-              padding: "20px",
-              borderRadius: "12px",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-              height: "400px",
-            }}
-          >
-            <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
-              Telemetry Analysis 📈
-            </h4>
-            <div style={{ width: "100%", height: "calc(100% - 35px)" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart
-                  data={chartData}
-                  margin={{ top: 10, right: -35, left: -25, bottom: 0 }}
+                <MapContainer
+                  center={mapCenter}
+                  zoom={14}
+                  style={{ width: "100%", height: "100%" }}
                 >
-                  <defs>
-                    <linearGradient id="colorHr" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ff5252" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#ff5252" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#333"
-                    horizontal={true}
-                    vertical={false}
+<TileLayer
+  url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+  attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+/>
+                  <Polyline
+                    positions={gpsCoords}
+                    color="#00e5ff"
+                    weight={4}
+                    opacity={0.8}
                   />
-                  <XAxis
-                    dataKey="name"
-                    stroke="#666"
-                    tick={{ fontSize: 10 }}
-                    tickLine={false}
-                    minTickGap={60}
-                  />
-
-                  <YAxis
-                    yAxisId="left"
-                    domain={["dataMin - 10", "dataMax + 5"]}
-                    stroke="#ff5252"
-                    tick={{ fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    domain={[3, "dataMax + 2"]}
-                    stroke="#00e5ff"
-                    tick={{ fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-
-                  <Tooltip
-                    content={<CustomTooltip />}
-                    cursor={{
-                      stroke: "#666",
-                      strokeWidth: 1,
-                      strokeDasharray: "6 6",
-                    }}
-                  />
-                  <Legend
-                    iconType="circle"
-                    wrapperStyle={{ fontSize: "11px", paddingTop: "5px" }}
-                  />
-
-                  <Area
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="Heart Rate (bpm)"
-                    stroke="#ff5252"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorHr)"
-                  />
-
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="speedKmH"
-                    name="Speed (km/h)"
-                    stroke="#00e5ff"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
+                </MapContainer>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              background: "#222",
-              padding: "30px",
-              borderRadius: "10px",
-              textAlign: "center",
-              color: "#aaa",
-              fontStyle: "italic",
-            }}
-          >
-            No detailed telemetry data available for this run.
-          </div>
-        )}
-      </div>
+          )}
+
+          {chartData.length > 0 ? (
+            <div
+              style={{
+                background: "#222",
+                padding: "20px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+                height: "400px",
+              }}
+            >
+              <h4 style={{ margin: "0 0 15px 0", color: "#aaa" }}>
+                Telemetry Analysis 📈
+              </h4>
+              <div style={{ width: "100%", height: "calc(100% - 35px)" }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart
+                    data={chartData}
+                    margin={{ top: 10, right: -35, left: -25, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorHr" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#ff5252" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#ff5252" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#333"
+                      horizontal={true}
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#666"
+                      tick={{ fontSize: 10 }}
+                      tickLine={false}
+                      minTickGap={60}
+                    />
+
+                    <YAxis
+                      yAxisId="left"
+                      domain={["dataMin - 10", "dataMax + 5"]}
+                      stroke="#ff5252"
+                      tick={{ fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      domain={[3, "dataMax + 2"]}
+                      stroke="#00e5ff"
+                      tick={{ fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+
+                    <Tooltip
+                      content={<CustomTooltip />}
+                      cursor={{
+                        stroke: "#666",
+                        strokeWidth: 1,
+                        strokeDasharray: "6 6",
+                      }}
+                    />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: "11px", paddingTop: "5px" }}
+                    />
+
+                    <Area
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="Heart Rate (bpm)"
+                      stroke="#ff5252"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorHr)"
+                    />
+
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="speedKmH"
+                      name="Speed (km/h)"
+                      stroke="#00e5ff"
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                background: "#222",
+                padding: "30px",
+                borderRadius: "10px",
+                textAlign: "center",
+                color: "#aaa",
+                fontStyle: "italic",
+              }}
+            >
+              No detailed telemetry data available for this run.
+            </div>
+          )}
+        </div>
+      )}
 
       {weather && (
         <div
@@ -453,6 +507,7 @@ function RunDetailsView({ run, onBackClick, onEditClick }) {
             padding: "20px",
             borderRadius: "10px",
             boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            marginTop: "20px",
           }}
         >
           <h4
