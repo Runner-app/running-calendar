@@ -27,60 +27,61 @@ function App() {
   const [selectedRun, setSelectedRun] = useState(null);
   const [defaultRunDate, setDefaultRunDate] = useState(null);
 
-  const fetchRuns = useCallback(async () => {
-    if (!sessionRef.current?.user) return;
-    try {
-      const { data, error } = await supabase
-        .from("runs")
-        .select("*")
-        .order("date", { ascending: false });
-      if (error) throw error;
-      const formattedRuns = data.map((run) => {
-        const h = Math.floor(run.duration / 3600);
-        const m = Math.floor((run.duration % 3600) / 60);
-        const s = run.duration % 60;
+const fetchRuns = useCallback(async () => {
+  if (!sessionRef.current?.user) return;
+  try {
+    const { data, error } = await supabase
+      .from("runs")
+      .select("id, date, distance, duration, avg_hr, notes, source, weather_data, mountain_run") // <-- WYKLUCZONO route_data I chart_records
+      .order("date", { ascending: false });
 
-        const totalMinutes = run.duration / 60;
-        const rawPace = run.distance > 0 ? totalMinutes / run.distance : 0;
-        const paceM = Math.floor(rawPace);
-        const paceS = Math.round((rawPace - paceM) * 60);
-        const cleanDate =
-          run.date && typeof run.date === "string"
-            ? run.date.substring(0, 10)
-            : run.date;
-        let computedTime = "19:00";
-        if (
-          run.date &&
-          typeof run.date === "string" &&
-          run.date.includes("T")
-        ) {
-          computedTime = run.date.substring(11, 16);
-        }
-        return {
-          id: run.id,
-          date: cleanDate,
-          distance: run.distance,
-          hr: run.avg_hr,
-          durationH: h,
-          durationM: m,
-          durationS: s,
-          paceM: paceM,
-          paceS: paceS,
-          notes: run.notes || "",
-          source: run.source,
-          time: computedTime,
-          computedNumber: run.id,
-          computedStreak: 1,
-          chart_records: run.chart_records,
-          weather_data: run.weather_data,
-          mountainRun: run.mountain_run || false,
-        };
-      });
-      setRuns(formattedRuns);
-    } catch (error) {
-      console.error("Error while fetching runs from Supabase:", error.message);
-    }
-  }, []);
+    if (error) throw error;
+    
+    const formattedRuns = data.map((run) => {
+      const h = Math.floor(run.duration / 3600);
+      const m = Math.floor((run.duration % 3600) / 60);
+      const s = run.duration % 60;
+
+      const totalMinutes = run.duration / 60;
+      const rawPace = run.distance > 0 ? totalMinutes / run.distance : 0;
+      const paceM = Math.floor(rawPace);
+      const paceS = Math.round((rawPace - paceM) * 60);
+      const cleanDate =
+        run.date && typeof run.date === "string"
+          ? run.date.substring(0, 10)
+          : run.date;
+      let computedTime = "19:00";
+      if (
+        run.date &&
+        typeof run.date === "string" &&
+        run.date.includes("T")
+      ) {
+        computedTime = run.date.substring(11, 16);
+      }
+      return {
+        id: run.id,
+        date: cleanDate,
+        distance: run.distance,
+        hr: run.avg_hr,
+        durationH: h,
+        durationM: m,
+        durationS: s,
+        paceM: paceM,
+        paceS: paceS,
+        notes: run.notes || "",
+        source: run.source,
+        time: computedTime,
+        computedNumber: run.id,
+        computedStreak: 1,
+        weather_data: run.weather_data,
+        mountainRun: run.mountain_run || false,
+      };
+    });
+    setRuns(formattedRuns);
+  } catch (error) {
+    console.error("Error while fetching runs from Supabase:", error.message);
+  }
+}, []);
 
   const fetchGoals = useCallback(async () => {
     if (!sessionRef.current?.user) return;
