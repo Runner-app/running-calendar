@@ -1,11 +1,11 @@
 export function getMonday(date) {
-    const result = new Date(date);
-    const day = result.getDay();
-    const daysFromMonday = day === 0 ? 6 : day - 1;
+  const result = new Date(date);
+  const day = result.getDay();
+  const daysFromMonday = day === 0 ? 6 : day - 1;
 
-    result.setDate(result.getDate() - daysFromMonday);
+  result.setDate(result.getDate() - daysFromMonday);
 
-    return result;
+  return result;
 }
 
 export function formatDate(date) {
@@ -16,18 +16,12 @@ export function formatDate(date) {
 }
 
 export function parseRunDate(date, time = "00:00") {
-    if (!date) return null;
+  if (!date) return null;
 
-    const [year, month, day] = date.split("-").map(Number);
-    const [hours, minutes] = time.split(":").map(Number);
+  const [year, month, day] = date.split("-").map(Number);
+  const [hours, minutes] = time.split(":").map(Number);
 
-    return new Date(
-        year,
-        month - 1,
-        day,
-        hours || 0,
-        minutes || 0
-    );
+  return new Date(year, month - 1, day, hours || 0, minutes || 0);
 }
 
 export function getRunningWeekNumber(mondayDate, runs) {
@@ -51,8 +45,8 @@ export function getRunningWeekNumber(mondayDate, runs) {
   const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
   const rawWeekNum = diffWeeks + 1;
 
-  if (rawWeekNum > 371) {
-    return rawWeekNum - 371;
+  if (rawWeekNum > 372) {
+    return rawWeekNum - 372;
   }
 
   return rawWeekNum;
