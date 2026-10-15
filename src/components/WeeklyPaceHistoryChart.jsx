@@ -32,7 +32,8 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       if (!weeksMap[weekKey]) {
         const day = runDate.getDay();
         const diff = runDate.getDate() - day + (day === 0 ? -6 : 1);
-        const mondayDate = new Date(runDate.setDate(diff));
+        const mondayDate = new Date(runDate);
+        mondayDate.setDate(diff);
         mondayDate.setHours(0, 0, 0, 0);
 
         weeksMap[weekKey] = {
@@ -62,45 +63,74 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       }
     });
 
-    return Object.values(weeksMap)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map((group) => {
-        let paceDecimal = 0;
-        let paceStr = "--:--";
+    const existingWeeks = Object.values(weeksMap).sort(
+      (a, b) => a.timestamp - b.timestamp,
+    );
 
-        if (group.totalDist > 0 && group.totalSeconds > 0) {
-          const avgSecondsPerKm = group.totalSeconds / group.totalDist;
+    if (existingWeeks.length === 0) return [];
 
-          const avgMin = Math.floor(avgSecondsPerKm / 60);
-          const avgSec = Math.round(avgSecondsPerKm % 60);
+    const firstWeek = new Date(existingWeeks[0].timestamp);
+    const lastWeek = new Date(
+      existingWeeks[existingWeeks.length - 1].timestamp,
+    );
 
-          const finalMin = avgSec === 60 ? avgMin + 1 : avgMin;
-          const finalSec = avgSec === 60 ? 0 : avgSec;
+    const allWeeks = [];
+    const currentWeek = new Date(firstWeek);
 
-          const avgSecStr = String(finalSec).padStart(2, "0");
+    while (currentWeek <= lastWeek) {
+      const timestamp = currentWeek.getTime();
 
-          paceStr = `${finalMin}:${avgSecStr}`;
-          paceDecimal = finalMin + finalSec / 60;
-        }
+      const existingWeek = existingWeeks.find(
+        (week) => week.timestamp === timestamp,
+      );
 
-        const dateObj = new Date(group.timestamp);
-
-        const shortDate = dateObj.toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "2-digit",
+      if (existingWeek) {
+        allWeeks.push(existingWeek);
+      } else {
+        allWeeks.push({
+          totalDist: 0,
+          totalSeconds: 0,
+          displayLabel: getWeekKey(new Date(timestamp), runsWithMetrics),
+          timestamp,
         });
+      }
 
-        return {
-          weekKey: group.displayLabel,
-          shortDate,
-          distance: parseFloat(group.totalDist.toFixed(1)),
-          paceDecimal:
-            paceDecimal > 0 ? parseFloat(paceDecimal.toFixed(2)) : null,
-          paceStr,
-        };
-      })
-      .filter((item) => item.paceDecimal !== null);
+      currentWeek.setDate(currentWeek.getDate() + 7);
+    }
+
+    return allWeeks.map((group) => {
+      let paceDecimal = null;
+      let paceStr = "--:--";
+
+      if (group.totalDist > 0 && group.totalSeconds > 0) {
+        const avgSecondsPerKm = group.totalSeconds / group.totalDist;
+
+        const avgMin = Math.floor(avgSecondsPerKm / 60);
+        const avgSec = Math.round(avgSecondsPerKm % 60);
+
+        const finalMin = avgSec === 60 ? avgMin + 1 : avgMin;
+        const finalSec = avgSec === 60 ? 0 : avgSec;
+
+        paceStr = `${finalMin}:${String(finalSec).padStart(2, "0")}`;
+        paceDecimal = parseFloat((finalMin + finalSec / 60).toFixed(2));
+      }
+
+      const dateObj = new Date(group.timestamp);
+
+      const shortDate = dateObj.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "2-digit",
+      });
+
+      return {
+        weekKey: group.displayLabel,
+        shortDate,
+        distance: parseFloat(group.totalDist.toFixed(1)),
+        paceDecimal,
+        paceStr,
+      };
+    });
   }, [runs]);
 
   const filteredData = useMemo(() => {
@@ -216,6 +246,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
               yAxisId="pace"
               type="monotone"
               dataKey="paceDecimal"
+              connectNulls={true}
               stroke="var(--color-red)"
               strokeWidth={2}
               activeDot={{
