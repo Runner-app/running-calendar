@@ -12,13 +12,13 @@ import {
 function WeightChartSection({ weightData = [], onAddWeight }) {
   const [weightInput, setWeightInput] = useState("");
   const [dateInput, setDateInput] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!weightInput) return;
-    
+
     onAddWeight({
       date: dateInput,
       weight: parseFloat(weightInput.replace(",", ".")),
@@ -35,8 +35,6 @@ function WeightChartSection({ weightData = [], onAddWeight }) {
     <div className="statsSection fullWidthSection weightSection">
       <div className="weightHeader">
         <h3 className="statsSectionTitle">⚖️ Body Weight Tracker</h3>
-        
-        {/* Szybki formularz do wpisywania wagi */}
         <form onSubmit={handleSubmit} className="weightForm">
           <input
             type="date"
@@ -53,7 +51,7 @@ function WeightChartSection({ weightData = [], onAddWeight }) {
             className="weightInputNumber"
             required
           />
-          <button type="submit" className="weightSubmitBtn">
+          <button type="submit" className="weightSubmitBtn btn">
             Add
           </button>
         </form>
@@ -64,10 +62,14 @@ function WeightChartSection({ weightData = [], onAddWeight }) {
           <LineChart data={weightData}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
             <XAxis dataKey="date" stroke="#888" fontSize={12} />
-            <YAxis domain={[minWeight, maxWeight]} stroke="#888" fontSize={12} />
+            <YAxis
+              domain={[minWeight, maxWeight]}
+              stroke="#888"
+              fontSize={12}
+            />
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(20, 20, 20, 0.85)",
+                backgroundColor: "rgba(20, 20, 20, 1)",
                 borderRadius: "8px",
                 border: "none",
                 color: "#fff",

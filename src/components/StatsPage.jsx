@@ -14,6 +14,7 @@ import WeeklyPaceHistoryChart from "./WeeklyPaceHistoryChart";
 import YearlyDistanceChart from "./stats/YearlyDistanceChart";
 import WeightChartSection from "./stats/WeightChartSection";
 import { formatWeightChartData } from "../utils/statsCalculators.js";
+import PersonalRecords from "./stats/PersonalRecords";
 
 function StatsPage({ runs, weights = [], onAddWeight }) {
   const currentYear = new Date().getFullYear();
@@ -21,62 +22,81 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
 
   const runsWithMetrics = useMemo(() => computeRunMetrics(runs || []), [runs]);
 
-  const summaryStats = useMemo(() => getSummaryStats(runsWithMetrics), [runsWithMetrics]);
-  const yearlyStats = useMemo(() => getYearlyStats(runsWithMetrics), [runsWithMetrics]);
-  const monthlyStats = useMemo(() => getMonthlyStats(runsWithMetrics), [runsWithMetrics]);
-  const topWeeklyStats = useMemo(() => getTopWeeklyStats(runsWithMetrics), [runsWithMetrics]);
-  const streakStats = useMemo(() => getStreakStats(runsWithMetrics), [runsWithMetrics]);
+  const summaryStats = useMemo(
+    () => getSummaryStats(runsWithMetrics),
+    [runsWithMetrics],
+  );
+  const yearlyStats = useMemo(
+    () => getYearlyStats(runsWithMetrics),
+    [runsWithMetrics],
+  );
+  const monthlyStats = useMemo(
+    () => getMonthlyStats(runsWithMetrics),
+    [runsWithMetrics],
+  );
+  const topWeeklyStats = useMemo(
+    () => getTopWeeklyStats(runsWithMetrics),
+    [runsWithMetrics],
+  );
+  const streakStats = useMemo(
+    () => getStreakStats(runsWithMetrics),
+    [runsWithMetrics],
+  );
   const monthlyComparisonStats = useMemo(
     () => getMonthlyComparisonStats(runsWithMetrics, currentYear, currentMonth),
-    [runsWithMetrics, currentYear, currentMonth]
+    [runsWithMetrics, currentYear, currentMonth],
   );
   const formattedWeightData = useMemo(
-      () => formatWeightChartData(weights),
-      [weights]
-    );
+    () => formatWeightChartData(weights),
+    [weights],
+  );
 
   return (
     <div className="statsPage glassPanel" id="statsPage">
-      <header className="statsHeader">
-        <h1 className="statsTitle">Statistics</h1>
-      </header>
+      <h1 className="statsTitle">Statistics</h1>
 
-      {/* SUMMARY STATS */}
-      <div className="statsSummaryGrid">
+      <div className="statsSummary">
         <div className="statCard">
           <div className="statIcon">🏁</div>
           <div className="statInfo">
-            <span className="statLabel">Total Runs</span>
-            <span className="statValue">{summaryStats.totalRuns}</span>
+            <p className="statLabel">RUNS</p>
+            <p className="statValue">{summaryStats.totalRuns}</p>
           </div>
         </div>
         <div className="statCard">
           <div className="statIcon">🗺️</div>
           <div className="statInfo">
-            <span className="statLabel">Total Distance</span>
-            <span className="statValue">
-              {Math.floor(summaryStats.totalDistance).toLocaleString("pl-PL")} km
-            </span>
+            <p className="statLabel">DISTANCE</p>
+            <p className="statValue">
+              {Math.floor(summaryStats.totalDistance).toLocaleString("pl-PL")}{" "}
+              km
+            </p>
           </div>
         </div>
         <div className="statCard">
           <div className="statIcon">🔥</div>
           <div className="statInfo">
-            <span className="statLabel">Day streak</span>
-            <span className="statValue">
+            <p className="statLabel">STREAK</p>
+            <p className="statValue">
               {summaryStats.currentStreak}{" "}
               {summaryStats.currentStreak === 1 ? "day" : "days"}
-            </span>
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="statsContent chart">
+      <div className="statsContent">
+        <PersonalRecords runs={runsWithMetrics} />
+      </div>
+
+      <div className="statsContent">
         <div className="statsSection">
           <h3 className="statsSectionTitle">📅 Yearly Distance</h3>
           <YearlyDistanceChart data={yearlyStats} />
         </div>
       </div>
+
+      <WeeklyPaceHistoryChart runs={runs} />
 
       <div className="statsContent">
         {/* MONTHLY RANKING */}
@@ -92,7 +112,9 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
                     : ""
                 }`}
               >
-                <span className="statsLabel">{stat.monthName} {stat.year}</span>
+                <span className="statsLabel">
+                  {stat.monthName} {stat.year}
+                </span>
                 <span className="statsValues">
                   {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
                   {stat.runCount === 1 ? "run" : "runs"}
@@ -109,7 +131,8 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
             {topWeeklyStats.map((stat, index) => (
               <div className="statsItem" key={stat.weekKey}>
                 <span className="statsLabel">
-                  <span className="rankNumber">#{index + 1}</span> {stat.dateRangeLabel}
+                  <span className="rankNumber">#{index + 1}</span>{" "}
+                  {stat.dateRangeLabel}
                 </span>
                 <span className="statsValues">
                   {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
@@ -122,7 +145,9 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
 
         {/* TOP STREAKS */}
         <div className="statsSection">
-          <h3 className="statsSectionTitle">🔥 Running Streaks (&gt; 9 days)</h3>
+          <h3 className="statsSectionTitle">
+            🔥 Running Streaks (&gt; 9 days)
+          </h3>
           <div id="streaksTopStatsContainer">
             {streakStats.map((stat, index) => (
               <div
@@ -130,11 +155,14 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
                 className={`statsItem ${stat.isCurrent ? "isCurrentStreak" : ""}`}
               >
                 <span className="statsLabel">
-                  <span className="rankNumber">#{index + 1}</span> {stat.count} days
+                  <span className="rankNumber">#{index + 1}</span> {stat.count}{" "}
+                  days
                 </span>
                 <span className="statsValues">
                   {stat.startDate.split("-").reverse().join(".")} -{" "}
-                  {stat.isCurrent ? "present 🔥" : stat.endDate.split("-").reverse().join(".")}
+                  {stat.isCurrent
+                    ? "present 🔥"
+                    : stat.endDate.split("-").reverse().join(".")}
                 </span>
               </div>
             ))}
@@ -142,7 +170,7 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
         </div>
 
         {/* MONTHLY COMPARISON ACCORDION */}
-        <div className="statsSection fullWidthSection">
+        <div className="statsSection">
           <h3 className="statsSectionTitle">📊 Monthly Performance by Year</h3>
           <div className="monthlyComparisonGrid">
             {monthlyComparisonStats.map((m) => (
@@ -152,9 +180,7 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
         </div>
       </div>
 
-      <WeeklyPaceHistoryChart runs={runs} />
-
-      <div className="statsContent chart">
+      <div className="statsContent">
         <WeightChartSection
           weightData={formattedWeightData}
           onAddWeight={onAddWeight}
