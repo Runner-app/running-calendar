@@ -123,8 +123,19 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
         year: "2-digit",
       });
 
+      const weekEnd = new Date(dateObj);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      const formatDate = (date) =>
+        date.toLocaleDateString("pl-PL", {
+          day: "numeric",
+          month: "short",
+        });
+
       return {
         weekKey: group.displayLabel,
+        weekStart: formatDate(dateObj),
+        weekEnd: formatDate(weekEnd),
         shortDate,
         distance: parseFloat(group.totalDist.toFixed(1)),
         paceDecimal,
@@ -147,7 +158,9 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
 
       return (
         <div className="chartCustomTooltip">
-          <p className="week">{data.weekKey}</p>
+          <p className="week">
+            {data.weekStart} – {data.weekEnd}
+          </p>
 
           <p className="pace">
             Pace: <strong>{data.paceStr} min/km</strong>

@@ -124,22 +124,32 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
           </div>
         </div>
 
-        {/* TOP 20 WEEKS */}
+        {/*TOP 20 WEEKS*/}
         <div className="statsSection">
           <h3 className="statsSectionTitle">⚡ Top 20 Weekly Distance</h3>
+
           <div id="weeklyTopStatsContainer">
-            {topWeeklyStats.map((stat, index) => (
-              <div className="statsItem" key={stat.weekKey}>
-                <span className="statsLabel">
-                  <span className="rankNumber">#{index + 1}</span>{" "}
-                  {stat.dateRangeLabel}
-                </span>
-                <span className="statsValues">
-                  {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
-                  {stat.runCount === 1 ? "run" : "runs"}
-                </span>
-              </div>
-            ))}
+            {topWeeklyStats.map((stat, index) => {
+              const currentYear = new Date().getFullYear();
+              const isCurrentYear = stat.weekKey.includes(`(${currentYear})`);
+
+              return (
+                <div
+                  className={`statsItem ${isCurrentYear ? "currentYear" : ""}`}
+                  key={stat.weekKey}
+                >
+                  <span className="statsLabel">
+                    <span className="rankNumber">#{index + 1}</span>{" "}
+                    {stat.dateRangeLabel}
+                  </span>
+
+                  <span className="statsValues">
+                    {Math.round(stat.totalDistance)}.0 km • {stat.runCount}{" "}
+                    {stat.runCount === 1 ? "run" : "runs"}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
