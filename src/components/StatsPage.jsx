@@ -123,7 +123,9 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
             ))}
           </div>
         </div>
+      </div>
 
+      <div className="statsContent">
         {/*TOP 20 WEEKS*/}
         <div className="statsSection">
           <h3 className="statsSectionTitle">⚡ Top 20 Weekly Distance</h3>
