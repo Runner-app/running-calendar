@@ -137,7 +137,7 @@ function StatsPage({ runs, weights = [], onAddWeight }) {
 
               return (
                 <div
-                  className={`statsItem ${isCurrentYear ? "currentYear" : ""}`}
+                  className={`statsItem ${isCurrentYear ? "isCurrentYear" : ""}`}
                   key={stat.weekKey}
                 >
                   <span className="statsLabel">

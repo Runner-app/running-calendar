@@ -2,7 +2,8 @@
 
 .statsPage.glassPanel {
   padding: 25px;
-  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 
   .statsTitle {
     font-size: @fontSizeH1;
@@ -65,7 +66,7 @@
       width: 100%;
       #monthlyStatsContainer {
         display: grid;
-        grid-template-rows: repeat(18, auto);
+        grid-template-rows: repeat(22, auto);
         grid-auto-flow: column;
         gap: 12px;
       }
@@ -87,7 +88,7 @@
         &.isCurrentYear,
         &.isCurrentMonth,
         &.isCurrentStreak {
-          background: var(--color-red);
+          border: 3px solid var(--color-red);
         }
         .statsLabel {
           font-weight: bold;
@@ -184,11 +185,6 @@
         display: flex;
         gap: 25px;
         margin-top: 25px;
-      }
-    }
-    #weeklyTopStatsContainer {
-      .statsItem.currentYear {
-        background-color: var(--color-red);
       }
     }
   }
