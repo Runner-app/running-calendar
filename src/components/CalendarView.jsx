@@ -18,7 +18,6 @@ function CalendarView({
   onSaveSettings,
   onAddRunClick,
 }) {
-
   const [scrollDirection, setScrollDirection] = useState("Next");
   const isScrolling = useRef(false);
   const gridRef = useRef(null);
@@ -56,7 +55,7 @@ function CalendarView({
     n.setDate(n.getDate() + 21);
     setCurrentDate(n);
   };
-  
+
   const handlePrevYear = () => {
     const n = new Date(currentDate);
     n.setFullYear(n.getFullYear() - 1);
@@ -123,7 +122,9 @@ function CalendarView({
       weekMonday.setDate(weekMonday.getDate() + w * 7);
       const weekKey = getWeekKey(weekMonday, runs || []);
       const weekDailyGoal =
-        weeklyGoals[weekKey] !== undefined ? parseFloat(weeklyGoals[weekKey]) : 0;
+        weeklyGoals[weekKey] !== undefined
+          ? parseFloat(weeklyGoals[weekKey])
+          : 0;
 
       const weekDates = [];
       const daysInWeek = [];
@@ -137,7 +138,7 @@ function CalendarView({
         const runsOnThisDay = runsWithMetrics.filter((r) => r.date === dateStr);
         const dayTotalDist = runsOnThisDay.reduce(
           (sum, run) => sum + (parseFloat(run.distance) || 0),
-          0
+          0,
         );
         const isToday = dateStr === formatDate(new Date());
         const isGoalFailed =
@@ -153,16 +154,18 @@ function CalendarView({
         });
       }
 
-      const runsInWeek = runsWithMetrics.filter((r) => weekDates.includes(r.date));
+      const runsInWeek = runsWithMetrics.filter((r) =>
+        weekDates.includes(r.date),
+      );
       const totalDist = runsInWeek.reduce(
         (sum, run) => sum + (parseFloat(run.distance) || 0),
-        0
+        0,
       );
       const runsWithHr = runsInWeek.filter((r) => (parseInt(r.hr) || 0) > 0);
       const avgHr =
         runsWithHr.length > 0
           ? Math.round(
-              runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length
+              runsWithHr.reduce((sum, r) => sum + r.hr, 0) / runsWithHr.length,
             )
           : null;
 
@@ -249,7 +252,11 @@ function CalendarView({
     <>
       <header className="calendarHeader">
         <div className="calendarNavigation">
-          <button className="btn btnSecondary navButton" onClick={handlePrevYear}>
+          <button
+            className="btn btnSecondary navButton"
+            onClick={handlePrevYear}
+            title="Go to previous year"
+          >
             <span>
               <img
                 src="/images/icons/fast-backward.svg"
@@ -258,18 +265,30 @@ function CalendarView({
               />
             </span>
           </button>
-          <button className="btn btnSecondary navButton" onClick={handlePrevMonth}>
+          <button
+            className="btn btnSecondary navButton"
+            onClick={handlePrevMonth}
+            title="Go to previous month"
+          >
             <span>
               <img src="/images/icons/arrow-back.svg" alt="Previous Month" />
             </span>
           </button>
           <h2 className="monthTitle">{headerTitle}</h2>
-          <button className="btn btnSecondary navButton" onClick={handleNextMonth}>
+          <button
+            className="btn btnSecondary navButton"
+            onClick={handleNextMonth}
+            title="Go to next month"
+          >
             <span>
               <img src="/images/icons/arrow-forward.svg" alt="Next Month" />
             </span>
           </button>
-          <button className="btn btnSecondary navButton" onClick={handleNextYear}>
+          <button
+            className="btn btnSecondary navButton"
+            onClick={handleNextYear}
+            title="Go to next year"
+          >
             <span>
               <img
                 src="/images/icons/fast-forward.svg"
@@ -297,11 +316,17 @@ function CalendarView({
         <div className="weekday">SUN</div>
       </div>
 
-      <div className={`calendarGrid animate${scrollDirection}`} ref={gridRef} key={gridAnimationKey}>
+      <div
+        className={`calendarGrid animate${scrollDirection}`}
+        ref={gridRef}
+        key={gridAnimationKey}
+      >
         {weeksData.map((week) => (
           <div className="runWeek" key={`week-${week.weekKey}`}>
             <div className="weekSummaryBar">
-              <span className="weekSummaryTitle">{week.summary.weekNumText}</span>
+              <span className="weekSummaryTitle">
+                {week.summary.weekNumText}
+              </span>
               <span className="weekSummaryItem">
                 <img
                   src="/images/icons/graph.svg"
@@ -343,7 +368,9 @@ function CalendarView({
                   }
                   min="0"
                   step="0.5"
-                  onChange={(e) => handleGoalChange(week.weekKey, e.target.value)}
+                  onChange={(e) =>
+                    handleGoalChange(week.weekKey, e.target.value)
+                  }
                 />{" "}
                 km/day
               </span>
@@ -374,24 +401,41 @@ function CalendarView({
                       }`}
                     >
                       {day.runs.map((run) => {
-                        const zoneIndex = getPaceZoneIndex(run.paceM, run.paceS);
+                        const zoneIndex = getPaceZoneIndex(
+                          run.paceM,
+                          run.paceS,
+                        );
                         const zoneColor = getPaceZoneColor(zoneIndex);
                         const paceSecStr = String(run.paceS || 0).padStart(
                           2,
-                          "0"
+                          "0",
                         );
 
                         const hStr =
                           run.durationH > 0 ? `${run.durationH}:` : "";
-                        const mStr = String(run.durationM || 0).padStart(2, "0");
-                        const sStr = String(run.durationS || 0).padStart(2, "0");
+                        const mStr = String(run.durationM || 0).padStart(
+                          2,
+                          "0",
+                        );
+                        const sStr = String(run.durationS || 0).padStart(
+                          2,
+                          "0",
+                        );
 
                         const distFormatted =
                           typeof run.distance === "number"
                             ? run.distance.toFixed(1)
                             : parseFloat(run.distance || 0).toFixed(1);
                         const mountainEmoji = run.mountainRun ? " ⛰️" : "";
-                        const notesEmoji = run.notes ? <img src="/images/icons/note.svg" alt="Note" className="icon notesIcon" /> : "";
+                        const notesEmoji = run.notes ? (
+                          <img
+                            src="/images/icons/note.svg"
+                            alt="Note"
+                            className="icon notesIcon"
+                          />
+                        ) : (
+                          ""
+                        );
                         const weather = run.weather_data;
 
                         return (
@@ -416,11 +460,7 @@ function CalendarView({
                             </div>
 
                             {run.hr && parseInt(run.hr) > 0 && (
-                              <div
-                                className={`runBar ${getHrClass(
-                                  run.hr
-                                )}`}
-                              >
+                              <div className={`runBar ${getHrClass(run.hr)}`}>
                                 <img
                                   src="/images/icons/heart-rate.svg"
                                   alt="Heart rate"
@@ -436,7 +476,8 @@ function CalendarView({
                                 alt="Stopwatch"
                                 style={{ width: "17px", height: "auto" }}
                               />
-                              {hStr}{mStr}:{sStr}
+                              {hStr}
+                              {mStr}:{sStr}
                             </div>
 
                             <div
@@ -449,11 +490,11 @@ function CalendarView({
                                 style={{ width: "17px", height: "auto" }}
                               />
                               <span>
-                                {roundToNearestQuarter(run.time) || "--:--"} •{" "}
+                                {roundToNearestQuarter(run.time) || "--:--"}{" "}
+                                •{" "}
                               </span>
                               {run.computedNumber || 0} || {distFormatted} km [
-                              {run.computedStreak || 1}]
-                              {mountainEmoji}
+                              {run.computedStreak || 1}]{mountainEmoji}
                               <span className="notes">{notesEmoji}</span>
                             </div>
 

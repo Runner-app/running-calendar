@@ -120,11 +120,9 @@
       padding: 10px;
       margin-top: 75px;
     }
-    &.animateNext {
-      animation: calendarFadeInNext 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    &.animateNext,
     &.animatePrev {
-      animation: calendarFadeInPrev 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: calendarFadeInNext 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .runWeek {
       .flexColumn();
@@ -161,14 +159,12 @@
           align-items: center;
           gap: 4px;
           input.inputWeeklyGoal {
-            width: 42px;
+            width: 38px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            color: inherit;
-            font-family: inherit;
             font-weight: @fontBold;
             text-align: center;
-            padding: 2px 4px;
+            padding: 0;
             border-radius: borderRadiusExtraSmall;
             &:focus {
               outline: none;
@@ -223,7 +219,7 @@
           border-color: rgba(255, 255, 255, 0.15);
           .runWeatherTooltip {
             opacity: 1;
-            visibility: visible;
+
             transform: translateX(-50%) translateY(0);
           }
         }
@@ -243,14 +239,12 @@
           left: 50%;
           transform: translateX(-50%) translateY(5px);
           background: rgba(20, 20, 20, 0.95);
-          color: #fff;
           padding: 6px 10px;
           border-radius: borderRadiusExtraSmall;
           font-size: @fontSizeSmaller;
           white-space: nowrap;
           z-index: 10;
           opacity: 0;
-          visibility: hidden;
           transition: all 0.15s ease-in-out;
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
           border: 1px solid rgba(255, 255, 255, 0.1);
