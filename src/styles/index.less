@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "./variables.less";
 @import "./mixins.less";
 @import "./calendar.less";
@@ -13,7 +13,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-feature-settings: "tnum";
 }
 
@@ -25,7 +25,7 @@ body {
   color: var(--text-primary);
   overflow-x: hidden;
   background-color: var(--text-dark);
-  
+
   .appContainer {
     max-width: 100%;
     width: 100%;
@@ -41,11 +41,11 @@ body {
   }
 
   .loadingScreen {
-    .centerFlex();
+    .flexCenter();
     height: 100vh;
     color: var(--text-primary);
     h2 {
-      .centerFlex();
+      .flexCenter();
       .runnerGif {
         filter: invert(1);
         width: 90px;
@@ -56,6 +56,9 @@ body {
   .mainContent {
     width: 100%;
     margin-left: 60px;
+    @media (max-width: @mobileScreen) {
+      margin: 0;
+    }
   }
 
   .glassPanel {
@@ -76,7 +79,12 @@ label {
   text-transform: uppercase;
 }
 
-input[type='text'], input[type='number'], input[type='date'], input[type='time'], select, textarea {
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
   width: 100%;
   background: var(--stat-cart-border);
   border: 1px solid var(--glass-border);
@@ -86,13 +94,15 @@ input[type='text'], input[type='number'], input[type='date'], input[type='time']
   font-size: 0.95rem;
 }
 
-input[type='number'] {
+input[type="number"] {
   appearance: textfield;
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 8px var(--color-primary-glow);

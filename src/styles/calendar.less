@@ -14,7 +14,7 @@
     .makeHrGradient(--hr-under-130);
   }
   .barHr130-134 {
-    .makeHrGradient(--hr-under-130);
+    .makeHrGradient(--hr-130-134);
   }
   .barHr135-139 {
     .makeHrGradient(--hr-135-139);
@@ -39,11 +39,10 @@
   }
 
   .calendarHeader {
-    .centerFlex();
+    .flexCenter();
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: @spacingLarge;
     @media (max-width: @mobileScreen) {
       position: fixed;
       top: 0;
@@ -55,7 +54,7 @@
       z-index: 2;
     }
     .calendarNavigation {
-      .centerFlex();
+      .flexCenter();
       gap: 15px;
       padding-left: 15px;
       .monthTitle {
@@ -76,7 +75,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    padding: @paddingMedium;
+    padding: @spacingMedium;
     @media (max-width: @mobileScreen) {
       display: none;
     }
@@ -88,7 +87,7 @@
     }
   }
 
-  @keyframes calendarFadeInNext {
+  @keyframes calendarFadeIn {
     from {
       opacity: 0;
       transform: translateY(25px) scale(0.95);
@@ -99,21 +98,10 @@
     }
   }
 
-  @keyframes calendarFadeInPrev {
-    from {
-      opacity: 0;
-      transform: translateY(-25px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
   .calendarGrid {
     .flexColumn();
     gap: 16px;
-    padding: 0 @paddingMedium;
+    padding: 0 @spacingMedium;
     will-change: transform, opacity;
     @media (max-width: @mobileScreen) {
       gap: 15px;
@@ -122,7 +110,7 @@
     }
     &.animateNext,
     &.animatePrev {
-      animation: calendarFadeInNext 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: calendarFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .runWeek {
       .flexColumn();
@@ -132,12 +120,10 @@
       background: var(--glass-bg);
       height: 27vh;
       .weekSummaryBar {
+        .flexLeft();
         background-color: var(--glass-bg-hover);
-        border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-        padding: 8px 15px;
-        display: flex;
+        padding: 8px;
         gap: 25px;
-        align-items: center;
         font-size: @fontSizeSmall;
         font-weight: @fontNormal;
         color: var(--text-secondary);
@@ -150,13 +136,11 @@
           color: var(--text-primary);
         }
         .weekSummaryItem {
-          display: flex;
-          align-items: center;
+          .flexLeft();
           gap: 6px;
         }
         .weekGoalWrapper {
-          display: flex;
-          align-items: center;
+          .flexLeft();
           gap: 4px;
           input.inputWeeklyGoal {
             width: 38px;
@@ -219,7 +203,6 @@
           border-color: rgba(255, 255, 255, 0.15);
           .runWeatherTooltip {
             opacity: 1;
-
             transform: translateX(-50%) translateY(0);
           }
         }
@@ -240,14 +223,14 @@
           transform: translateX(-50%) translateY(5px);
           background: rgba(20, 20, 20, 0.95);
           padding: 6px 10px;
-          border-radius: borderRadiusExtraSmall;
+          border-radius: @borderRadiusSmall;
           font-size: @fontSizeSmaller;
           white-space: nowrap;
           z-index: 10;
           opacity: 0;
           transition: all 0.15s ease-in-out;
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--glass-border);
           pointer-events: none;
         }
         .dayRunContainer {
@@ -267,8 +250,7 @@
             gap: 2px;
           }
           .runBar {
-            .centerFlex();
-            justify-content: flex-start;
+            .flexLeft();
             gap: 5px;
             font-size: @fontSizeSmall;
             font-weight: @fontBold;

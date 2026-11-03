@@ -9,18 +9,32 @@
   padding: 16px 5px 16px 0;
   background: var(--dark-background);
   position: fixed;
+  @media (max-width: @mobileScreen) {
+    height: 60px;
+    bottom: 0;
+    flex-direction: row;
+    width: 100%;
+    z-index: 10;
+  }
   .sidebarBrand {
     .brandLogo {
       margin-top: 9px;
-      width: 40px;
+      width: 42px;
       height: auto;
+      @media (max-width: @mobileScreen) {
+        margin-top: 0;
+      }
     }
   }
-  .sidebarNav, .sidebarFooter {
-    display: flex;
+  .sidebarNav,
+  .sidebarFooter {
+    .flexLeft();
     flex-direction: column;
     gap: 12px;
-    align-items: center;
     width: 100%;
+    @media (max-width: @mobileScreen) {
+      flex-direction: row;
+      justify-content: center;
+    }
   }
 }
