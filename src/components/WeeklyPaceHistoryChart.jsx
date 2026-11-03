@@ -116,6 +116,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       }
 
       const dateObj = new Date(group.timestamp);
+      const year = dateObj.getFullYear(); // Pobieramy rok do filtrowania
 
       const shortDate = dateObj.toLocaleDateString("en-US", {
         day: "numeric",
@@ -137,6 +138,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
         weekStart: formatDate(dateObj),
         weekEnd: formatDate(weekEnd),
         shortDate,
+        year, // Dodajemy rok do obiektu danych
         distance: parseFloat(group.totalDist.toFixed(1)),
         paceDecimal,
         paceStr,
@@ -144,12 +146,18 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
     });
   }, [runs]);
 
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set(rawChartData.map((d) => d.year));
+    return Array.from(yearsSet).sort((a, b) => b - a); // Od najnowszego do najstarszego
+  }, [rawChartData]);
+
   const filteredData = useMemo(() => {
     if (range === "3M") return rawChartData.slice(-12);
     if (range === "6M") return rawChartData.slice(-24);
     if (range === "1Y") return rawChartData.slice(-52);
+    if (range === "ALL") return rawChartData;
 
-    return rawChartData;
+    return rawChartData.filter((d) => d.year.toString() === range);
   }, [rawChartData, range]);
 
   const CustomTooltip = ({ active, payload }) => {
@@ -159,7 +167,7 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
       return (
         <div className="chartCustomTooltip">
           <p className="week">
-            {data.weekStart} – {data.weekEnd}
+            {data.weekStart} – {data.weekEnd} ({data.year})
           </p>
 
           <p className="pace">
@@ -198,6 +206,16 @@ function WeeklyPaceHistoryChart({ runs = [] }) {
               onClick={() => setRange(r)}
             >
               {r}
+            </button>
+          ))}
+
+          {availableYears.map((year) => (
+            <button
+              key={year}
+              className={`btnRange ${range === year.toString() ? "active" : ""}`}
+              onClick={() => setRange(year.toString())}
+            >
+              {year}
             </button>
           ))}
         </div>
